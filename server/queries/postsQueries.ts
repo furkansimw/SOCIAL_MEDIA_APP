@@ -23,9 +23,9 @@ const getPostQ = (id: string, postid: string, guest: boolean) => {
     left join relationships r on r.owner = $1 and r.target = u.id
     left join relationships b on b.owner = u.id and b.target = $1 and b.type = 2
     left join p.id = $1 and
-    (ispublic or (is not null r.type and r.type = 0) or u.id = $1) and b is not null and (r.type is null or r.type != 2)
+    (ispublic or coalesce(f.type, -1) = 0 or u.id = $1) and b is not null and coalesce(r.type, -1) != 2)
     `;
-  db.query(query, values).then((r) => r.rows[0] || null);
+  return db.query(query, values).then((r) => r.rows[0] || null);
 };
 
 export { createPostQ, getPostQ };
