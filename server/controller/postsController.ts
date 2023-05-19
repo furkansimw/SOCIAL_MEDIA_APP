@@ -1,12 +1,8 @@
 import { upload } from "../db/cloudinary";
 import { asyncErrorWrapper, badRequest } from "../mw/error";
 import { v4 } from "uuid";
-import { createPostQ, getPostQ } from "../queries/postsQueries";
-
-type bodyType = {
-  images: string[];
-  content: string;
-};
+import { createPostQ, getPostQ, getPostLikesQ } from "../queries/postsQueries";
+import conv from "../functions/converter";
 
 const createPostController = asyncErrorWrapper(async (req, res) => {
   const { guest, id } = res.locals;
@@ -14,7 +10,13 @@ const createPostController = asyncErrorWrapper(async (req, res) => {
 
   const postid = v4();
 
-  const { images, content }: bodyType = req.body;
+  const {
+    images,
+    content,
+  }: {
+    images: string[];
+    content: string;
+  } = req.body;
   const urls = await Promise.all(
     images.map((img, i) => upload(img, `${postid}-${i}`, "posts"))
   );
@@ -30,4 +32,16 @@ const getPostController = asyncErrorWrapper(async (req, res) => {
   res.json(post);
 });
 
-export { createPostController, getPostController };
+const getPostLikesController = asyncErrorWrapper(async (req, res) => {
+  const { id, guest } = res.locals;
+  if (guest) badRequest();
+
+  const { postid } = req.params;
+
+  const { offset, sd } = conv(req.query);
+
+  const postLikes = await getPostLikesQ(id, postid, offset, sd);
+  res.json(postLikes);
+});
+
+export { createPostController, getPostController, getPostLikesController };

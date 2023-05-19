@@ -28,4 +28,27 @@ const getPostQ = (id: string, postid: string, guest: boolean) => {
   return db.query(query, values).then((r) => r.rows[0] || null);
 };
 
-export { createPostQ, getPostQ };
+const getPostLikesQ = (
+  id: string,
+  postid: string,
+  offset: number,
+  sd?: Date
+) => {
+  const values: any[] = [id, postid, offset];
+  if (sd) values.push(sd);
+
+  const str = sd ? `and pl.created < $4` : ``;
+
+  return db.query(
+    `select u.username, u.pp, u.fullname, r.type from postlikes pl
+     left join users u on u.id = pl.owner
+     left join relationships r on r.owner = $1 and r.target = u.id
+     left join relationships b on b.owner = u.id and b.target = u.id and b.type = 2
+     where pl.post = $2 ${str} and b is null and
+     LIMIT 12 offset $3
+  `,
+    values
+  );
+};
+
+export { createPostQ, getPostQ, getPostLikesQ };

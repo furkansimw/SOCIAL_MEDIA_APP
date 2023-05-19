@@ -6,7 +6,7 @@ import postsRoute from "./postsRoute";
 const apiRoute = Router();
 
 apiRoute.use(tokenMw);
-apiRoute.use("/login", authRoute);
+apiRoute.use("/auth", authRoute);
 apiRoute.use("/posts", postsRoute);
 
 export default apiRoute;
