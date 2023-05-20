@@ -1,13 +1,14 @@
-import express from "express";
+import { Router } from "express";
 import {
+  getPostsController,
+  getExplorePostsController,
   createPostController,
-  getPostController,
-  getPostLikesController,
 } from "../controller/postsController";
-const postsRoute = express.Router();
+import postsIdRoute from "./postsIdRoute";
+const postsRoute = Router();
 
-postsRoute.route("/").post(createPostController);
-postsRoute.route("/:postid").get(getPostController);
-postsRoute.route("/:postid/likes").get(getPostLikesController);
+postsRoute.route("/").get(getPostsController).post(createPostController);
+postsRoute.route("/explore").get(getExplorePostsController);
+postsRoute.use("/:postid", postsIdRoute);
 
 export default postsRoute;
