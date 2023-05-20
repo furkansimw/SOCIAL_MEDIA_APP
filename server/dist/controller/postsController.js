@@ -8,27 +8,44 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPostController = exports.createPostController = void 0;
+exports.createPostController = exports.getExplorePostsController = exports.getPostsController = void 0;
 const cloudinary_1 = require("../db/cloudinary");
 const error_1 = require("../mw/error");
 const uuid_1 = require("uuid");
 const postsQueries_1 = require("../queries/postsQueries");
+const converter_1 = __importDefault(require("../functions/converter"));
+const getPostsController = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { guest, id } = res.locals;
+    if (guest)
+        (0, error_1.badRequest)();
+    const { offset, sd } = (0, converter_1.default)(req.query);
+    const posts = yield (0, postsQueries_1.getPostsQ)(id, offset, sd);
+    res.json(posts);
+}));
+exports.getPostsController = getPostsController;
+const getExplorePostsController = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { guest, id } = res.locals;
+    if (guest)
+        (0, error_1.badRequest)();
+    const { offset, sd } = (0, converter_1.default)(req.query);
+    const posts = yield (0, postsQueries_1.getExplorePostsQ)(id, offset, sd);
+    res.json(posts);
+}));
+exports.getExplorePostsController = getExplorePostsController;
 const createPostController = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const { guest, id } = res.locals;
     if (guest)
         (0, error_1.badRequest)();
     const postid = (0, uuid_1.v4)();
-    const { images, content } = req.body;
+    let { images, content, } = req.body;
     const urls = yield Promise.all(images.map((img, i) => (0, cloudinary_1.upload)(img, `${postid}-${i}`, "posts")));
+    content = (_a = content === null || content === void 0 ? void 0 : content.trim()) === null || _a === void 0 ? void 0 : _a.replace(/\n{2,}/g, "\n");
     const postId = yield (0, postsQueries_1.createPostQ)(id, urls, content);
     res.status(201).json(postId);
 }));
 exports.createPostController = createPostController;
-const getPostController = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id, guest } = res.locals;
-    const { postid } = req.params;
-    const post = yield (0, postsQueries_1.getPostQ)(id, postid, guest);
-    res.json(post);
-}));
-exports.getPostController = getPostController;
