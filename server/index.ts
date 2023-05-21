@@ -8,7 +8,7 @@ import morgan from "morgan";
 import apiRoute from "./api/routes";
 import { errorHandler, routeNotFound } from "./mw/error";
 import create from "./db/create";
-import jwt from "jsonwebtoken";
+import helmet from "helmet";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -20,6 +20,7 @@ app.use(express.json({ limit: "60mb" }));
 app.use(cookieParser());
 app.use(cors({ origin, credentials: true }));
 app.use(morgan("dev"));
+app.use(helmet());
 
 app.use("/api", apiRoute);
 
