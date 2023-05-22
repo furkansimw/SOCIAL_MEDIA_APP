@@ -1,9 +1,23 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
+import { HomeIcon } from "./Icons";
 
 const Navigation = () => {
   const [mini, setMini] = useState(false);
+  const { pathname } = useLocation();
+  const [panel, setPanel] = useState<null | "search" | "notifications">(null);
+  const [createPostPopup, setCreatePostPopup] = useState(false);
+
+  const uiController = (key: string) => {
+    if (createPostPopup) return key == "create";
+    if (panel) {
+      if (panel == "search") return key == "search";
+      if (panel == "notifications") return key == "notifications";
+    }
+    return false;
+  };
+
   return (
     <Container className={mini ? "mini" : ""}>
       <div className="content">
@@ -16,7 +30,7 @@ const Navigation = () => {
         <ul>
           <li>
             <Link to={"/"}>
-              <p>icon</p>
+              <HomeIcon isactive={uiController("home")} />
               <p>Home</p>
             </Link>
           </li>
@@ -69,6 +83,12 @@ const Container = styled.div`
         a {
           padding: 12px;
           display: flex;
+          align-items: center;
+          svg {
+          }
+          p {
+            margin-left: 10px;
+          }
         }
       }
     }
