@@ -2,9 +2,14 @@ import React, { useState, FormEvent, useEffect } from "react";
 import styled from "styled-components";
 import Title from "../components/Title";
 import { ToastContainer, toast } from "react-toastify";
+import { login, signup } from "../api/auth";
+import { toggleSetIsloggedin } from "../redux/profileSlice";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
-  const usernamePattern = "^(?!.*[_.]{2})[a-zd._]{5,35}[^_.]$";
+  const dispatch = useDispatch();
+  const usernamePattern =
+    "^(?=.{6,36}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$";
   const emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$";
   const [islogin, setIslogin] = useState(true);
 
@@ -28,11 +33,14 @@ const Login = () => {
     formCheckValidity();
   }, [username, email, fullname, password]);
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    toast.error("xd");
-    if (islogin) {
-    } else {
+    try {
+      if (islogin) await login(username, password);
+      else await signup(username, password, fullname, email);
+      dispatch(toggleSetIsloggedin());
+    } catch (error) {
+      toast.error((error as any).toString());
     }
   };
 

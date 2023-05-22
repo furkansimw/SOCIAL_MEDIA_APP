@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import { createError } from "../mw/error";
 
-const connectionString = process.env.DB_URl;
+const connectionString = process.env.DB_URL;
 
 if (!connectionString) createError("Connection string not defined");
 

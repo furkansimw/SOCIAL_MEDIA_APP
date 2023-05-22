@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
 import { IProfileInitialState } from "../interfaces/ISlices";
 import { RootState } from "./store";
 

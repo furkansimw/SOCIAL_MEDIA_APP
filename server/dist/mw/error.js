@@ -26,10 +26,16 @@ const errorHandler = (err, req, res, next) => {
         res.status(err.status).json({ message: err.message });
     }
     else if (err instanceof pg_1.DatabaseError) {
-        let message = "Internal Server Error";
-        if (err.detail)
-            message = parser(err.detail);
-        res.status(500).json({ message });
+        if (err.code == "23505") {
+            let message = "Internal Server Error";
+            if (err.detail)
+                message = parser(err.detail);
+            return res.status(500).json({ message });
+        }
+        else {
+            const message = err.message || "Internal Server Error";
+            return res.status(500).json({ message });
+        }
     }
     else {
         const message = err.message || "Internal Server Error";
