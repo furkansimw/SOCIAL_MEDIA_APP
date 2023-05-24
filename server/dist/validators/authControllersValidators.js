@@ -9,6 +9,7 @@ const loginVal = (username, password) => username &&
 exports.loginVal = loginVal;
 const signUpVal = (username, password, email, fullname) => loginVal(username, password) &&
     email &&
+    !['explore', 'messages'].includes(username) &&
     new RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$").test(email) &&
     fullname
     ? fullname.length <= 50

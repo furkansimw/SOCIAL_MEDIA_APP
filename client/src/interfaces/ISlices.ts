@@ -16,6 +16,7 @@ export interface IPost {
   cover?: string;
   images: string[];
   owner: string;
+  username: string;
   created: string;
   pp: string | null;
   content: string;
@@ -34,6 +35,7 @@ export interface IPost {
 
 export interface IComment {
   owner: string;
+  username: string;
   pp: string | string;
   content: string;
   created: string;
@@ -45,6 +47,7 @@ export interface IComment {
 
 export interface ISubComment {
   owner: string;
+  username: string;
   pp: string | string;
   content: string;
   created: string;
@@ -60,7 +63,7 @@ export interface IProfile {
   id: string;
   pp: string | null;
   ispublic: boolean;
-  followingme: boolean;
+  isfollowingme: boolean;
   status: number | null;
   posts: { loading: boolean; hasmore: boolean; data: IPost[] };
 }

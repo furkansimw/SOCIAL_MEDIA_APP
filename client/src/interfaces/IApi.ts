@@ -1,5 +1,5 @@
 export interface IPosts {
-  explore: boolean;
-  offset: number;
+  explore?: boolean;
+  offset?: number;
   sd?: string;
 }

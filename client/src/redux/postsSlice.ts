@@ -1,7 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
+// import type {PayloadAction} from "@reduxjs/toolkit";
 import { IPost, IPostsSliceInitialState } from "../interfaces/ISlices";
-import { posts } from "../api/posts";
+import { getPosts } from "../api/getPosts.ts";
+import { RootState } from "./store.ts";
+import { dateR } from "./functions.ts";
 
 const initialState: IPostsSliceInitialState = {
   posts: [],
@@ -16,22 +18,53 @@ export const profileSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(posts.fulfilled, (state, action) => {
-      const { explore } = action.meta.arg;
-      let newPosts = action.payload as IPost[];
-      const { posts } = state;
-      newPosts = newPosts.map((newPost) => {
-        return { ...newPost, page: explore ? "explore" : "home" };
+    builder
+      .addCase(getPosts.pending, (state, action) => {
+        const { explore } = action.meta.arg;
+        state.loading[explore ? "explore" : "home"] = true;
+      })
+      .addCase(getPosts.fulfilled, (state, action) => {
+        const { explore } = action.meta.arg;
+        const pageC = (post: IPost) => ({
+          ...post,
+          page: explore ? "explore" : "home",
+        });
+
+        const newPosts = action.payload as IPost[];
+        const { posts } = state;
+
+        const updatedPosts = newPosts.map(pageC);
+
+        const result = posts
+          .concat(updatedPosts)
+          .sort((a, b) => dateR(b.created) - dateR(a.created));
+
+        state.posts = result;
+        state.loading[explore ? "explore" : "home"] = false;
+        state.hasmore[explore ? "explore" : "home"] = newPosts.length == 12;
       });
-
-      let result = [...posts, ...newPosts];
-      result = result.sort((a, b) => parseInt(a.created) - parseInt(b.created));
-
-      state.posts = result;
-    });
   },
 });
 
 export const {} = profileSlice.actions;
+
+export const selectPostsHome = (state: RootState) =>
+  state.posts.posts.filter((post) => post.page != "home");
+
+export const selectPostsProfile = (state: RootState, username: string) =>
+  state.posts.posts.filter((post) => post.username == username);
+
+export const selectPostsExplore = (state: RootState) =>
+  state.posts.posts.filter((post) => post.page != "explore");
+
+export const selectPostsSaved = (state: RootState) =>
+  state.posts.posts.filter((post) => post.page != "saved");
+
+export const selectProfile = (state: RootState, username: string) =>
+  state.posts.profiles.find((profile) => profile.username == username);
+
+export const selectHasMore = (state: RootState) => state.posts.hasmore;
+
+export const selectLoading = (state: RootState) => state.posts.loading;
 
 export default profileSlice.reducer;
