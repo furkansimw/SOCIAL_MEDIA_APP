@@ -1,7 +1,11 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../redux/store";
-import { selectLoading, selectPostsExplore } from "../redux/postsSlice";
+import {
+  selectHasMore,
+  selectLoading,
+  selectPostsExplore,
+} from "../redux/postsSlice";
 import { getPosts } from "../api/getPosts";
 import LoadingBox from "../components/LoadingBox";
 import PostMini from "../components/PostMini";
@@ -12,9 +16,10 @@ const Explore = () => {
 
   const posts = useSelector(selectPostsExplore);
   const { explore: loading } = useSelector(selectLoading);
+  const { explore: hasmore } = useSelector(selectHasMore);
 
   useEffect(() => {
-    if (posts.length == 0) dispatch(getPosts({ explore: true }));
+    if (posts.length == 0 && hasmore) dispatch(getPosts({ explore: true }));
   }, []);
 
   return (
@@ -27,7 +32,7 @@ const Explore = () => {
   );
 };
 
-const Container = styled.div`
+const Container = styled.ul`
   width: 100%;
   max-width: 1206px;
   margin: 0px 2rem;

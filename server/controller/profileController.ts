@@ -1,11 +1,22 @@
 import { asyncErrorWrapper, badRequest } from "../mw/error";
-import { searchProfileQ, getProfileQ } from "../queries/profileQ";
+import {
+  searchProfileQ,
+  getMyProfileQ,
+  getProfileQ,
+} from "../queries/profileQ";
 
 const searchProfile = asyncErrorWrapper(async (req, res) => {
   const { u } = req.query;
   const { guest, id } = res.locals;
   if (guest || u == undefined || typeof u != "string") return badRequest();
   const result = await searchProfileQ(id, u);
+  res.json(result);
+});
+
+const getMyProfile = asyncErrorWrapper(async (req, res) => {
+  const { guest, id } = res.locals;
+  if (guest) badRequest();
+  const result = await getMyProfileQ(id);
   res.json(result);
 });
 
@@ -17,4 +28,4 @@ const getProfile = asyncErrorWrapper(async (req, res) => {
   res.json(profile);
 });
 
-export { searchProfile, getProfile };
+export { searchProfile, getMyProfile, getProfile };

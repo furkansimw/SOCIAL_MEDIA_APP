@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IProfileInitialState } from "../interfaces/ISlices";
 import { RootState } from "./store";
+import { getMyProfile } from "../api/profile";
 
 const init = () => document.cookie.includes("isloggedin=true");
 
@@ -20,6 +21,15 @@ export const profileSlice = createSlice({
     toggleSetIsloggedin: (state) => {
       state.isloggedin = !state.isloggedin;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(getMyProfile.fulfilled, (state, action) => {
+      state.values = action.payload as {
+        username: string;
+        pp: string | null;
+        id: string;
+      };
+    });
   },
 });
 

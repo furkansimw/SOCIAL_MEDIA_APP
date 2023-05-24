@@ -14,6 +14,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectProfileValues } from "../redux/profileSlice";
 import SearchPanel from "./SearchPanel";
 import NotificationsPanel from "./NotificationsPanel";
+import { AppDispatch } from "../redux/store";
+import { getMyProfile } from "../api/profile";
+import CreatePostPopup from "./createpostpopup/CreatePostPopup";
 
 export const disableRightClick = (
   e: React.MouseEvent<HTMLImageElement, MouseEvent>
@@ -49,38 +52,34 @@ const Navigation = () => {
 
   useEffect(() => {
     const worker = (e: MouseEvent) => {
-      console.log("click");
       const l = e.composedPath();
       if (
-        searchPanelBtnRef.current &&
-        notificationPanelBtnRef.current &&
-        leftSideRef.current &&
-        searchPanelRef.current &&
-        notificationPanelRef.current
-      ) {
-        if (panel) {
-          if (panel == "search") {
-            if (
-              !(
-                l.includes(searchPanelBtnRef.current) ||
-                l.includes(searchPanelRef.current)
-              )
-            ) {
-              setPanel(null);
-            }
-          } else {
-            if (
-              !(
-                l.includes(notificationPanelBtnRef.current) ||
-                l.includes(notificationPanelRef.current)
-              )
-            ) {
-              setPanel(null);
-            }
-          }
-        }
+        !(
+          searchPanelBtnRef.current &&
+          notificationPanelBtnRef.current &&
+          leftSideRef.current &&
+          searchPanelRef.current &&
+          notificationPanelRef.current
+        )
+      )
+        return;
+      if (!panel) return;
+
+      if (panel == "search") {
+        if (
+          ![searchPanelBtnRef.current, searchPanelRef.current].some(l.includes)
+        )
+          setPanel(null);
+      } else {
+        if (
+          ![notificationPanelBtnRef.current, notificationPanelRef.current].some(
+            l.includes
+          )
+        )
+          setPanel(null);
       }
     };
+
     window.addEventListener("click", worker);
     return () => {
       window.removeEventListener("click", worker);
@@ -89,6 +88,14 @@ const Navigation = () => {
 
   const closePanel = () => setPanel(null);
 
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    dispatch(getMyProfile());
+  }, []);
+
+  const closeCreatePostPopup = () => setCreatePostPopup(false);
+
   return (
     <>
       <SearchPanel isActive={panel == "search"} ref={searchPanelRef} />
@@ -96,6 +103,7 @@ const Navigation = () => {
         isActive={panel == "notifications"}
         ref={notificationPanelRef}
       />
+      {createPostPopup && <CreatePostPopup close={closeCreatePostPopup} />}
       <Container className={mini ? "mini" : ""}>
         <div className="content" ref={leftSideRef}>
           <div className="up">
@@ -224,6 +232,10 @@ const Container = styled.div`
     ul {
       height: 100%;
       width: 100%;
+      overflow-y: auto;
+      &::-webkit-scrollbar {
+        display: none;
+      }
       li {
         margin: 8px 0px;
         &.active {

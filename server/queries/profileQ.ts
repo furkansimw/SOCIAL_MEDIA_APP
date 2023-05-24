@@ -15,6 +15,11 @@ const searchProfileQ = (id: string, u: string) =>
     )
     .then((r) => r.rows);
 
+const getMyProfileQ = (id: string) =>
+  db
+    .query(`select id, pp, username from users where id = $1`, [id])
+    .then((r) => r.rows[0]);
+
 const getProfileQ = (id: string, username: string) =>
   db
     .query(
@@ -28,4 +33,4 @@ const getProfileQ = (id: string, username: string) =>
     )
     .then((r) => r.rows[0] || null);
 
-export { searchProfileQ, getProfileQ };
+export { searchProfileQ, getMyProfileQ, getProfileQ };

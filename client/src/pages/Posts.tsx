@@ -2,7 +2,11 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../redux/store.ts";
 import { getPosts } from "../api/getPosts.ts";
-import { selectLoading, selectPostsHome } from "../redux/postsSlice.ts";
+import {
+  selectHasMore,
+  selectLoading,
+  selectPostsHome,
+} from "../redux/postsSlice.ts";
 import PostItemHome from "../components/PostItemHome.tsx";
 import LoadingBox from "../components/LoadingBox.tsx";
 import styled from "styled-components";
@@ -12,9 +16,10 @@ const Posts = () => {
 
   const posts = useSelector(selectPostsHome);
   const { home: loading } = useSelector(selectLoading);
+  const { home: hasmore } = useSelector(selectHasMore);
 
   useEffect(() => {
-    if (posts.length == 0) dispatch(getPosts({}));
+    if (posts.length == 0 && hasmore) dispatch(getPosts({}));
   }, []);
 
   return (
@@ -26,7 +31,7 @@ const Posts = () => {
     </Container>
   );
 };
-const Container = styled.div`
+const Container = styled.ul`
   height: 100vh;
   overflow-x: hidden;
   width: 100%;
