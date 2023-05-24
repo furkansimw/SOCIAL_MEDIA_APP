@@ -1,23 +1,19 @@
 import { Router } from "express";
 import {
-  deleteCommentController,
-  getSubCommentsController,
-  commentLikeController,
-  commentUnLikeController,
-  getCommentLikesController,
+  deleteComment,
+  getSubComments,
+  commentLike,
+  commentUnLike,
+  getCommentLikes,
 } from "../controller/commentsController";
 import subCommentIdRoute from "./subComments";
 
-// :commentid
 const commentIdRoute = Router({ mergeParams: true });
 
-commentIdRoute.route("/").delete(deleteCommentController);
-commentIdRoute.route("/subcomments").get(getSubCommentsController);
-commentIdRoute
-  .route("/like")
-  .post(commentLikeController)
-  .delete(commentUnLikeController);
-commentIdRoute.route("/likes").get(getCommentLikesController);
+commentIdRoute.route("/").delete(deleteComment);
+commentIdRoute.route("/subcomments").get(getSubComments);
+commentIdRoute.route("/like").post(commentLike).delete(commentUnLike);
+commentIdRoute.route("/likes").get(getCommentLikes);
 
 commentIdRoute.use("/:subcommentid", subCommentIdRoute);
 

@@ -8,9 +8,9 @@ import {
   postCommentQ,
   postLikeQ,
   postUnlikeQ,
-} from "../queries/postIdQueries";
+} from "../queries/postIdQ";
 
-const getCommentsController = asyncErrorWrapper(async (req, res) => {
+const getComments = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   const { postid } = req.params;
   const { offset, sd } = conv(req.query);
@@ -21,7 +21,7 @@ const getCommentsController = asyncErrorWrapper(async (req, res) => {
   res.json(postComments);
 });
 
-const getPostController = asyncErrorWrapper(async (req, res) => {
+const getPost = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   const { postid } = req.params;
   const post = await getPostQ(id, postid, guest);
@@ -29,7 +29,7 @@ const getPostController = asyncErrorWrapper(async (req, res) => {
   res.json(post);
 });
 
-const getPostImagesController = asyncErrorWrapper(async (req, res) => {
+const getPostImages = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   const { postid } = req.params;
 
@@ -37,7 +37,7 @@ const getPostImagesController = asyncErrorWrapper(async (req, res) => {
   res.json(images);
 });
 
-const getPostLikesController = asyncErrorWrapper(async (req, res) => {
+const getPostLikes = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   if (guest) badRequest();
 
@@ -49,7 +49,7 @@ const getPostLikesController = asyncErrorWrapper(async (req, res) => {
   res.json(postLikes);
 });
 
-const postLikeController = asyncErrorWrapper(async (req, res) => {
+const postLike = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   const { postid } = req.params;
   if (guest) badRequest();
@@ -57,14 +57,14 @@ const postLikeController = asyncErrorWrapper(async (req, res) => {
   res.json({ status: "ok" });
 });
 
-const postUnlikeController = asyncErrorWrapper(async (req, res) => {
+const postUnlike = asyncErrorWrapper(async (req, res) => {
   const { id } = res.locals;
   const { postid } = req.params;
   await postUnlikeQ(id, postid);
   res.json({ status: "ok" });
 });
 
-const postCommentController = asyncErrorWrapper(async (req, res) => {
+const postComment = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   if (guest) badRequest();
   const { postid } = req.params;
@@ -77,17 +77,17 @@ const postCommentController = asyncErrorWrapper(async (req, res) => {
   res.json(commentId);
 });
 
-const postSaveController = asyncErrorWrapper(async (req, res) => {});
-const postUnSaveController = asyncErrorWrapper(async (req, res) => {});
+const postSave = asyncErrorWrapper(async (req, res) => {});
+const postUnSave = asyncErrorWrapper(async (req, res) => {});
 
 export {
-  getCommentsController,
-  getPostController,
-  getPostImagesController,
-  getPostLikesController,
-  postLikeController,
-  postUnlikeController,
-  postCommentController,
-  postSaveController,
-  postUnSaveController,
+  getComments,
+  getPost,
+  getPostImages,
+  getPostLikes,
+  postLike,
+  postUnlike,
+  postComment,
+  postSave,
+  postUnSave,
 };

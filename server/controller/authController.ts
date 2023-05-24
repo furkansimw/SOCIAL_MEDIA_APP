@@ -1,11 +1,10 @@
 import { cookieSetter } from "../functions/authControllersFunctions";
 import { asyncErrorWrapper, badRequest, createError } from "../mw/error";
-import { logoutQ, signUpQ } from "../queries/authQueries";
-import { createRefreshId, loginQ } from "../queries/authQueries";
-import { loginVal } from "../validators/authControllersValidators";
-import { signUpVal } from "../validators/authControllersValidators";
+import { logoutQ, signUpQ } from "../queries/authQ";
+import { createRefreshId, loginQ } from "../queries/authQ";
+import { loginVal, signUpVal } from "../validators/authControllersValidators";
 
-const loginController = asyncErrorWrapper(async (req, res) => {
+const login = asyncErrorWrapper(async (req, res) => {
   const { username, password } = req.body;
   const isVal = loginVal(username, password);
   if (!isVal) badRequest();
@@ -19,7 +18,7 @@ const loginController = asyncErrorWrapper(async (req, res) => {
   res.json({ status: "ok" });
 });
 
-const signupController = asyncErrorWrapper(async (req, res) => {
+const signup = asyncErrorWrapper(async (req, res) => {
   const { username, password, fullname, email } = req.body;
   const isVal = signUpVal(username, password, email, fullname);
   if (!isVal) badRequest();
@@ -32,11 +31,11 @@ const signupController = asyncErrorWrapper(async (req, res) => {
   res.status(201).json({ status: "ok" });
 });
 
-const logOutController = asyncErrorWrapper(async (req, res) => {
+const logOut = asyncErrorWrapper(async (req, res) => {
   const { id } = req.body;
   const { refreshid } = req.cookies;
   await logoutQ(id, refreshid);
   res.json({ status: "ok" });
 });
 
-export { loginController, signupController, logOutController };
+export { login, signup, logOut };

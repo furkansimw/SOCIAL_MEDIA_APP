@@ -31,7 +31,7 @@ const Login = () => {
 
   useEffect(() => {
     formCheckValidity();
-  }, [username, email, fullname, password]);
+  }, [username, email, fullname, password, islogin]);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -57,7 +57,7 @@ const Login = () => {
           <input
             type="text"
             id="username"
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => setUsername(e.target.value.toLowerCase())}
             value={username}
             pattern={usernamePattern}
             required

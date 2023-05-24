@@ -1,7 +1,7 @@
 const loginVal = (username: string, password: string) =>
   username &&
   password &&
-  new RegExp("^(?=.{6,36}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$").test(
+  new RegExp("^(?=.{6,36}$)(?![_.])(?!.*[_.]{2})[a-z0-9._]+(?<![_.])$").test(
     username
   ) &&
   password.length >= 6 &&

@@ -1,15 +1,15 @@
 import { asyncErrorWrapper } from "../mw/error";
 
-const deleteCommentController = asyncErrorWrapper(async (req, res) => {});
-const getSubCommentsController = asyncErrorWrapper(async (req, res) => {});
-const commentLikeController = asyncErrorWrapper(async (req, res) => {});
-const commentUnLikeController = asyncErrorWrapper(async (req, res) => {});
-const getCommentLikesController = asyncErrorWrapper(async (req, res) => {});
+const deleteComment = asyncErrorWrapper(async (req, res) => {});
+const getSubComments = asyncErrorWrapper(async (req, res) => {});
+const commentLike = asyncErrorWrapper(async (req, res) => {});
+const commentUnLike = asyncErrorWrapper(async (req, res) => {});
+const getCommentLikes = asyncErrorWrapper(async (req, res) => {});
 
 export {
-  deleteCommentController,
-  getSubCommentsController,
-  commentLikeController,
-  commentUnLikeController,
-  getCommentLikesController,
+  deleteComment,
+  getSubComments,
+  commentLike,
+  commentUnLike,
+  getCommentLikes,
 };

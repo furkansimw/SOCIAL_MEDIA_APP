@@ -1,14 +1,10 @@
 import { upload } from "../db/cloudinary";
 import { asyncErrorWrapper, badRequest } from "../mw/error";
 import { v4 } from "uuid";
-import {
-  getPostsQ,
-  getExplorePostsQ,
-  createPostQ,
-} from "../queries/postsQueries";
+import { getPostsQ, getExplorePostsQ, createPostQ } from "../queries/postsQ";
 import conv from "../functions/converter";
 
-const getPostsController = asyncErrorWrapper(async (req, res) => {
+const getPosts = asyncErrorWrapper(async (req, res) => {
   const { guest, id } = res.locals;
   if (guest) badRequest();
   const { offset, sd } = conv(req.query);
@@ -16,7 +12,7 @@ const getPostsController = asyncErrorWrapper(async (req, res) => {
   res.json(posts);
 });
 
-const getExplorePostsController = asyncErrorWrapper(async (req, res) => {
+const getExplorePosts = asyncErrorWrapper(async (req, res) => {
   const { guest, id } = res.locals;
   if (guest) badRequest();
   const { offset, sd } = conv(req.query);
@@ -24,7 +20,7 @@ const getExplorePostsController = asyncErrorWrapper(async (req, res) => {
   res.json(posts);
 });
 
-const createPostController = asyncErrorWrapper(async (req, res) => {
+const createPost = asyncErrorWrapper(async (req, res) => {
   const { guest, id } = res.locals;
   if (guest) badRequest();
 
@@ -40,11 +36,10 @@ const createPostController = asyncErrorWrapper(async (req, res) => {
   const urls = await Promise.all(
     images.map((img, i) => upload(img, `${postid}-${i}`, "posts"))
   );
+
   content = content?.trim()?.replace(/\n{2,}/g, "\n");
   const postId = await createPostQ(id, urls, content);
   res.status(201).json(postId);
 });
 
-//
-
-export { getPostsController, getExplorePostsController, createPostController };
+export { getPosts, getExplorePosts, createPost };
