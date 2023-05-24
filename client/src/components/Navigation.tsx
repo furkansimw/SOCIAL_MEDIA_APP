@@ -1,13 +1,26 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { HomeIcon } from "./Icons";
+import {
+  CreatePostPopupIcon,
+  ExploreIcon,
+  HomeIcon,
+  MessagesIcon,
+  NotificationsIcon,
+  SearchIcon,
+} from "./Icons";
+import { useSelector } from "react-redux";
+import { selectProfileValues } from "../redux/profileSlice";
 
 const Navigation = () => {
+  const { username, pp } = useSelector(selectProfileValues);
+
   const [mini, setMini] = useState(false);
   const { pathname } = useLocation();
   const [panel, setPanel] = useState<null | "search" | "notifications">(null);
   const [createPostPopup, setCreatePostPopup] = useState(false);
+
+  const closePanel = () => setPanel(null);
 
   const uiController = (key: string) => {
     if (createPostPopup) return key == "create";
@@ -15,7 +28,7 @@ const Navigation = () => {
       if (panel == "search") return key == "search";
       if (panel == "notifications") return key == "notifications";
     }
-    return false;
+    return key == pathname;
   };
 
   return (
@@ -28,10 +41,58 @@ const Navigation = () => {
           </Link>
         </div>
         <ul>
-          <li>
+          <li
+            onClick={closePanel}
+            className={uiController("/") ? "active" : ""}
+          >
             <Link to={"/"}>
-              <HomeIcon isactive={uiController("home")} />
+              <HomeIcon isactive={uiController("/")} />
               <p>Home</p>
+            </Link>
+          </li>
+          <li className={uiController("search") ? "active" : ""}>
+            <div onClick={() => setPanel("search")}>
+              <SearchIcon isactive={uiController("search")} />
+              <p>Search</p>
+            </div>
+          </li>
+          <li
+            onClick={closePanel}
+            className={uiController("/explore") ? "active" : ""}
+          >
+            <Link to={"/explore"}>
+              <ExploreIcon isactive={uiController("/explore")} />
+              <p>Explore</p>
+            </Link>
+          </li>
+          <li
+            onClick={closePanel}
+            className={uiController("/direct/inbox") ? "active" : ""}
+          >
+            <Link to={"/direct/inbox"}>
+              <MessagesIcon isactive={uiController("/direct/inbox")} />
+              <p>Messages</p>
+            </Link>
+          </li>
+          <li className={uiController("notifications") ? "active" : ""}>
+            <div onClick={() => setPanel("notifications")}>
+              <NotificationsIcon isactive={uiController("notifications")} />
+              <p>Notifications</p>
+            </div>
+          </li>
+          <li className={uiController("create") ? "active" : ""}>
+            <div onClick={() => setCreatePostPopup(true)}>
+              <CreatePostPopupIcon isactive={uiController("create")} />
+              <p>Create</p>
+            </div>
+          </li>
+          <li
+            onClick={closePanel}
+            className={uiController(`/${username}`) ? "active" : ""}
+          >
+            <Link to={`/${username}`}>
+              <img src={pp || "/pp.jpg"} alt="pp" />
+              <p>Profile</p>
             </Link>
           </li>
         </ul>
@@ -80,14 +141,23 @@ const Container = styled.div`
     ul {
       height: 100%;
       li {
-        a {
+        margin: 2px 0px;
+        a,
+        div {
+          cursor: pointer;
+          border-radius: 8px;
           padding: 12px;
           display: flex;
           align-items: center;
+          transition: 0.2s ease all;
+          transition-delay: 0.1s;
           svg {
           }
           p {
             margin-left: 10px;
+          }
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
           }
         }
       }
@@ -114,7 +184,7 @@ const Logo = () => (
   >
     <title>React Logo</title>
     <circle cx="0" cy="0" r="2.05" fill="#61dafb" />
-    <g stroke="#61dafb" stroke-width="1" fill="none">
+    <g stroke="#61dafb" strokeWidth="1" fill="none">
       <ellipse rx="11" ry="4.2" />
       <ellipse rx="11" ry="4.2" transform="rotate(60)" />
       <ellipse rx="11" ry="4.2" transform="rotate(120)" />

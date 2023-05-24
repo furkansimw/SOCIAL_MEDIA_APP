@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import { useSelector } from "react-redux";
 import { selectProfile } from "./redux/profileSlice";
 import "react-toastify/dist/ReactToastify.css";
+import Messages from "./pages/Messages";
 
 const App = () => {
   const { isloggedin } = useSelector(selectProfile);
@@ -17,7 +18,12 @@ const App = () => {
       <View>
         <Routes>
           <Route path="/" element={isloggedin ? <Posts /> : <Login />} />
-          {isloggedin && <Route path="/explore" element={<Explore />} />}
+          {isloggedin && (
+            <>
+              <Route path="/explore" element={<Explore />} />
+              <Route path="/direct/inbox" element={<Messages />} />
+            </>
+          )}
         </Routes>
       </View>
     </Container>
