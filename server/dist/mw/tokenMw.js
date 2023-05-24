@@ -45,9 +45,7 @@ const tokenMw = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
             next();
         }
         catch (error) {
-            console.log(error);
-            if (error instanceof jsonwebtoken_1.JsonWebTokenError &&
-                error.message == "TokenExpiredError") {
+            if (error instanceof jsonwebtoken_1.TokenExpiredError) {
                 const { id } = jsonwebtoken_1.default.decode(token);
                 const ok = yield (0, mwQ_1.checkSessions)(id, refreshid);
                 if (ok) {
@@ -55,11 +53,13 @@ const tokenMw = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
                     (0, authControllersFunctions_1.cookieSetter)(res, id, refreshid);
                     next();
                 }
-                else
+                else {
                     (0, tokenMwFunctions_1.clearCookies)(res);
+                }
             }
-            else
+            else {
                 (0, tokenMwFunctions_1.clearCookies)(res);
+            }
         }
     }
     else {

@@ -10,13 +10,14 @@ const getPostsQ = (id: string, offset: number, sd?: Date) => {
       `
       select p.*, likecount::int, commentcount::int, pl is not null isliked, s is not null issaved from posts p
       left join users u on u.id = p.owner
-      left relationships f on f.owner = $1 and f.target = u.id and f.type = 0
+      left join relationships f on f.owner = $1 and f.target = u.id and f.type = 0
       left join postlikes pl on pl.owner = $1 and pl.post = p.id
       left join saved s on s.owner = $1 and s.post = p.id
       where f is not null ${str}
       order by p.created desc
       limit 12 offset $2
-  `
+  `,
+      values
     )
     .then((r) => r.rows);
 };
@@ -34,7 +35,8 @@ const getExplorePostsQ = (id: string, offset: number, sd?: Date) => {
       where ispublic and r is null and p.owner != $1 ${str} 
       order by p.created desc 
       limit 12 offset $2
-  `
+  `,
+      values
     )
     .then((r) => r.rows);
 };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, LegacyRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import {
@@ -10,8 +10,10 @@ import {
   NotificationsIcon,
   SearchIcon,
 } from "./Icons";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectProfileValues } from "../redux/profileSlice";
+import SearchPanel from "./SearchPanel";
+import NotificationsPanel from "./NotificationsPanel";
 
 export const disableRightClick = (
   e: React.MouseEvent<HTMLImageElement, MouseEvent>
@@ -26,8 +28,6 @@ const Navigation = () => {
   const [createPostPopup, setCreatePostPopup] = useState(false);
   const [moreIconActive, setMoreIconActive] = useState(false);
 
-  const closePanel = () => setPanel(null);
-
   const uiController = (key: string) => {
     if (createPostPopup) return key == "create";
     if (panel) {
@@ -37,83 +37,132 @@ const Navigation = () => {
     return key == pathname;
   };
 
+  useEffect(() => {
+    setMini(panel != null);
+  }, [panel]);
+
+  const searchPanelBtnRef = useRef<HTMLLIElement>(null),
+    notificationPanelBtnRef = useRef<HTMLLIElement>(null),
+    leftSideRef = useRef<HTMLDivElement>(null),
+    searchPanelRef = useRef<HTMLDivElement>(null),
+    notificationPanelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const worker = (e: MouseEvent) => {
+      console.log("click");
+      const l = e.composedPath();
+      if (
+        searchPanelBtnRef.current &&
+        notificationPanelBtnRef.current &&
+        leftSideRef.current &&
+        searchPanelRef.current &&
+        notificationPanelRef.current
+      ) {
+        if (panel) {
+          if (panel == "search") {
+            if (
+              !l.includes(searchPanelBtnRef.current || searchPanelRef.current)
+            ) {
+              setPanel(null);
+            }
+          } else {
+            if (
+              !l.includes(
+                notificationPanelBtnRef.current || notificationPanelRef.current
+              )
+            ) {
+              setPanel(null);
+            }
+          }
+        }
+      }
+    };
+    window.addEventListener("click", worker);
+    return () => {
+      window.removeEventListener("click", worker);
+    };
+  }, [panel]);
+
+  const closePanel = () => setPanel(null);
+
   return (
-    <Container className={mini ? "mini" : ""}>
-      <div className="content">
-        <div className="up">
-          <Link to={"/"}>
-            <h1>Social Media App</h1>
-            <Logo />
-          </Link>
+    <>
+      <SearchPanel isActive={panel == "search"} ref={searchPanelRef} />
+      <NotificationsPanel
+        isActive={panel == "notifications"}
+        ref={notificationPanelRef}
+      />
+      <Container className={mini ? "mini" : ""}>
+        <div className="content" ref={leftSideRef}>
+          <div className="up">
+            <Link onClick={closePanel} to={"/"}>
+              <h1>Social Media App</h1>
+              <Logo />
+            </Link>
+          </div>
+          <ul>
+            <li className={uiController("/") ? "active" : ""}>
+              <Link onClick={closePanel} to={"/"}>
+                <HomeIcon isactive={uiController("/")} />
+                <p>Home</p>
+              </Link>
+            </li>
+            <li
+              ref={searchPanelBtnRef}
+              className={uiController("search") ? "active" : ""}
+            >
+              <div onClick={() => setPanel("search")}>
+                <SearchIcon isactive={uiController("search")} />
+                <p>Search</p>
+              </div>
+            </li>
+            <li className={uiController("/explore") ? "active" : ""}>
+              <Link onClick={closePanel} to={"/explore"}>
+                <ExploreIcon isactive={uiController("/explore")} />
+                <p>Explore</p>
+              </Link>
+            </li>
+            <li className={uiController("/direct/inbox") ? "active" : ""}>
+              <Link onClick={closePanel} to={"/direct/inbox"}>
+                <MessagesIcon isactive={uiController("/direct/inbox")} />
+                <p>Messages</p>
+              </Link>
+            </li>
+            <li
+              ref={notificationPanelBtnRef}
+              className={uiController("notifications") ? "active" : ""}
+            >
+              <div onClick={() => setPanel("notifications")}>
+                <NotificationsIcon isactive={uiController("notifications")} />
+                <p>Notifications</p>
+              </div>
+            </li>
+            <li className={uiController("create") ? "active" : ""}>
+              <div onClick={() => setCreatePostPopup(true)}>
+                <CreatePostPopupIcon isactive={uiController("create")} />
+                <p>Create</p>
+              </div>
+            </li>
+            <li className={uiController(`/${username}`) ? "active" : ""}>
+              <Link onClick={closePanel} to={`/${username}`}>
+                <img
+                  onContextMenu={disableRightClick}
+                  src={pp || "/pp.jpg"}
+                  alt="pp"
+                />
+                <p>Profile</p>
+              </Link>
+            </li>
+          </ul>
+          <div className="bottom">
+            <button className={moreIconActive ? "active" : ""}>
+              <MoreIcon isactive={moreIconActive} />
+              <p>More</p>
+            </button>
+          </div>
         </div>
-        <ul>
-          <li
-            onClick={closePanel}
-            className={uiController("/") ? "active" : ""}
-          >
-            <Link to={"/"}>
-              <HomeIcon isactive={uiController("/")} />
-              <p>Home</p>
-            </Link>
-          </li>
-          <li className={uiController("search") ? "active" : ""}>
-            <div onClick={() => setPanel("search")}>
-              <SearchIcon isactive={uiController("search")} />
-              <p>Search</p>
-            </div>
-          </li>
-          <li
-            onClick={closePanel}
-            className={uiController("/explore") ? "active" : ""}
-          >
-            <Link to={"/explore"}>
-              <ExploreIcon isactive={uiController("/explore")} />
-              <p>Explore</p>
-            </Link>
-          </li>
-          <li
-            onClick={closePanel}
-            className={uiController("/direct/inbox") ? "active" : ""}
-          >
-            <Link to={"/direct/inbox"}>
-              <MessagesIcon isactive={uiController("/direct/inbox")} />
-              <p>Messages</p>
-            </Link>
-          </li>
-          <li className={uiController("notifications") ? "active" : ""}>
-            <div onClick={() => setPanel("notifications")}>
-              <NotificationsIcon isactive={uiController("notifications")} />
-              <p>Notifications</p>
-            </div>
-          </li>
-          <li className={uiController("create") ? "active" : ""}>
-            <div onClick={() => setCreatePostPopup(true)}>
-              <CreatePostPopupIcon isactive={uiController("create")} />
-              <p>Create</p>
-            </div>
-          </li>
-          <li
-            onClick={closePanel}
-            className={uiController(`/${username}`) ? "active" : ""}
-          >
-            <Link to={`/${username}`}>
-              <img
-                onContextMenu={disableRightClick}
-                src={pp || "/pp.jpg"}
-                alt="pp"
-              />
-              <p>Profile</p>
-            </Link>
-          </li>
-        </ul>
-        <div className="bottom">
-          <button className={moreIconActive ? "active" : ""}>
-            <MoreIcon isactive={moreIconActive} />
-            <p>More</p>
-          </button>
-        </div>
-      </div>
-    </Container>
+      </Container>
+    </>
   );
 };
 
@@ -121,12 +170,15 @@ const Container = styled.div`
   height: 100vh;
   width: 360px;
   .content {
+    background-color: #000;
+    position: relative;
     border-right: 1px solid #262626;
     height: 100%;
     width: 100%;
     padding: 8px 12px 20px;
     display: flex;
     min-width: 48px;
+    overflow: hidden;
     justify-content: space-between;
     flex-direction: column;
     transition: 0.3s ease-in-out width;
@@ -169,7 +221,7 @@ const Container = styled.div`
       height: 100%;
       width: 100%;
       li {
-        margin: 2px 0px;
+        margin: 8px 0px;
         &.active {
           p {
             font-weight: 600;

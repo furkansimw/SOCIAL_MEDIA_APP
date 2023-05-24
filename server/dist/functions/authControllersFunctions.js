@@ -7,7 +7,7 @@ exports.cookieSetter = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const cookieSetter = (res, id, refreshid) => {
     const token = jsonwebtoken_1.default.sign({ id }, process.env.JWT_SECRET || "-", {
-        expiresIn: "1h",
+        expiresIn: "2h",
     });
     const maxAge = 1000 * 60 * 60 * 24 * 365;
     const httpOnly = true;

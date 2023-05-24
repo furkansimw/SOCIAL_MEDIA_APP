@@ -3,7 +3,7 @@ import { Response } from "express";
 
 const cookieSetter = (res: Response, id: string, refreshid: string) => {
   const token = jwt.sign({ id }, process.env.JWT_SECRET || "-", {
-    expiresIn: "1h",
+    expiresIn: "2h",
   });
 
   const maxAge = 1000 * 60 * 60 * 24 * 365;

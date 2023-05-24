@@ -6,6 +6,9 @@ const checkSessions = (id: string, refreshid: string) =>
       id,
       refreshid,
     ])
-    .then((r) => r.rows[0].a == 1);
+    .then((r) => {
+      console.log(r.rows);
+      return r.rows[0].a == 1;
+    });
 
 export { checkSessions };

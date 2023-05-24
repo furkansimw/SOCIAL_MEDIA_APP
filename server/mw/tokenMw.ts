@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import jwt, { JsonWebTokenError } from "jsonwebtoken";
+import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import { checkSessions } from "../queries/mwQ";
 import { clearCookies } from "../functions/tokenMwFunctions";
 import { cookieSetter } from "../functions/authControllersFunctions";
@@ -14,19 +14,19 @@ const tokenMw = async (req: Request, res: Response, next: NextFunction) => {
       res.locals.id = id;
       next();
     } catch (error) {
-      console.log(error);
-      if (
-        error instanceof JsonWebTokenError &&
-        error.message == "TokenExpiredError"
-      ) {
+      if (error instanceof TokenExpiredError) {
         const { id } = jwt.decode(token) as { id: string };
         const ok = await checkSessions(id, refreshid);
         if (ok) {
           res.locals.id = id;
           cookieSetter(res, id, refreshid);
           next();
-        } else clearCookies(res);
-      } else clearCookies(res);
+        } else {
+          clearCookies(res);
+        }
+      } else {
+        clearCookies(res);
+      }
     }
   } else {
     res.locals.guest = true;
