@@ -61,14 +61,18 @@ const Navigation = () => {
         if (panel) {
           if (panel == "search") {
             if (
-              !l.includes(searchPanelBtnRef.current || searchPanelRef.current)
+              !(
+                l.includes(searchPanelBtnRef.current) ||
+                l.includes(searchPanelRef.current)
+              )
             ) {
               setPanel(null);
             }
           } else {
             if (
-              !l.includes(
-                notificationPanelBtnRef.current || notificationPanelRef.current
+              !(
+                l.includes(notificationPanelBtnRef.current) ||
+                l.includes(notificationPanelRef.current)
               )
             ) {
               setPanel(null);
