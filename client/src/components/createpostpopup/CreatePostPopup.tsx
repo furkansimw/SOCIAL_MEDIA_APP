@@ -19,7 +19,7 @@ type Props = {
   close: () => void;
 };
 
-type IPickImage = {
+export type IPickImage = {
   src: string;
   index: string;
 };
@@ -143,6 +143,7 @@ const CreatePostPopup: FC<Props> = ({ close }) => {
               text={text}
               setText={setText}
               textAreaIsActive={step == 3}
+              images={images}
             />
           )}
           {loading && <LoadingBox />}
@@ -237,10 +238,11 @@ const Container = styled.div`
     }
   }
   .content {
-    height: 100%;
+    height: calc(100% - 42px);
     display: flex;
     width: 100%;
     position: relative;
+    overflow: hidden;
     .loading-box {
       background-color: #262626;
       width: 100%;

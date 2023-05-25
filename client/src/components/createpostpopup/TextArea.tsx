@@ -4,18 +4,19 @@ import styled from "styled-components";
 import { selectProfileValues } from "../../redux/profileSlice";
 
 type Props = {
+  textAreaIsActive: boolean;
   text: string;
   setText: Dispatch<SetStateAction<string>>;
 };
 
-const TextArea: FC<Props> = ({ text, setText }) => {
+const TextArea: FC<Props> = ({ textAreaIsActive, text, setText }) => {
   const { username, pp } = useSelector(selectProfileValues);
 
   const onChange = (e: ChangeEvent<HTMLTextAreaElement>) =>
     setText(e.target.value);
 
   return (
-    <Container>
+    <Container className={textAreaIsActive ? "active" : ""}>
       <div className="info">
         <img src={pp || "/pp.jpg"} alt="pp" />
         <p>{username}</p>
@@ -30,6 +31,17 @@ const TextArea: FC<Props> = ({ text, setText }) => {
   );
 };
 
-const Container = styled.div``;
+const Container = styled.div`
+  overflow: hidden;
+  transition: 0.2s ease all;
+  width: 0px;
+  max-width: 400px;
+  padding: 0px;
+  min-width: 300px;
+  &.active {
+    padding: 1rem;
+    width: 100%;
+  }
+`;
 
 export default TextArea;

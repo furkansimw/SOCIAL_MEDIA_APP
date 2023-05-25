@@ -12,7 +12,7 @@ const PickImage: FC<Props> = ({ pick }) => {
       <p>Drag photos and videos here</p>
       <button>
         Select from computer
-        <input onChange={pick} type="file" name="images" id="images" />
+        <input onChange={pick} type="file" multiple name="images" id="images" />
       </button>
     </Container>
   );
