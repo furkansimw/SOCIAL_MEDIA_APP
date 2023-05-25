@@ -11,6 +11,7 @@ const postsRoute = (0, express_1.Router)();
 const postsIdRoute = (0, express_1.Router)({ mergeParams: true });
 postsRoute.route("/").get(postsController_1.getPosts).post(postsController_1.createPost);
 postsRoute.route("/explore").get(postsController_1.getExplorePosts);
+postsRoute.route("/create").post(postsController_1.createPost);
 postsRoute.use("/:postid", postsIdRoute);
 postsIdRoute.route("/").get(postIdController_1.getPost);
 postsIdRoute.route("/images").get(postIdController_1.getPostImages);

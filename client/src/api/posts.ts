@@ -7,3 +7,6 @@ export const getPosts = createAsyncThunk(
   ({ explore, offset, sd }: IPosts) =>
     req(`${explore ? `/posts/explore` : `/posts`}?offset=${offset}&sd=${sd}`)
 );
+
+export const createPost = (images: string[], content: string | null) =>
+  req(`/posts/create`, "POST", { images, content });

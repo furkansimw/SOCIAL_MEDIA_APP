@@ -11,6 +11,9 @@ import PickImage from "./PickImage";
 import { ToastContainer, toast } from "react-toastify";
 import { LeftArrowIcon } from "../Icons";
 import CreatePostPopupImages from "./CreatePostPopupImages";
+import { createPost } from "../../api/posts";
+import { useNavigate } from "react-router-dom";
+import LoadingBox from "../LoadingBox";
 
 type Props = {
   close: () => void;
@@ -27,6 +30,8 @@ const CreatePostPopup: FC<Props> = ({ close }) => {
   const cancel = () => setDiscardPopup(false);
   const [step, setStep] = useState(1);
   const [images, setImages] = useState<IPickImage[]>([]);
+  const [text, setText] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const conv = (file: File) =>
     new Promise((resolve, reject) => {
@@ -73,7 +78,30 @@ const CreatePostPopup: FC<Props> = ({ close }) => {
       setDiscardPopup(true);
     } else setStep(step - 1);
   };
-  const next = () => setStep(step + 1);
+
+  const nav = useNavigate();
+
+  const next = async () => {
+    if (step == 3) {
+      const updatedText =
+        text?.trim().length > 0
+          ? text.trim().replace(/\n\s*\n/g, "\n\n")
+          : null;
+
+      const updatedImages = images.map((img) => img.src);
+
+      try {
+        setLoading(true);
+        const postId = await createPost(updatedImages, updatedText);
+        close();
+        nav(`/p${postId}`);
+      } catch (error) {
+        toast.error((error as any).toString());
+      } finally {
+        setLoading(false);
+      }
+    } else setStep(step + 1);
+  };
 
   const closeIn = () => {
     setIsBack(false);
@@ -92,7 +120,7 @@ const CreatePostPopup: FC<Props> = ({ close }) => {
     <>
       <Bg onClick={closeIn} />
       <Container className={step == 3 ? "exp" : ""}>
-        <ToastContainer />
+        <ToastContainer position="bottom-center" theme="dark" />
         <div className="header">
           {step > 1 && (
             <button onClick={back} className="back">
@@ -112,9 +140,12 @@ const CreatePostPopup: FC<Props> = ({ close }) => {
           ) : (
             <CreatePostPopupImages
               extraPick={extraPick}
+              text={text}
+              setText={setText}
               textAreaIsActive={step == 3}
             />
           )}
+          {loading && <LoadingBox />}
         </div>
         {discardPopup && (
           <DiscardPopup cancel={cancel} discard={closeDiscard} />
@@ -209,6 +240,19 @@ const Container = styled.div`
     height: 100%;
     display: flex;
     width: 100%;
+    position: relative;
+    .loading-box {
+      background-color: #262626;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      .loading-icon {
+        width: 3rem;
+        height: 3rem;
+      }
+    }
   }
 `;
 

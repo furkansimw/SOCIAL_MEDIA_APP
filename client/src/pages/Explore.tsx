@@ -6,7 +6,7 @@ import {
   selectLoading,
   selectPostsExplore,
 } from "../redux/postsSlice";
-import { getPosts } from "../api/getPosts";
+import { getPosts } from "../api/posts";
 import LoadingBox from "../components/LoadingBox";
 import PostMini from "../components/PostMini";
 import styled from "styled-components";

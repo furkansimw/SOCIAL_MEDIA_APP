@@ -22,6 +22,7 @@ const postsIdRoute = Router({ mergeParams: true });
 
 postsRoute.route("/").get(getPosts).post(createPost);
 postsRoute.route("/explore").get(getExplorePosts);
+postsRoute.route("/create").post(createPost);
 
 postsRoute.use("/:postid", postsIdRoute);
 

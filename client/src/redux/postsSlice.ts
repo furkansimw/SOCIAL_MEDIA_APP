@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 // import type {PayloadAction} from "@reduxjs/toolkit";
 import { IPost, IPostsSliceInitialState } from "../interfaces/ISlices";
-import { getPosts } from "../api/getPosts.ts";
+import { getPosts } from "../api/posts.ts";
 import { RootState } from "./store.ts";
 import { dateR } from "./functions.ts";
 

@@ -1,17 +1,24 @@
-import React, { ChangeEvent, FC } from "react";
+import React, { ChangeEvent, FC, Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
 import TextArea from "./TextArea";
 
 type Props = {
   extraPick: (e: ChangeEvent<HTMLInputElement>) => void;
   textAreaIsActive: boolean;
+  text: string;
+  setText: Dispatch<SetStateAction<string>>;
 };
 
-const CreatePostPopupImages: FC<Props> = ({ extraPick, textAreaIsActive }) => {
+const CreatePostPopupImages: FC<Props> = ({
+  extraPick,
+  textAreaIsActive,
+  text,
+  setText,
+}) => {
   return (
     <Container>
       <h1>Create PostPopupImages</h1>
-      {textAreaIsActive && <TextArea />}
+      {textAreaIsActive && <TextArea text={text} setText={setText} />}
     </Container>
   );
 };

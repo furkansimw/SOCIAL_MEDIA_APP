@@ -23,7 +23,7 @@ const Container = styled.div`
     }
   }
   svg {
-    animation: 1s linear looprotate infinite;
+    animation: 1.4s linear looprotate infinite;
     width: 2rem;
     height: 2rem;
     color: #fafafa;

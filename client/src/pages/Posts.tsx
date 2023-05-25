@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../redux/store.ts";
-import { getPosts } from "../api/getPosts.ts";
+import { getPosts } from "../api/posts.ts";
 import {
   selectHasMore,
   selectLoading,
