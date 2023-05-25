@@ -6,6 +6,7 @@ import { disableRightClick } from "./Navigation";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store";
 import { setBack } from "../redux/postsSlice";
+import { MoreIcon, MoreIconImages } from "./Icons";
 
 type props = {
   post: IPost;
@@ -14,7 +15,7 @@ type props = {
 const PostMini: FC<props> = ({ post }) => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const { cover, id, likecount, commentcount } = post;
+  const { cover, id, likecount, commentcount, more } = post;
 
   const tap = () => {
     window.history.pushState(null, "", `/p/${id}`);
@@ -39,6 +40,7 @@ const PostMini: FC<props> = ({ post }) => {
             </div>
           )}
         </div>
+        {more && <MoreIconImages />}
         <div className="layer"></div>
       </Link>
     </Container>
@@ -56,6 +58,14 @@ const Container = styled.li`
   cursor: pointer;
   position: relative;
   margin: -3px 0px;
+  .moreimagesicon {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    z-index: 10;
+    width: 20px;
+    height: 20px;
+  }
   .layer {
     width: 100%;
     height: 100%;

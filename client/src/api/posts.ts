@@ -13,3 +13,8 @@ export const getPosts = createAsyncThunk(
 
 export const createPost = (images: string[], content: string | null) =>
   req(`/posts/create`, "POST", { images, content }).then((r) => r as string);
+
+export const getImages = createAsyncThunk(
+  "/posts/:postid/images",
+  (postid: string) => req(`/posts/${postid}/images`).then((r) => r as string[])
+);

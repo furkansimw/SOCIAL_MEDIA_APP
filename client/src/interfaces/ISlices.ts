@@ -14,8 +14,9 @@ export interface IPostsSliceInitialState {
 
 export interface IPost {
   cover?: string;
-  images: string[];
+  images?: string[];
   owner: string;
+  more?: boolean;
   username: string;
   created: string;
   id: string;

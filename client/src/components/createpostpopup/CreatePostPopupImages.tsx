@@ -43,7 +43,7 @@ const CreatePostPopupImages: FC<Props> = ({
 
   useEffect(() => {
     const worker = (e: MouseEvent) => {
-      if (!(btnRef.current && sortImagesRef.current)) return;
+      if (!(btnRef.current!! && sortImagesRef.current)) return;
       const l = e.composedPath();
       if (l.includes(btnRef.current) || l.includes(sortImagesRef.current)) {
         if (l.includes(btnRef.current)) setSortImagesPopup(!sortImagesPopup);

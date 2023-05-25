@@ -1,9 +1,13 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 // import type {PayloadAction} from "@reduxjs/toolkit";
-import { IPost, IPostsSliceInitialState } from "../interfaces/ISlices";
-import { getPosts } from "../api/posts.ts";
+import {
+  IPost,
+  IPostsSliceInitialState,
+  IProfile,
+} from "../interfaces/ISlices";
+import { getImages, getPosts } from "../api/posts.ts";
 import { RootState } from "./store.ts";
-import { dateR } from "./functions.ts";
+import { dateR, postsU } from "./functions.ts";
 
 const initialState: IPostsSliceInitialState = {
   posts: [],
@@ -47,6 +51,15 @@ export const profileSlice = createSlice({
         state.loading[explore ? "explore" : "home"] = false;
         state.hasmore[explore ? "explore" : "home"] = newPosts.length == 12;
       });
+
+    builder.addCase(getImages.fulfilled, (state, action) => {
+      const postid = action.meta.arg;
+      const { posts } = state;
+      const images = action.payload;
+      const obj = (p: IPost) => ({ ...p, images });
+      const updatedPosts = postsU(posts, postid, obj);
+      state.posts = updatedPosts;
+    });
   },
 });
 
@@ -72,5 +85,8 @@ export const selectHasMore = (state: RootState) => state.posts.hasmore;
 export const selectLoading = (state: RootState) => state.posts.loading;
 
 export const selectBack = (state: RootState) => state.posts.back;
+
+export const selectCurrentPost = (state: RootState, id: string) =>
+  state.posts.posts.find((post) => post.id == id);
 
 export default profileSlice.reducer;

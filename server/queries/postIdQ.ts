@@ -42,7 +42,7 @@ const getPostImagesQ = (id: string, postid: string, guest: boolean) => {
         left join users u on u.id = p.owner
         left join relationships f on f.owner = $1 and f.target = u.id and f.type = 0
         left join relationships b on (b.owner = u.id and f.target = $1 and f.type = 2) or (b.owner = $1 and f.target = u.id and f.type = 2)
-        where p.id = $1 and (ispublic or f is not null or u.id = $1) and b is null
+        where p.id = $2 and (ispublic or f is not null or u.id = $1) and b is null
       `;
   const values = [id, postid];
   if (guest) values.shift();
@@ -122,8 +122,9 @@ const postUnlikeQ = (id: string, postid: string) =>
   );
 
 const postCommentQ = (id: string, postid: string, content: string) =>
-  db.query(
-    `
+  db
+    .query(
+      `
       insert into comments (owner, post, content)
       SELECT $1, $2, $3
       FROM posts p
@@ -131,9 +132,11 @@ const postCommentQ = (id: string, postid: string, content: string) =>
       left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
       left join relationships b on (b.owner = p.owner and b.target = $1 and b.type = 2) or (b.owner = $1 and b.target = p.owner and b.type = 2)
       where p.id = $2 and (ispublic or f is not null or u.id = $1) and b is null
+      returning id
   `,
-    [id, postid, content]
-  );
+      [id, postid, content]
+    )
+    .then((r) => r.rows[0].id);
 
 export {
   getCommentsQ,
