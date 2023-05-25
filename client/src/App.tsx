@@ -8,15 +8,23 @@ import { useSelector } from "react-redux";
 import { selectProfile } from "./redux/profileSlice";
 import "react-toastify/dist/ReactToastify.css";
 import Messages from "./pages/Messages";
+import PostPage from "./pages/PostPage";
+import Profile from "./pages/Profile";
+import { selectBack } from "./redux/postsSlice";
+import PostPopup from "./components/PostPopup";
 
 const App = () => {
   const { isloggedin } = useSelector(selectProfile);
+  const back = useSelector(selectBack);
+
   return (
     <Container>
       {isloggedin && <Navigation />}
       <View>
         <Routes>
           <Route path="/" element={isloggedin ? <Posts /> : <Login />} />
+          <Route path="/p/:postid" element={<PostPage />} />
+          <Route path="/:username/saved?" element={<Profile />} />
           {isloggedin && (
             <>
               <Route path="/explore" element={<Explore />} />
@@ -25,6 +33,7 @@ const App = () => {
           )}
         </Routes>
       </View>
+      {back && <PostPopup />}
     </Container>
   );
 };

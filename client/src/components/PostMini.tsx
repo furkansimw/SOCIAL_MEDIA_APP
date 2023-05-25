@@ -1,31 +1,46 @@
 import { FC } from "react";
 import { IPost } from "../interfaces/ISlices";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
+import { disableRightClick } from "./Navigation";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../redux/store";
+import { setBack } from "../redux/postsSlice";
 
 type props = {
   post: IPost;
 };
 
 const PostMini: FC<props> = ({ post }) => {
+  const dispatch = useDispatch<AppDispatch>();
+
   const { cover, id, likecount, commentcount } = post;
+
+  const tap = () => {
+    window.history.pushState(null, "", `/p/${id}`);
+    dispatch(setBack("explore"));
+  };
+
   return (
-    <Container>
-      <img src={cover} alt={`cover ${id}`} />
-      <div className="text">
-        {likecount > 0 && (
-          <div className="like">
-            <div className="icon"></div>
-            <p>{likecount.toLocaleString()}</p>
-          </div>
-        )}
-        {commentcount > 0 && (
-          <div className="comment">
-            <div className="icon"></div>
-            <p>{commentcount.toLocaleString()}</p>
-          </div>
-        )}
-      </div>
-      <div className="layer"></div>
+    <Container onClick={tap}>
+      <Link to={`/p/${id}`} onClick={(e) => e.preventDefault()}>
+        <img src={cover} alt={`cover ${id}`} />
+        <div className="text">
+          {likecount > 0 && (
+            <div className="like">
+              <div className="icon"></div>
+              <p>{likecount.toLocaleString()}</p>
+            </div>
+          )}
+          {commentcount > 0 && (
+            <div className="comment">
+              <div className="icon"></div>
+              <p>{commentcount.toLocaleString()}</p>
+            </div>
+          )}
+        </div>
+        <div className="layer"></div>
+      </Link>
     </Container>
   );
 };

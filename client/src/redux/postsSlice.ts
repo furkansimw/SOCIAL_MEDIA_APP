@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 // import type {PayloadAction} from "@reduxjs/toolkit";
 import { IPost, IPostsSliceInitialState } from "../interfaces/ISlices";
 import { getPosts } from "../api/posts.ts";
@@ -16,7 +16,11 @@ const initialState: IPostsSliceInitialState = {
 export const profileSlice = createSlice({
   name: "profile",
   initialState,
-  reducers: {},
+  reducers: {
+    setBack: (state, action: PayloadAction<string | null>) => {
+      state.back = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getPosts.pending, (state, action) => {
@@ -30,7 +34,7 @@ export const profileSlice = createSlice({
           page: explore ? "explore" : "home",
         });
 
-        const newPosts = action.payload as IPost[];
+        const newPosts = action.payload;
         const { posts } = state;
 
         const updatedPosts = newPosts.map(pageC);
@@ -46,7 +50,7 @@ export const profileSlice = createSlice({
   },
 });
 
-export const {} = profileSlice.actions;
+export const { setBack } = profileSlice.actions;
 
 export const selectPostsHome = (state: RootState) =>
   state.posts.posts.filter((post) => post.page == "home");
@@ -66,5 +70,7 @@ export const selectProfile = (state: RootState, username: string) =>
 export const selectHasMore = (state: RootState) => state.posts.hasmore;
 
 export const selectLoading = (state: RootState) => state.posts.loading;
+
+export const selectBack = (state: RootState) => state.posts.back;
 
 export default profileSlice.reducer;
