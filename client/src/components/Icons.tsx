@@ -374,3 +374,53 @@ export const MoreIconImages = () => (
     ></path>
   </svg>
 );
+
+export const RemoveIcon = () => (
+  <svg
+    aria-label="Delete"
+    color="rgb(255, 255, 255)"
+    fill="rgb(255, 255, 255)"
+    height="12"
+    role="img"
+    viewBox="0 0 24 24"
+    width="12"
+  >
+    <line
+      fill="none"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      x1="21"
+      x2="3"
+      y1="3"
+      y2="21"
+    ></line>
+    <line
+      fill="none"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      x1="21"
+      x2="3"
+      y1="21"
+      y2="3"
+    ></line>
+  </svg>
+);
+
+export const AddIcon = () => (
+  <svg
+    aria-label="Plus icon"
+    color="rgb(245, 245, 245)"
+    fill="rgb(245, 245, 245)"
+    height="22"
+    role="img"
+    viewBox="0 0 24 24"
+    width="22"
+  >
+    <title>Plus icon</title>
+    <path d="M21 11.3h-8.2V3c0-.4-.3-.8-.8-.8s-.8.4-.8.8v8.2H3c-.4 0-.8.3-.8.8s.3.8.8.8h8.2V21c0 .4.3.8.8.8s.8-.3.8-.8v-8.2H21c.4 0 .8-.3.8-.8s-.4-.7-.8-.7z"></path>
+  </svg>
+);

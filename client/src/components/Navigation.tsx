@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, LegacyRef } from "react";
+import { useState, useEffect, useRef, MouseEvent as ME } from "react"; // with the global mouseevent to avoid collision.
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import {
@@ -18,9 +18,8 @@ import { AppDispatch } from "../redux/store";
 import { getMyProfile } from "../api/profile";
 import CreatePostPopup from "./createpostpopup/CreatePostPopup";
 
-export const disableRightClick = (
-  e: React.MouseEvent<HTMLImageElement, MouseEvent>
-) => e.preventDefault();
+export const disableRightClick = (e: ME<HTMLImageElement, MouseEvent>) =>
+  e.preventDefault();
 
 const Navigation = () => {
   const { username, pp } = useSelector(selectProfileValues);

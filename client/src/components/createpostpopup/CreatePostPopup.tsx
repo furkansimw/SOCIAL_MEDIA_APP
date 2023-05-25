@@ -1,10 +1,4 @@
-import React, {
-  FC,
-  Dispatch,
-  SetStateAction,
-  useState,
-  ChangeEvent,
-} from "react";
+import { FC, useState, ChangeEvent, useEffect } from "react";
 import styled from "styled-components";
 import DiscardPopup from "./DiscardPopup";
 import PickImage from "./PickImage";
@@ -46,14 +40,14 @@ const CreatePostPopup: FC<Props> = ({ close }) => {
     });
 
   const parser = (img: File) =>
-    img.size <= 5000000 && ["image/jpeg", "image/png"].includes(img.type);
+    img.size <= 5000000 &&
+    ["image/jpeg", "image/jpg", "image/png"].includes(img.type);
 
   const pickFirst10 = (e: File, index: number) => index < 10;
 
   const pick = async (e: ChangeEvent<HTMLInputElement>) => {
     const _files = Array.from(e.target.files ?? []);
     if (_files.length == 0) return;
-    console.log(_files);
     const updatedImages = _files.filter(parser).filter(pickFirst10);
     if (_files.length != updatedImages.length)
       toast.info("First 10 image or size 5mb under image");
@@ -70,7 +64,25 @@ const CreatePostPopup: FC<Props> = ({ close }) => {
     setImages(i);
   };
 
-  const extraPick = async (e: ChangeEvent<HTMLInputElement>) => {};
+  const extraPick = async (e: ChangeEvent<HTMLInputElement>) => {
+    const addedFiles = Array.from(e.target.files ?? []);
+    if (addedFiles.length == 0) return;
+    const updatedAddedImages = addedFiles
+      .filter(parser)
+      .filter((_, index) => index < 10 - images.length);
+    if (addedFiles.length != updatedAddedImages.length)
+      toast.info(`First ${10 - images.length} image or size 5mb under image`);
+
+    const i = await Promise.all(
+      updatedAddedImages.map(async (ui, index) => {
+        const src = (await conv(ui)) as string;
+        const a: IPickImage = { index: index + images.length.toString(), src };
+        return a;
+      })
+    );
+
+    setImages([...images, ...i]);
+  };
 
   const back = () => {
     if (step == 2) {
@@ -80,6 +92,10 @@ const CreatePostPopup: FC<Props> = ({ close }) => {
   };
 
   const nav = useNavigate();
+
+  useEffect(() => {
+    if (images.length == 0) setStep(1);
+  }, [images]);
 
   const next = async () => {
     if (step == 3) {
@@ -171,13 +187,13 @@ const Bg = styled.div`
 const Container = styled.div`
   @keyframes scalex {
     0% {
-      transform: scale(0.9);
+      transform: scale(0.9) translate(initial);
     }
     100% {
-      transform: scale(1);
+      transform: scale(1) translate(initial);
     }
   }
-  transform: scale(0.9);
+  transform: scale(0.9) translate(initial);
   animation: 0.1s scalex ease-in-out forwards;
   position: fixed;
   z-index: 50;

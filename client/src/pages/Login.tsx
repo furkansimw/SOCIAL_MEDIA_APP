@@ -1,4 +1,4 @@
-import React, { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import styled from "styled-components";
 import Title from "../components/Title";
 import { ToastContainer, toast } from "react-toastify";

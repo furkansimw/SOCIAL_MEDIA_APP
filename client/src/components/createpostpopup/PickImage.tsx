@@ -1,4 +1,4 @@
-import React, { FC, ChangeEvent } from "react";
+import { FC, ChangeEvent } from "react";
 import styled from "styled-components";
 
 type Props = {
@@ -12,7 +12,14 @@ const PickImage: FC<Props> = ({ pick }) => {
       <p>Drag photos here</p>
       <button>
         Select from computer
-        <input onChange={pick} type="file" multiple name="images" id="images" />
+        <input
+          onChange={pick}
+          type="file"
+          multiple
+          accept="image/jpeg, image/png, image/jpg"
+          name="images"
+          id="images"
+        />
       </button>
     </Container>
   );

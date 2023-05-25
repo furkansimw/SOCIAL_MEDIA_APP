@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { IPost } from "../interfaces/ISlices";
 import styled from "styled-components";
 

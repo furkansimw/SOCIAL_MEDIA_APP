@@ -1,4 +1,4 @@
-import React, {
+import {
   ChangeEvent,
   FC,
   Dispatch,
@@ -10,8 +10,6 @@ import React, {
 import styled from "styled-components";
 import TextArea from "./TextArea";
 import { Swiper, SwiperSlide } from "swiper/react";
-
-// Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
