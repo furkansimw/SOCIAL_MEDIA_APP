@@ -61,22 +61,29 @@ const Navigation = () => {
           searchPanelRef.current &&
           notificationPanelRef.current
         )
-      )
+      ) {
         return;
+      }
       if (!panel) return;
-
-      if (panel == "search") {
+      if (l.includes(leftSideRef.current)) return;
+      if (panel == "notifications") {
         if (
-          ![searchPanelBtnRef.current, searchPanelRef.current].some(l.includes)
-        )
+          !(
+            l.includes(notificationPanelBtnRef.current) ||
+            l.includes(notificationPanelRef.current)
+          )
+        ) {
           setPanel(null);
+        }
       } else {
         if (
-          ![notificationPanelBtnRef.current, notificationPanelRef.current].some(
-            l.includes
+          !(
+            l.includes(searchPanelBtnRef.current) ||
+            l.includes(searchPanelRef.current)
           )
-        )
+        ) {
           setPanel(null);
+        }
       }
     };
 
