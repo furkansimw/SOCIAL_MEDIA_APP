@@ -31,7 +31,7 @@ const Bg = styled.div`
   height: 100vh;
   left: 0px;
   top: 0px;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
   z-index: 100;
   position: fixed;
   cursor: pointer;

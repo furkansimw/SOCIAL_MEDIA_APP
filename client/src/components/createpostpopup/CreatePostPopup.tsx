@@ -144,6 +144,7 @@ const CreatePostPopup: FC<Props> = ({ close }) => {
               setText={setText}
               textAreaIsActive={step == 3}
               images={images}
+              setImages={setImages}
             />
           )}
           {loading && <LoadingBox />}
@@ -161,7 +162,7 @@ const Bg = styled.div`
   z-index: 50;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
   left: 0px;
   top: 0px;
   cursor: pointer;
