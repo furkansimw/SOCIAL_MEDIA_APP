@@ -38,8 +38,9 @@ const Container = styled.div`
   width: 0px;
   max-width: 400px;
   padding: 0px;
-  min-width: 300px;
+  min-width: 0px;
   &.active {
+    min-width: 300px;
     padding: 1rem;
     width: 100%;
   }

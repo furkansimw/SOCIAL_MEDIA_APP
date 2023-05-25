@@ -45,8 +45,10 @@ const CreatePostPopup: FC<Props> = ({ close }) => {
 
   const pickFirst10 = (e: File, index: number) => index < 10;
 
-  const pick = async (e: ChangeEvent<HTMLInputElement>) => {
-    const _files = Array.from(e.target.files ?? []);
+  const pick = async (e: File[] | ChangeEvent<HTMLInputElement>) => {
+    const _files = Array.isArray(e)
+      ? e
+      : (Array.from(e.target.files ?? []) as File[]);
     if (_files.length == 0) return;
     const updatedImages = _files.filter(parser).filter(pickFirst10);
     if (_files.length != updatedImages.length)

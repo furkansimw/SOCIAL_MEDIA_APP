@@ -1,13 +1,31 @@
-import { FC, ChangeEvent } from "react";
+import { FC, ChangeEvent, useState } from "react";
 import styled from "styled-components";
 
 type Props = {
-  pick: (e: ChangeEvent<HTMLInputElement>) => void;
+  pick: (e: File[] | ChangeEvent<HTMLInputElement>) => void;
 };
 
 const PickImage: FC<Props> = ({ pick }) => {
+  const [isDragging, setIsDragging] = useState(false);
+  const handleDragOver = (event: React.DragEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (event: React.DragEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    setIsDragging(false);
+    const files = Array.from(event.dataTransfer.files);
+    if (files.length == 0) return;
+    pick(files);
+  };
+
   return (
-    <Container>
+    <Container className={isDragging ? "d" : ""}>
       <PickImageIcon />
       <p>Drag photos here</p>
       <button>
@@ -21,6 +39,19 @@ const PickImage: FC<Props> = ({ pick }) => {
           id="images"
         />
       </button>
+      <input
+        className="t"
+        onChange={pick}
+        type="file"
+        onClick={(e) => e.preventDefault()}
+        multiple
+        accept="image/jpeg, image/png, image/jpg"
+        name="images"
+        id="images"
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      />
     </Container>
   );
 };
@@ -32,6 +63,12 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  &.d {
+    background-color: #181818;
+    svg {
+      color: #0095f6;
+    }
+  }
   p {
     margin: 1rem;
     font-size: 24px;
@@ -51,15 +88,21 @@ const Container = styled.div`
     &:hover {
       background-color: #1877f2;
     }
-    input {
-      position: absolute;
-      left: 0px;
-      top: 0px;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      cursor: pointer;
-      user-select: none;
+  }
+  input {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    user-select: none;
+    &:hover {
+      background-color: red;
+    }
+    &.t {
+      cursor: default;
     }
   }
 `;
