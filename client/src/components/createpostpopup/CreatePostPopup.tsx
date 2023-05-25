@@ -177,7 +177,7 @@ const CreatePostPopup: FC<Props> = ({ close }) => {
 
 const Bg = styled.div`
   position: fixed;
-  z-index: 50;
+  z-index: 70;
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.6);
@@ -198,7 +198,7 @@ const Container = styled.div`
   transform: scale(0.9) translate(initial);
   animation: 0.1s scalex ease-in-out forwards;
   position: fixed;
-  z-index: 50;
+  z-index: 80;
   max-width: 700px;
   background-color: #262626;
   left: calc(50vw - 350px);
@@ -211,6 +211,11 @@ const Container = styled.div`
       left: 4rem;
       width: calc(100% - 8rem);
     }
+  }
+  .loading-box {
+    height: 100%;
+    position: absolute;
+    z-index: 50;
   }
   width: 100%;
   height: 100%;

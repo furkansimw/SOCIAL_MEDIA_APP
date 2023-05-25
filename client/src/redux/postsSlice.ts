@@ -49,16 +49,16 @@ export const profileSlice = createSlice({
 export const {} = profileSlice.actions;
 
 export const selectPostsHome = (state: RootState) =>
-  state.posts.posts.filter((post) => post.page != "home");
+  state.posts.posts.filter((post) => post.page == "home");
 
 export const selectPostsProfile = (state: RootState, username: string) =>
   state.posts.posts.filter((post) => post.username == username);
 
 export const selectPostsExplore = (state: RootState) =>
-  state.posts.posts.filter((post) => post.page != "explore");
+  state.posts.posts.filter((post) => post.page == "explore");
 
 export const selectPostsSaved = (state: RootState) =>
-  state.posts.posts.filter((post) => post.page != "saved");
+  state.posts.posts.filter((post) => post.page == "saved");
 
 export const selectProfile = (state: RootState, username: string) =>
   state.posts.profiles.find((profile) => profile.username == username);

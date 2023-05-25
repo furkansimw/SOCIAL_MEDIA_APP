@@ -24,9 +24,11 @@ const Explore = () => {
 
   return (
     <Container>
-      {posts.map((post) => (
-        <PostMini post={post} />
-      ))}
+      <div className="content">
+        {posts.map((post) => (
+          <PostMini key={post.id} post={post} />
+        ))}
+      </div>
       {loading && <LoadingBox />}
     </Container>
   );
@@ -34,13 +36,20 @@ const Explore = () => {
 
 const Container = styled.ul`
   width: 100%;
-  max-width: 1206px;
-  margin: 0px 2rem;
-  padding: 2rem 0px;
-  display: grid;
-  height: 100vh;
-  overflow-x: hidden;
+  max-height: 100vh;
   overflow-y: auto;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .content {
+    max-width: calc(906px + 4rem);
+    width: 100%;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 3px;
+  }
   .loading-box {
     margin: 2rem 0px;
   }

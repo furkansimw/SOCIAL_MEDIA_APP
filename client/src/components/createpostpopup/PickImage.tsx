@@ -12,9 +12,7 @@ const PickImage: FC<Props> = ({ pick }) => {
     setIsDragging(true);
   };
 
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
+  const handleDragLeave = () => setIsDragging(false);
 
   const handleDrop = async (event: React.DragEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -73,6 +71,8 @@ const Container = styled.div`
     margin: 1rem;
     font-size: 24px;
     line-height: 20px;
+    position: relative;
+    z-index: 50;
   }
   button {
     position: relative;
@@ -88,6 +88,7 @@ const Container = styled.div`
     &:hover {
       background-color: #1877f2;
     }
+    z-index: 50;
   }
   input {
     position: absolute;

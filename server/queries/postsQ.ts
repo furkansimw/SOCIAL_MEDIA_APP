@@ -29,7 +29,7 @@ const getExplorePostsQ = (id: string, offset: number, sd?: Date) => {
   return db
     .query(
       `
-      select p.id, cardinality(images)>1 more, images[1], likecount::int, commentcount::int cover from posts p
+      select p.id, cardinality(images)>1 more, images[1] cover, likecount::int, commentcount::int from posts p
       left join users u on u.id = p.owner
       left join relationships r on (r.owner = $1 and r.target = u.id) or (r.owner = u.id and r.target = $1 and r.type = 2) 
       where ispublic and r is null and p.owner != $1 ${str} 

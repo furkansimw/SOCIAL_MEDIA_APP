@@ -18,6 +18,7 @@ export interface IPost {
   owner: string;
   username: string;
   created: string;
+  id: string;
   pp: string | null;
   content: string;
   likecount: number;
@@ -36,6 +37,7 @@ export interface IPost {
 export interface IComment {
   owner: string;
   username: string;
+  id: string;
   pp: string | string;
   content: string;
   created: string;
@@ -46,6 +48,7 @@ export interface IComment {
 }
 
 export interface ISubComment {
+  id: string;
   owner: string;
   username: string;
   pp: string | string;
