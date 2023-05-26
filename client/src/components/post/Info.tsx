@@ -4,14 +4,7 @@ import styled from "styled-components";
 import { FC } from "react";
 import { disableRightClick } from "../Navigation";
 
-type InfoProps = {
-  to: string;
-  username: string;
-  isfollowing: boolean;
-  pp: string | null;
-};
-
-const Info: FC<InfoProps> = ({ isfollowing, pp, to, username }) => (
+const Info = () => (
   <InfoContainer>
     <div className="l">
       <Link className="pp" to={to} replace>

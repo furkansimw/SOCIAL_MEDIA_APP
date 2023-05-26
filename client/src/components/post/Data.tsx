@@ -3,13 +3,7 @@ import styled from "styled-components";
 import { IComment } from "../../interfaces/ISlices";
 import LoadingBox from "../LoadingBox";
 
-type DataProps = {
-  loading: boolean;
-  hasmore: boolean;
-  data: IComment[];
-};
-
-const Data: FC<DataProps> = ({ data, hasmore, loading }) => {
+const Data: FC = () => {
   return (
     <DataContainer>
       <Content />
@@ -24,9 +18,11 @@ const Data: FC<DataProps> = ({ data, hasmore, loading }) => {
 const DataContainer = styled.ul`
   height: calc(100% - 130px - 4rem);
   overflow-y: auto;
+
   .loading-box {
     margin: 1rem 0px;
   }
+
   padding: 1rem;
 `;
 

@@ -16,20 +16,12 @@ const PostPopupComments: FC<Props> = ({ cp }) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const {
-    owner,
-    pp,
-    isfollowing,
-    username,
-    comments: { data, hasmore, loading, sending },
-    id,
+    comments: { hasmore, data, sending },
   } = cp;
-  // const { username, id, pp } = useSelector(selectValues);
 
   useEffect(() => {
     if (hasmore && data.length == 0) dispatch(getComments({ postid: id }));
   }, []);
-
-  const to = `/${username}`;
 
   const [comment, setComment] = useState("");
   const commentInputRef = useRef<HTMLInputElement>(null);
@@ -40,9 +32,9 @@ const PostPopupComments: FC<Props> = ({ cp }) => {
 
   return (
     <Container>
-      <Info {...{ pp, username, to, isfollowing }} />
-      <Data {...{ data, hasmore, loading }} />
-      <Bottom ref={commentInputRef} {...{ comment, setComment, sending, id }} />
+      <Info />
+      <Data />
+      <Bottom ref={commentInputRef} {...{ comment, setComment }} />
     </Container>
   );
 };

@@ -21,7 +21,7 @@ export interface IPost {
   created: string;
   id: string;
   pp: string | null;
-  content: string;
+  content: string | null;
   likecount: number;
   commentcount: number;
   isliked: boolean;

@@ -10,11 +10,9 @@ import { Dispatch, SetStateAction } from "react";
 type BottomProps = {
   comment: string;
   setComment: Dispatch<SetStateAction<string>>;
-  sending: boolean;
-  id: string;
 };
 const Bottom = forwardRef<HTMLInputElement, BottomProps>(
-  ({ comment, setComment, sending, id }, inputRef) => {
+  ({ comment, setComment }, inputRef) => {
     const dispatch = useDispatch<AppDispatch>();
     const myvalues = useSelector(selectValues);
     return (
