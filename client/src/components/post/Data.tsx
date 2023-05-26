@@ -14,7 +14,7 @@ const Data: FC<DataProps> = ({ data, hasmore, loading }) => {
     <DataContainer>
       <Content />
       {data.map((comment) => (
-        <CommentItem />
+        <CommentItem comment={comment} />
       ))}
       {loading && <LoadingBox />}
     </DataContainer>
@@ -36,7 +36,7 @@ const Content = () => (
   </div>
 );
 
-const CommentItem = () => (
+const CommentItem = ({ comment }: { comment: IComment }) => (
   <div>
     <h1>Commentitem</h1>
   </div>

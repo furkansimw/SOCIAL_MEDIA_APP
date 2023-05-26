@@ -75,11 +75,10 @@ export const profileSlice = createSlice({
         const { posts, profiles, back } = state;
         const { postid } = action.meta.arg;
 
-        const loading = true;
         const obj = (po: IPost) =>
           ({
             ...po,
-            comments: { ...po.comments, loading },
+            comments: { ...po.comments, loading: true },
           } as IPost);
 
         const obj2 = (pr: IProfile) =>
@@ -119,11 +118,10 @@ export const profileSlice = createSlice({
         const { posts, profiles, back } = state;
         const { postid } = action.meta.arg;
 
-        const sending = true;
         const obj = (po: IPost) =>
           ({
             ...po,
-            comments: { ...po.comments, sending },
+            comments: { ...po.comments, sending: true },
           } as IPost);
 
         const obj2 = (pr: IProfile) =>
