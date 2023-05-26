@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Title from "../components/Title";
 import { ToastContainer, toast } from "react-toastify";
 import { login, signup } from "../api/auth";
-import { toggleSetIsloggedin } from "../redux/profileSlice";
+import { toggleSetIsloggedin } from "../redux/profileReducer";
 import { useDispatch } from "react-redux";
 
 const Login = () => {

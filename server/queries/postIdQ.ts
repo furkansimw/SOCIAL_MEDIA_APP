@@ -22,9 +22,9 @@ const getCommentsQ = (
     : `
         select c.*, u.username, u.pp from comments c
         left join users u on u.id = c.owner
-        left join relationships b on (b.owner = $1 and b.target = u.id and b.type = 2) or (b.owner = u.id and b.target = $2 and b.type = 2)
-        where c.post = $1 and b is null ${str}
-        order by c.owner = $1, created desc
+        left join relationships b on (b.owner = $1 and b.target = u.id and b.type = 2) or (b.owner = u.id and b.target = $1 and b.type = 2)
+        where c.post = $2 and b is null ${str}
+        order by c.owner = $2, created desc
         limit 12 offset $3
         `;
   return db.query(query, values).then((r) => r.rows);
@@ -58,8 +58,10 @@ const getPostQ = (id: string, postid: string, guest: boolean) => {
     where p.id = $1 and ispublic
   `
     : `
-    select p.*, likecount::int, commentcount::int, (select ) is not null isliked, (select ) is not null issaved from posts p
+    select p.*, likecount::int, commentcount::int, pl is not null isliked, s is not null issaved, (r.type not null and r.type == 0) isfollowing from posts p
     left join users u on u.id = p.owner
+    left join postlikes pl on pl.post = p.id and pl.owner = $1
+    left join saved s on s.post = p.id and pl.owner = $1
     left join relationships r on r.owner = $1 and r.target = u.id
     left join relationships b on (b.owner = u.id and b.target = $1 and b.type = 2) or (b.target = u.id and b.owner = $1 and b.type = 2)
     left join p.id = $1 and

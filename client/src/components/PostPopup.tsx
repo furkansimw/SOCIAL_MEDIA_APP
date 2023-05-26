@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { AppDispatch, RootState } from "../redux/store";
-import { selectCurrentPost, setBack } from "../redux/postsSlice";
+import { selectCurrentPost, setBack } from "../redux/postsReducer";
 import { useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import { IPost } from "../interfaces/ISlices";
@@ -10,6 +10,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 //@ts-ignore
 import { Pagination, Navigation } from "swiper";
 import { getImages } from "../api/posts";
+import PostPopupComments from "./post/PostPopupComments";
 
 const PostPopup = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -30,7 +31,7 @@ const PostPopup = () => {
       <Bg onClick={close} />
       <Container>
         <PostPopupImages cp={cp} />
-        <div className="comments"></div>
+        <PostPopupComments cp={cp} />
       </Container>
     </>
   );
@@ -47,6 +48,16 @@ const Bg = styled.div`
 `;
 
 const Container = styled.div`
+  @media screen and (max-width: 1164px) {
+    left: 2rem !important;
+    width: calc(100% - 4rem) !important;
+  }
+
+  @media screen and (max-height: 764px) {
+    top: 2rem !important;
+    height: calc(100% - 4rem) !important;
+  }
+
   background-color: rgba(0, 0, 0, 0.6);
   left: calc(50% - 550px);
   top: calc(50% - 350px);
@@ -60,7 +71,6 @@ const Container = styled.div`
   background-color: #000;
   display: flex;
   transform: scale(1.2);
-
   @keyframes sc {
     from {
       transform: scale(1.2);
@@ -71,9 +81,10 @@ const Container = styled.div`
   }
   animation: sc 0.1s ease-in-out forwards;
   .cvr {
-    width: 100%;
     height: 100%;
+    min-width: 300px;
     max-width: 700px;
+    object-fit: cover;
     position: relative;
     .layer {
       width: 100%;
@@ -90,10 +101,14 @@ const Container = styled.div`
       max-width: 700px;
     }
   }
-  .images {
-    max-width: 700px;
-    width: 100%;
+  .swiper {
     height: 100%;
+  }
+  .images {
+    height: 100%;
+    min-width: 300px;
+    max-width: 700px;
+    object-fit: cover;
     position: relative;
     img {
       width: 100%;

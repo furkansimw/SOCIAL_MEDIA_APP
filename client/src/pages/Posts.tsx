@@ -6,8 +6,8 @@ import {
   selectHasMore,
   selectLoading,
   selectPostsHome,
-} from "../redux/postsSlice.ts";
-import PostItemHome from "../components/PostItemHome.tsx";
+} from "../redux/postsReducer.ts";
+import PostItemHome from "../components/post/PostItemHome.tsx";
 import LoadingBox from "../components/LoadingBox.tsx";
 import styled from "styled-components";
 

@@ -3,3 +3,17 @@ export interface IPosts {
   offset?: number;
   sd?: string;
 }
+
+export interface IGetComments {
+  postid: string;
+  offset?: number;
+  sd?: string;
+}
+
+export interface ICreateComment {
+  postid: string;
+  content: string;
+  username: string;
+  pp: string | null;
+  id: string | null;
+}

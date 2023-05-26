@@ -5,12 +5,12 @@ import Explore from "./pages/Explore";
 import styled from "styled-components";
 import Login from "./pages/Login";
 import { useSelector } from "react-redux";
-import { selectProfile } from "./redux/profileSlice";
+import { selectProfile } from "./redux/profileReducer";
 import "react-toastify/dist/ReactToastify.css";
 import Messages from "./pages/Messages";
 import PostPage from "./pages/PostPage";
 import Profile from "./pages/Profile";
-import { selectBack } from "./redux/postsSlice";
+import { selectBack } from "./redux/postsReducer";
 import PostPopup from "./components/PostPopup";
 
 const App = () => {

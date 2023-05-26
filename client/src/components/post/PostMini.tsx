@@ -1,12 +1,12 @@
 import { FC } from "react";
-import { IPost } from "../interfaces/ISlices";
+import { IPost } from "../../interfaces/ISlices";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { disableRightClick } from "./Navigation";
+import { disableRightClick } from "../Navigation";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../redux/store";
-import { setBack } from "../redux/postsSlice";
-import { MoreIcon, MoreIconImages } from "./Icons";
+import { AppDispatch } from "../../redux/store";
+import { setBack } from "../../redux/postsReducer";
+import { MoreIcon, MoreIconImages } from "../Icons";
 
 type props = {
   post: IPost;
@@ -63,8 +63,8 @@ const Container = styled.li`
     right: 20px;
     top: 20px;
     z-index: 10;
-    width: 20px;
-    height: 20px;
+    width: 1rem;
+    height: 1rem;
   }
   .layer {
     width: 100%;

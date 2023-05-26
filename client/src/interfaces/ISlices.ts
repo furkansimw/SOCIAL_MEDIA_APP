@@ -7,13 +7,13 @@ export interface IPostsSliceInitialState {
   posts: IPost[];
   profiles: IProfile[];
   back: null | string;
-  currentPost?: IPost;
   hasmore: { home: boolean; explore: boolean };
   loading: { home: boolean; explore: boolean };
 }
 
 export interface IPost {
   cover?: string;
+  isfollowing: boolean;
   images?: string[];
   owner: string;
   more?: boolean;
@@ -28,8 +28,8 @@ export interface IPost {
   saved: boolean;
   page: string;
   comments: {
-    loading: true;
-    hasmore: true;
+    loading: boolean;
+    hasmore: boolean;
     sending: boolean;
     data: IComment[];
   };
@@ -45,7 +45,7 @@ export interface IComment {
   isliked: boolean;
   subcommentcount: number;
   likecount: number;
-  subcomments: { loading: true; hasmore: true; data: ISubComment[] };
+  subcomments: { loading: boolean; hasmore: boolean; data: ISubComment[] };
 }
 
 export interface ISubComment {

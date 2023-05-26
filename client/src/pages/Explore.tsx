@@ -5,10 +5,10 @@ import {
   selectHasMore,
   selectLoading,
   selectPostsExplore,
-} from "../redux/postsSlice";
+} from "../redux/postsReducer";
 import { getPosts } from "../api/posts";
 import LoadingBox from "../components/LoadingBox";
-import PostMini from "../components/PostMini";
+import PostMini from "../components/post/PostMini";
 import styled from "styled-components";
 
 const Explore = () => {

@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { IPost } from "../interfaces/ISlices";
+import { IPost } from "../../interfaces/ISlices";
 import styled from "styled-components";
 
 type props = {

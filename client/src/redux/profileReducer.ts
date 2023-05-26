@@ -36,6 +36,6 @@ export const profileSlice = createSlice({
 export const { toggleSetIsloggedin } = profileSlice.actions;
 
 export const selectProfile = (state: RootState) => state.profile;
-export const selectProfileValues = (state: RootState) => state.profile.values;
+export const selectValues = (state: RootState) => state.profile.values;
 
 export default profileSlice.reducer;

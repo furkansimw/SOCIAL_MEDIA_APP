@@ -10,10 +10,13 @@ export const postsU = (posts: IPost[], id: string, obj: (p: IPost) => IPost) =>
 
 export const profileU = (
   profiles: IProfile[],
-  id: string,
+  id: string | null,
   obj: (p: IProfile) => IProfile
 ) =>
   profiles.map((profile) => {
     if (profile.id == id) return { ...profile, ...obj(profile) };
     return profile;
   });
+
+export const isFeed = (back: string | null) =>
+  ["posts", "explore"].includes(back ?? "");
