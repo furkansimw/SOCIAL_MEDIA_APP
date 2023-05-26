@@ -140,6 +140,36 @@ const postCommentQ = (id: string, postid: string, content: string) =>
     )
     .then((r) => r.rows[0].id);
 
+const postSaveQ = (id: string, postid: string) =>
+  db.query(
+    `
+    insert into saved (owner, post)
+    SELECT $1, $2
+    FROM posts p
+    left join users u on p.owner = u.id
+    left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
+    left join relationships b on (b.owner = p.owner and b.target = $1 and b.type = 2) or (b.owner = $1 and b.target = p.owner and b.type = 2)
+    where p.id = $2 and (ispublic or f is not null or u.id = $1) and b is null
+    `,
+    [id, postid]
+  );
+
+const postUnSaveQ = (id: string, postid: string) =>
+  db.query(
+    `
+      DELETE FROM saved s
+      WHERE s.owner = $1 and s.post = $2
+      AND exists (
+        SELECT 1 FROM posts p
+        left join users u on p.owner = u.id
+        left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
+        left join relationships b on (b.owner = p.owner and f.target = $1 and f.type = 2) or (b.owner = $1 and b.target = p.owner and b.type = 2)
+        where p.id = $2 and (ispublic or f is not null or u.id = $1) and b is null
+      );
+`,
+    [id, postid]
+  );
+
 export {
   getCommentsQ,
   getPostImagesQ,
@@ -148,4 +178,6 @@ export {
   postCommentQ,
   postLikeQ,
   postUnlikeQ,
+  postSaveQ,
+  postUnSaveQ,
 };

@@ -10,13 +10,14 @@ import {
 import PostItemHome from "../components/post/PostItemHome.tsx";
 import LoadingBox from "../components/LoadingBox.tsx";
 import styled from "styled-components";
+import { shallowEqual } from "react-redux";
 
 const Posts = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const posts = useSelector(selectPostsHome);
-  const { home: loading } = useSelector(selectLoading);
-  const { home: hasmore } = useSelector(selectHasMore);
+  const { home: loading } = useSelector(selectLoading, shallowEqual);
+  const { home: hasmore } = useSelector(selectHasMore, shallowEqual);
 
   useEffect(() => {
     if (posts.length == 0 && hasmore) dispatch(getPosts({}));

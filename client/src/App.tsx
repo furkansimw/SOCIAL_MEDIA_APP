@@ -4,7 +4,7 @@ import Posts from "./pages/Posts";
 import Explore from "./pages/Explore";
 import styled from "styled-components";
 import Login from "./pages/Login";
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import { selectProfile } from "./redux/profileReducer";
 import "react-toastify/dist/ReactToastify.css";
 import Messages from "./pages/Messages";
@@ -15,7 +15,7 @@ import PostPopup from "./components/PostPopup";
 
 const App = () => {
   const { isloggedin } = useSelector(selectProfile);
-  const back = useSelector(selectBack);
+  const back = useSelector(selectBack, shallowEqual);
 
   return (
     <Container>

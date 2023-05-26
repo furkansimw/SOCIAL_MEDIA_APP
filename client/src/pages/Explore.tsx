@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../redux/store";
 import {
   selectHasMore,
@@ -15,8 +15,8 @@ const Explore = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const posts = useSelector(selectPostsExplore);
-  const { explore: loading } = useSelector(selectLoading);
-  const { explore: hasmore } = useSelector(selectHasMore);
+  const { explore: loading } = useSelector(selectLoading, shallowEqual);
+  const { explore: hasmore } = useSelector(selectHasMore, shallowEqual);
 
   useEffect(() => {
     if (posts.length == 0 && hasmore) dispatch(getPosts({ explore: true }));

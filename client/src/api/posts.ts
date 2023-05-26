@@ -1,6 +1,11 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import req from "./req";
-import { IPosts, IGetComments, ICreateComment } from "../interfaces/IApi";
+import {
+  IPosts,
+  IGetComments,
+  ICreateComment,
+  ICreateAction,
+} from "../interfaces/IApi";
 import { IComment, IPost } from "../interfaces/ISlices";
 
 export const getPosts = createAsyncThunk(
@@ -33,4 +38,10 @@ export const createComment = createAsyncThunk(
     req(`/posts/${postid}/comment`, "POST", { content }).then(
       (r) => r as string
     )
+);
+
+export const createAction = createAsyncThunk(
+  `/posts/:postid/like~{POST}`,
+  ({ a, postid, t }: ICreateAction) =>
+    req(`/posts/${postid}/${t}`, a ? "POST" : "DELETE")
 );

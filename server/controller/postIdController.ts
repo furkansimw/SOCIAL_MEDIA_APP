@@ -8,6 +8,8 @@ import {
   postCommentQ,
   postLikeQ,
   postUnlikeQ,
+  postSaveQ,
+  postUnSaveQ,
 } from "../queries/postIdQ";
 
 const getComments = asyncErrorWrapper(async (req, res) => {
@@ -77,8 +79,20 @@ const postComment = asyncErrorWrapper(async (req, res) => {
   res.json(commentId);
 });
 
-const postSave = asyncErrorWrapper(async (req, res) => {});
-const postUnSave = asyncErrorWrapper(async (req, res) => {});
+const postSave = asyncErrorWrapper(async (req, res) => {
+  const { id, guest } = res.locals;
+  const { postid } = req.params;
+  if (guest) badRequest();
+  await postSaveQ(id, postid);
+  res.json({ status: "ok" });
+});
+
+const postUnSave = asyncErrorWrapper(async (req, res) => {
+  const { id } = res.locals;
+  const { postid } = req.params;
+  await postUnSaveQ(id, postid);
+  res.json({ status: "ok" });
+});
 
 export {
   getComments,

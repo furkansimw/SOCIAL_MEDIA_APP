@@ -25,7 +25,7 @@ export interface IPost {
   likecount: number;
   commentcount: number;
   isliked: boolean;
-  saved: boolean;
+  issaved: boolean;
   page: string;
   comments: {
     loading: boolean;

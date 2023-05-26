@@ -10,7 +10,7 @@ import {
   NotificationsIcon,
   SearchIcon,
 } from "./Icons";
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { selectValues } from "../redux/profileReducer";
 import SearchPanel from "./SearchPanel";
 import NotificationsPanel from "./NotificationsPanel";
@@ -22,7 +22,7 @@ export const disableRightClick = (e: ME<HTMLImageElement, MouseEvent>) =>
   e.preventDefault();
 
 const Navigation = () => {
-  const { username, pp } = useSelector(selectValues);
+  const { username, pp } = useSelector(selectValues, shallowEqual);
 
   const [mini, setMini] = useState(false);
   const { pathname } = useLocation();

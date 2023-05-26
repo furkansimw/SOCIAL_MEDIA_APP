@@ -25,6 +25,8 @@ a:visited {
 
 button {
   cursor: pointer;
+  border: none;
+  outline: none;
 }
 
 ul {

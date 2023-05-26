@@ -17,3 +17,9 @@ export interface ICreateComment {
   pp: string | null;
   id: string | null;
 }
+
+export interface ICreateAction {
+  postid: string;
+  a: boolean;
+  t: "like" | "save";
+}

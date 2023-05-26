@@ -1,7 +1,7 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { IPost } from "../../interfaces/ISlices";
 import styled from "styled-components";
-import { useDispatch } from "react-redux";
+import { shallowEqual, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../redux/store";
 import { getComments } from "../../api/posts";
 import Info from "./Info";
@@ -13,7 +13,10 @@ import { selectCurrentPost } from "../../redux/postsReducer";
 const PostPopupComments = () => {
   const dispatch = useDispatch<AppDispatch>();
   const postid = window.location.pathname.split("/")[2];
-  const cp = useSelector((s: RootState) => selectCurrentPost(s, postid))!;
+  const cp = useSelector(
+    (s: RootState) => selectCurrentPost(s, postid),
+    shallowEqual
+  )!;
 
   const {
     comments: { hasmore, data, sending },
@@ -44,7 +47,7 @@ const Container = styled.div`
   min-width: 240px;
   max-width: 400px;
   height: 100%;
-  @media screen and (max-width: 750px) {
+  @media screen and (max-width: 820px) {
     display: none;
   }
 `;

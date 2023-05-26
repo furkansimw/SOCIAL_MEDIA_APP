@@ -1,5 +1,5 @@
 import { ChangeEvent, Dispatch, FC, SetStateAction } from "react";
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import styled from "styled-components";
 import { selectValues } from "../../redux/profileReducer";
 import { disableRightClick } from "../Navigation";
@@ -11,7 +11,7 @@ type Props = {
 };
 
 const TextArea: FC<Props> = ({ textAreaIsActive, text, setText }) => {
-  const { username, pp } = useSelector(selectValues);
+  const { username, pp } = useSelector(selectValues, shallowEqual);
 
   const onChange = (e: ChangeEvent<HTMLTextAreaElement>) =>
     setText(e.target.value);

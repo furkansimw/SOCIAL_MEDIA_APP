@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { shallowEqual, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { AppDispatch, RootState } from "../redux/store";
 import { selectCurrentPost, setBack } from "../redux/postsReducer";
@@ -47,7 +47,7 @@ const Bg = styled.div`
 `;
 
 const Container = styled.div`
-  @media screen and (max-width: 1164px) {
+  @media screen and (max-width: 1264px) {
     left: 2rem !important;
     width: calc(100% - 4rem) !important;
     .cvr,
@@ -57,18 +57,18 @@ const Container = styled.div`
     }
   }
 
-  @media screen and (max-height: 764px) {
+  @media screen and (max-height: 864px) {
     top: 2rem !important;
     height: calc(100% - 4rem) !important;
   }
 
   background-color: rgba(0, 0, 0, 0.6);
-  left: calc(50% - 550px);
-  top: calc(50% - 350px);
-  max-width: 1100px;
+  left: calc(50% - 600px);
+  top: calc(50% - 400px);
+  max-width: 1200px;
   width: 100%;
   height: 100%;
-  max-height: 700px;
+  max-height: 800px;
   overflow: hidden;
   position: fixed;
   z-index: 150;
@@ -86,8 +86,8 @@ const Container = styled.div`
   animation: sc 0.1s ease-in-out forwards;
   .cvr {
     height: 100%;
-    width: 700px;
-    min-width: 700px;
+    width: 800px;
+    min-width: 800px;
     position: relative;
     .layer {
       width: 100%;
@@ -108,13 +108,13 @@ const Container = styled.div`
   }
   .images {
     height: 100%;
-    width: 700px;
+    width: 800px;
     position: relative;
     img {
       width: 100%;
       object-fit: cover;
       height: 100%;
-      max-width: 700px;
+      max-width: 800px;
     }
     .layer {
       position: absolute;
@@ -129,7 +129,10 @@ const Container = styled.div`
 const PostPopupImages = () => {
   const dispach = useDispatch<AppDispatch>();
   const postid = window.location.pathname.split("/")[2];
-  const cp = useSelector((s: RootState) => selectCurrentPost(s, postid))!;
+  const cp = useSelector(
+    (s: RootState) => selectCurrentPost(s, postid),
+    shallowEqual
+  )!;
   const { images, cover, more, id } = cp;
   useEffect(() => {
     if (more && !images) dispach(getImages(id));

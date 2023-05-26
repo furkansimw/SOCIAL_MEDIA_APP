@@ -2,29 +2,33 @@ import { Link } from "react-router-dom";
 import { DetailIcon } from "../Icons";
 import styled from "styled-components";
 import { disableRightClick } from "../Navigation";
-import { useSelector } from "react-redux";
-import { selectCurrentPost } from "../../redux/postsReducer";
-import { RootState } from "../../redux/store";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { selectCurrentPost, setBack } from "../../redux/postsReducer";
+import { AppDispatch, RootState } from "../../redux/store";
 
 const Info = () => {
   const postid = window.location.pathname.split("/")[2];
-  const cp = useSelector((s: RootState) => selectCurrentPost(s, postid))!;
+  const dispatch = useDispatch<AppDispatch>();
 
-  const { username, isfollowing, pp } = cp;
+  const close = () => dispatch(setBack(null));
+  const { username, isfollowing, pp } = useSelector(
+    (s: RootState) => selectCurrentPost(s, postid),
+    shallowEqual
+  )!;
 
   const to = `/${username}`;
 
   return (
     <InfoContainer>
       <div className="l">
-        <Link className="pp" to={to} replace>
+        <Link className="pp" to={to} replace onClick={close}>
           <img
             onContextMenu={disableRightClick}
             src={pp || "/pp.jpg"}
             alt="pp"
           />
         </Link>
-        <Link className="username" to={to} replace>
+        <Link className="username" to={to} replace onClick={close}>
           <p>{username}</p>
         </Link>
         <span>•</span>
