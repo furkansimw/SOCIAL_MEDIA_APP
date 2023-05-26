@@ -3,18 +3,28 @@ import LoadingBox from "../LoadingBox";
 import { createComment } from "../../api/posts";
 import { useDispatch, useSelector } from "react-redux";
 import { selectValues } from "../../redux/profileReducer";
-import { AppDispatch } from "../../redux/store";
+import { AppDispatch, RootState } from "../../redux/store";
 import { forwardRef } from "react";
 import { Dispatch, SetStateAction } from "react";
+import { selectCurrentPost } from "../../redux/postsReducer";
 
 type BottomProps = {
   comment: string;
   setComment: Dispatch<SetStateAction<string>>;
 };
+
 const Bottom = forwardRef<HTMLInputElement, BottomProps>(
   ({ comment, setComment }, inputRef) => {
     const dispatch = useDispatch<AppDispatch>();
     const myvalues = useSelector(selectValues);
+
+    const postid = window.location.pathname.split("/")[2];
+    const cp = useSelector((s: RootState) => selectCurrentPost(s, postid))!;
+
+    const {
+      comments: { sending },
+    } = cp;
+
     return (
       <BottomContainer>
         <form
@@ -22,7 +32,7 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
             e.preventDefault();
             if (comment.trim().length === 0) return;
             const content = comment.replace(/\s+/g, " ");
-            dispatch(createComment({ content, postid: id, ...myvalues }));
+            dispatch(createComment({ content, postid, ...myvalues }));
           }}
         >
           <input

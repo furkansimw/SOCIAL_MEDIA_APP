@@ -15,7 +15,6 @@ import PostPopupComments from "./post/PostPopupComments";
 const PostPopup = () => {
   const dispatch = useDispatch<AppDispatch>();
   const postid = window.location.pathname.split("/")[2];
-  const cp = useSelector((s: RootState) => selectCurrentPost(s, postid))!;
   const close = () => {
     window.history.back();
     dispatch(setBack(null));
@@ -30,8 +29,8 @@ const PostPopup = () => {
     <>
       <Bg onClick={close} />
       <Container>
-        <PostPopupImages cp={cp} />
-        <PostPopupComments cp={cp} />
+        <PostPopupImages />
+        <PostPopupComments />
       </Container>
     </>
   );
@@ -127,8 +126,10 @@ const Container = styled.div`
   }
 `;
 
-const PostPopupImages = ({ cp }: { cp: IPost }) => {
+const PostPopupImages = () => {
   const dispach = useDispatch<AppDispatch>();
+  const postid = window.location.pathname.split("/")[2];
+  const cp = useSelector((s: RootState) => selectCurrentPost(s, postid))!;
   const { images, cover, more, id } = cp;
   useEffect(() => {
     if (more && !images) dispach(getImages(id));

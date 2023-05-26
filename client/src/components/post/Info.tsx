@@ -1,27 +1,41 @@
 import { Link } from "react-router-dom";
 import { DetailIcon } from "../Icons";
 import styled from "styled-components";
-import { FC } from "react";
 import { disableRightClick } from "../Navigation";
+import { useSelector } from "react-redux";
+import { selectCurrentPost } from "../../redux/postsReducer";
+import { RootState } from "../../redux/store";
 
-const Info = () => (
-  <InfoContainer>
-    <div className="l">
-      <Link className="pp" to={to} replace>
-        <img onContextMenu={disableRightClick} src={pp || "/pp.jpg"} alt="pp" />
-      </Link>
-      <Link className="username" to={to} replace>
-        <p>{username}</p>
-      </Link>
-      <span>•</span>
-      {!isfollowing && <button>Follow</button>}
-    </div>
-    <button className="d">
-      <DetailIcon />
-    </button>
-  </InfoContainer>
-);
+const Info = () => {
+  const postid = window.location.pathname.split("/")[2];
+  const cp = useSelector((s: RootState) => selectCurrentPost(s, postid))!;
 
+  const { username, isfollowing, pp } = cp;
+
+  const to = `/${username}`;
+
+  return (
+    <InfoContainer>
+      <div className="l">
+        <Link className="pp" to={to} replace>
+          <img
+            onContextMenu={disableRightClick}
+            src={pp || "/pp.jpg"}
+            alt="pp"
+          />
+        </Link>
+        <Link className="username" to={to} replace>
+          <p>{username}</p>
+        </Link>
+        <span>•</span>
+        {!isfollowing && <button>Follow</button>}
+      </div>
+      <button className="d">
+        <DetailIcon />
+      </button>
+    </InfoContainer>
+  );
+};
 const InfoContainer = styled.div`
   height: 4rem;
   display: flex;

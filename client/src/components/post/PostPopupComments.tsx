@@ -2,25 +2,25 @@ import { FC, useEffect, useRef, useState } from "react";
 import { IPost } from "../../interfaces/ISlices";
 import styled from "styled-components";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../redux/store";
+import { AppDispatch, RootState } from "../../redux/store";
 import { getComments } from "../../api/posts";
 import Info from "./Info";
 import Data from "./Data";
 import Bottom from "./Bottom";
+import { useSelector } from "react-redux";
+import { selectCurrentPost } from "../../redux/postsReducer";
 
-type Props = {
-  cp: IPost;
-};
-
-const PostPopupComments: FC<Props> = ({ cp }) => {
+const PostPopupComments = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const postid = window.location.pathname.split("/")[2];
+  const cp = useSelector((s: RootState) => selectCurrentPost(s, postid))!;
 
   const {
     comments: { hasmore, data, sending },
   } = cp;
 
   useEffect(() => {
-    if (hasmore && data.length == 0) dispatch(getComments({ postid: id }));
+    if (hasmore && data.length == 0) dispatch(getComments({ postid }));
   }, []);
 
   const [comment, setComment] = useState("");
