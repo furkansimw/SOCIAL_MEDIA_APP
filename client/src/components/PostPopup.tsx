@@ -51,6 +51,11 @@ const Container = styled.div`
   @media screen and (max-width: 1164px) {
     left: 2rem !important;
     width: calc(100% - 4rem) !important;
+    .cvr,
+    .images {
+      width: 100%;
+      min-width: 500px;
+    }
   }
 
   @media screen and (max-height: 764px) {
@@ -82,9 +87,8 @@ const Container = styled.div`
   animation: sc 0.1s ease-in-out forwards;
   .cvr {
     height: 100%;
-    min-width: 300px;
-    max-width: 700px;
-    object-fit: cover;
+    width: 700px;
+    min-width: 700px;
     position: relative;
     .layer {
       width: 100%;
@@ -98,7 +102,6 @@ const Container = styled.div`
       width: 100%;
       object-fit: cover;
       height: 100%;
-      max-width: 700px;
     }
   }
   .swiper {
@@ -106,9 +109,7 @@ const Container = styled.div`
   }
   .images {
     height: 100%;
-    min-width: 300px;
-    max-width: 700px;
-    object-fit: cover;
+    width: 700px;
     position: relative;
     img {
       width: 100%;

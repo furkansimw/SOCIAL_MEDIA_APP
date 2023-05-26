@@ -156,6 +156,7 @@ export const profileSlice = createSlice({
         const obj = (po: IPost) =>
           ({
             ...po,
+            commentcount: po.commentcount + 1,
             comments: {
               ...po.comments,
               data: [commentobj, ...po.comments.data],
