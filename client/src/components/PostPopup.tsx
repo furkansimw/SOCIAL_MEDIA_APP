@@ -19,9 +19,18 @@ const PostPopup = () => {
     dispatch(setBack(null));
   };
 
+  const worker2 = (e: KeyboardEvent) => {
+    if (e.key == "Escape") close();
+  };
+
   useEffect(() => {
     const worker = (e: PopStateEvent) => dispatch(setBack(null));
     window.addEventListener("popstate", worker);
+    window.addEventListener("keydown", worker2);
+    return () => {
+      window.removeEventListener("popstate", worker);
+      window.removeEventListener("keydown", worker2);
+    };
   }, []);
 
   return (

@@ -59,12 +59,17 @@ const createSubCommentQ = (id: string, commentid: string, content: string) =>
   db
     .query(
       `
-      insert into subcomments (owner, comment, content) values ($1,$2,$3)
+      insert into subcomments (owner, comment, content)
+      SELECT $1, $2, $3
+      FROM posts p
+      where exists (
+        todo
+        )
       returning id
 `,
       [id, commentid, content]
     )
-    .then((r) => r.rows[0].id);
+    .then((r) => r.rows);
 
 export {
   deleteCommentQ,
