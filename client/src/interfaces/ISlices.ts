@@ -1,6 +1,6 @@
 export interface IProfileInitialState {
   isloggedin: boolean;
-  values: { username: string; pp: string | null; id: string | null };
+  values: { username: string; pp: string | null; id: string };
 }
 
 export interface IPostsSliceInitialState {
@@ -39,7 +39,7 @@ export interface IComment {
   owner: string;
   username: string;
   id: string;
-  pp: string | string;
+  pp: string | null;
   content: string;
   created: string;
   isliked: boolean;
@@ -52,7 +52,7 @@ export interface ISubComment {
   id: string;
   owner: string;
   username: string;
-  pp: string | string;
+  pp: string | null;
   content: string;
   created: string;
   isliked: boolean;

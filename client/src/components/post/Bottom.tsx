@@ -6,12 +6,18 @@ import { selectValues } from "../../redux/profileReducer";
 import { AppDispatch, RootState } from "../../redux/store";
 import { forwardRef, useMemo } from "react";
 import { Dispatch, SetStateAction } from "react";
-import { selectCurrentPost } from "../../redux/postsReducer";
+import { selectCurrentPost, setBack } from "../../redux/postsReducer";
 import { CommentIcon, LikeIcon, SaveIcon, ShareIcon } from "../Icons";
+import { Link } from "react-router-dom";
+import LinkQ from "./LinkQ";
 
 type BottomProps = {
   comment: string;
   setComment: Dispatch<SetStateAction<string>>;
+  isRepliying: {
+    commentid: string;
+    username: string;
+  } | null;
 };
 
 export const dateCalc = (d: string) => {
@@ -53,7 +59,7 @@ export const dateCalc = (d: string) => {
 };
 
 const Bottom = forwardRef<HTMLInputElement, BottomProps>(
-  ({ comment, setComment }, inputRef) => {
+  ({ comment, setComment, isRepliying }, inputRef) => {
     const dispatch = useDispatch<AppDispatch>();
     const myvalues = useSelector(selectValues, shallowEqual);
 
@@ -107,7 +113,14 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
             e.preventDefault();
             if (comment.trim().length === 0) return;
             const content = comment.replace(/\s+/g, " ").trim();
-            dispatch(createComment({ content, postid, ...myvalues }));
+            dispatch(
+              createComment({
+                content,
+                postid,
+                ...myvalues,
+                commentid: isRepliying?.commentid,
+              })
+            );
           }}
         >
           <input
@@ -120,7 +133,20 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
             value={comment}
             maxLength={200}
           />
-          <button disabled={comment.length == 0} type="submit">
+          {isRepliying && (
+            <LinkQ to={`/${isRepliying.username}`}>
+              @{isRepliying.username}
+            </LinkQ>
+          )}
+          <button
+            disabled={
+              comment.length == 0 ||
+              (isRepliying
+                ? isRepliying.username.length + 2 > comment.trim().length
+                : true)
+            }
+            type="submit"
+          >
             Post
           </button>
         </form>
@@ -131,7 +157,6 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
 );
 
 const BottomContainer = styled.div`
-  height: 138px;
   position: relative;
   border-top: 1px solid #262626;
   .icons {
@@ -151,22 +176,30 @@ const BottomContainer = styled.div`
       background-color: transparent;
       padding: 6px;
       position: relative;
+
       &.like {
-        @keyframes likep {
-          0% {
-            transform: scale(1);
-          }
-          25% {
-            transform: scale(1.2);
-          }
-          50% {
-            transform: scale(0.95);
-          }
-          100% {
-            transform: scale(1);
+        svg {
+          transform: scale(1);
+        }
+        &.active {
+          svg {
+            @keyframes likep {
+              0% {
+                transform: scale(1);
+              }
+              25% {
+                transform: scale(1.2);
+              }
+              50% {
+                transform: scale(0.95);
+              }
+              100% {
+                transform: scale(1);
+              }
+            }
+            animation: likep 0.45s ease-in-out;
           }
         }
-        animation: likep 0.45s ease-in-out;
       }
       &.save {
         padding-right: 0px;
@@ -201,17 +234,27 @@ const BottomContainer = styled.div`
     height: 40px;
     border-top: 1px solid #262626;
     padding: 0px 1rem;
+    position: relative;
     input {
       background-color: transparent;
       outline: none;
       width: 100%;
+      height: 40px;
       border: none;
       font-size: 14px;
-      line-height: 18px;
+      line-height: 20px;
       padding-right: 10px;
       &::placeholder {
         color: #a8a8a8;
       }
+    }
+    a {
+      background-color: #000;
+      position: absolute;
+      font-weight: 600;
+      font-size: 14px;
+      top: 10px;
+      height: 20px;
     }
     button {
       color: #0095f6;

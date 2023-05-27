@@ -5,13 +5,19 @@ import { shallowEqual, useSelector } from "react-redux";
 import { selectCurrentPost, setBack } from "../../redux/postsReducer";
 import { AppDispatch, RootState } from "../../redux/store";
 import { dateCalc } from "./Bottom";
-import { useMemo } from "react";
+import { FC, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { LikeIconComment } from "../Icons";
+import { LikeIconComment, MoreIcon2 } from "../Icons";
 import { likeComment } from "../../api/posts";
+import LinkConverter from "./LinkConverter";
+import LinkQ from "./LinkQ";
 
-const Data = () => {
+type Props = {
+  reply: (commentid: string, username: string) => void;
+};
+
+const Data: FC<Props> = ({ reply }) => {
   const postid = window.location.pathname.split("/")[2];
   const {
     comments: { data, loading },
@@ -24,7 +30,7 @@ const Data = () => {
     <DataContainer>
       <Content />
       {data.map((comment) => (
-        <CommentItem comment={comment} />
+        <CommentItem comment={comment} reply={reply} />
       ))}
       {loading && <LoadingBox />}
     </DataContainer>
@@ -32,7 +38,7 @@ const Data = () => {
 };
 
 const DataContainer = styled.ul`
-  height: calc(100% - 138px - 4rem);
+  height: calc(100% - 147px - 4rem);
   overflow-y: auto;
   &::-webkit-scrollbar {
     display: none;
@@ -51,6 +57,10 @@ const DataContainer = styled.ul`
         width: 2rem;
         height: 2rem;
         display: block;
+        &.b {
+          font-weight: 400;
+          color: #e0f1ff;
+        }
         img {
           border-radius: 100%;
           width: 100%;
@@ -67,12 +77,20 @@ const DataContainer = styled.ul`
       p {
         font-size: 12px;
         color: #a8a8a8;
+        margin-top: 4px;
       }
     }
   }
 
   .commentitem {
     margin-bottom: 1rem;
+    &:hover {
+      .down-side {
+        .more {
+          display: block;
+        }
+      }
+    }
     .upside {
       display: flex;
       width: 100%;
@@ -90,6 +108,7 @@ const DataContainer = styled.ul`
         }
       }
       pre {
+        margin-bottom: 4px;
         font-size: 14px;
         width: 100%;
         white-space: pre-wrap;
@@ -98,6 +117,11 @@ const DataContainer = styled.ul`
         a {
           font-weight: 600;
           margin-right: 6px;
+          &.b {
+            margin: 0px;
+            font-weight: 400;
+            color: #e0f1ff;
+          }
         }
       }
       button {
@@ -129,6 +153,29 @@ const DataContainer = styled.ul`
         }
       }
     }
+    .down-side {
+      height: 18px;
+      align-items: center;
+      display: flex;
+      .date {
+        margin-left: calc(2rem + 18px);
+        font-size: 12px;
+        color: #a8a8a8;
+        margin-right: 12px;
+      }
+      .reply {
+        font-weight: 600;
+        background-color: transparent;
+        margin-right: 12px;
+        color: #a8a8a8;
+      }
+      .more {
+        height: 18px;
+        width: 18px;
+        background-color: transparent;
+        display: none;
+      }
+    }
   }
 `;
 
@@ -143,21 +190,17 @@ const Content = () => {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const close = () => dispatch(setBack(null));
-
   return (
     <div className="content">
       <div className="pp">
-        <Link to={`/${username}`} replace onClick={close}>
+        <LinkQ to={`/${username}`}>
           <img src={pp || "/pp.jpg"} alt="pp" />
-        </Link>
+        </LinkQ>
       </div>
       <div className="text">
         <pre>
-          <Link to={`/${username}`} replace onClick={close}>
-            {username}
-          </Link>
-          {content}
+          <LinkQ to={`/${username}`}>{username}</LinkQ>
+          <LinkConverter text={content || ""} />
         </pre>
         <p>{date}</p>
       </div>
@@ -165,7 +208,13 @@ const Content = () => {
   );
 };
 
-const CommentItem = ({ comment }: { comment: IComment }) => {
+const CommentItem = ({
+  comment,
+  reply,
+}: {
+  comment: IComment;
+  reply: (commentid: string, username: string) => void;
+}) => {
   const dispatch = useDispatch<AppDispatch>();
   const {
     id: commentid,
@@ -174,29 +223,41 @@ const CommentItem = ({ comment }: { comment: IComment }) => {
     subcommentcount,
     content,
     isliked,
+    created,
   } = comment;
 
   const postid = window.location.pathname.split("/")[2];
-
   const likeSubComment = () =>
     dispatch(likeComment({ a: !isliked, commentid, postid }));
+  const date = useMemo(() => dateCalc(created), []);
+
+  const replyHandle = () => reply(commentid, username);
+
+  const closeX = () => dispatch(setBack(null));
 
   return (
     <div className="commentitem">
       <div className="upside">
         <div className="pp">
-          <Link to={`/${username}`} replace>
+          <LinkQ to={`/${username}`}>
             <img src={pp || "/pp.jpg"} alt="pp" />
-          </Link>
+          </LinkQ>
         </div>
         <pre>
-          <Link to={`/${username}`} replace>
-            {username}
-          </Link>
-          {content}
+          <LinkQ to={`/${username}`}>{username}</LinkQ>
+          <LinkConverter text={content} />
         </pre>
         <button onClick={likeSubComment} className={isliked ? "active" : ""}>
           <LikeIconComment isactive={isliked} />
+        </button>
+      </div>
+      <div className="down-side">
+        <p className="date">{date}</p>
+        <button className="reply" onClick={replyHandle}>
+          Reply
+        </button>
+        <button className="more">
+          <MoreIcon2 />
         </button>
       </div>
       {subcommentcount > 0 && <div className="view-replies"></div>}

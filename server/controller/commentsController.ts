@@ -6,7 +6,9 @@ import {
   deleteCommentQ,
   getCommentLikesQ,
   getSubCommentsQ,
+  createSubCommentQ,
 } from "../queries/commentsQ";
+import { usernamePattern } from "../validators/authControllersValidators";
 
 const deleteComment = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
@@ -60,10 +62,28 @@ const getCommentLikes = asyncErrorWrapper(async (req, res) => {
   res.json(commentLikes);
 });
 
+const createSubComment = asyncErrorWrapper(async (req, res) => {
+  const { id } = res.locals;
+  let { content }: { content?: string } = req.body;
+  const { commentid } = req.params;
+
+  if (!content || content?.trim().length == 0) return badRequest();
+  content = content.replace(/\s+/g, " ").trim().toString();
+  const tag = content.split(" ")[0];
+  const isdone =
+    tag[0] == "@" &&
+    new RegExp(usernamePattern).test(tag.slice(1)) &&
+    tag.length > 1;
+  if (!isdone) badRequest();
+  const subCommentId = await createSubCommentQ(id, commentid, content);
+  res.json(subCommentId);
+});
+
 export {
   deleteComment,
   getSubComments,
   commentLike,
   commentUnLike,
   getCommentLikes,
+  createSubComment,
 };

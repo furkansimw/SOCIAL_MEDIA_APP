@@ -9,8 +9,9 @@ import { useDispatch } from "react-redux";
 const Login = () => {
   const dispatch = useDispatch();
   const usernamePattern =
-    "^(?=.{6,36}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$";
-  const emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$";
+      "^(?=.{6,36}$)(?![_.])(?!.*[_.]{2})[a-z0-9._]+(?<![_.])$",
+    emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$";
+
   const [islogin, setIslogin] = useState(true);
 
   const [username, setUsername] = useState("");
@@ -22,8 +23,12 @@ const Login = () => {
 
   const formCheckValidity = () => {
     setFormSubmitForReady(false);
-    if (!username.match(username)) return;
-    if (!islogin && !email.match(emailPattern)) return;
+
+    const usernameDone = new RegExp(usernamePattern).test(username);
+    const emailDone = new RegExp(emailPattern).test(email);
+
+    if (!usernameDone) return;
+    if (!islogin && !emailDone) return;
     if (password.length < 6 || username.length < 6) return;
     if (!islogin && fullname.length > 50) return;
     setFormSubmitForReady(true);

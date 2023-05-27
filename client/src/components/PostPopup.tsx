@@ -14,7 +14,6 @@ import PostPopupComments from "./post/PostPopupComments";
 
 const PostPopup = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const postid = window.location.pathname.split("/")[2];
   const close = () => {
     window.history.back();
     dispatch(setBack(null));
@@ -133,10 +132,12 @@ const PostPopupImages = () => {
     (s: RootState) => selectCurrentPost(s, postid),
     shallowEqual
   )!;
-  const { images, cover, more, id } = cp;
+
   useEffect(() => {
     if (more && !images) dispach(getImages(id));
   }, [cp]);
+
+  const { images, cover, more, id } = cp;
 
   if (!images)
     return (

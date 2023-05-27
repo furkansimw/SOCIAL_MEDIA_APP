@@ -35,10 +35,12 @@ export const getComments = createAsyncThunk(
 
 export const createComment = createAsyncThunk(
   "/posts/:postid/comment~{POST}",
-  ({ postid, content }: ICreateComment) =>
-    req(`/posts/${postid}/comment`, "POST", { content }).then(
-      (r) => r as string
-    )
+  ({ postid, content, commentid }: ICreateComment) =>
+    req(
+      `/posts/${postid}/${commentid ? `comments/${commentid}` : `comment`}`,
+      "POST",
+      { content }
+    ).then((r) => r as string)
 );
 
 export const createAction = createAsyncThunk(

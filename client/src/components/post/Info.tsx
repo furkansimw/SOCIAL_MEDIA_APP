@@ -5,12 +5,11 @@ import { disableRightClick } from "../Navigation";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { selectCurrentPost, setBack } from "../../redux/postsReducer";
 import { AppDispatch, RootState } from "../../redux/store";
+import LinkQ from "./LinkQ";
 
 const Info = () => {
   const postid = window.location.pathname.split("/")[2];
-  const dispatch = useDispatch<AppDispatch>();
 
-  const close = () => dispatch(setBack(null));
   const { username, isfollowing, pp } = useSelector(
     (s: RootState) => selectCurrentPost(s, postid),
     shallowEqual
@@ -21,16 +20,16 @@ const Info = () => {
   return (
     <InfoContainer>
       <div className="l">
-        <Link className="pp" to={to} replace onClick={close}>
+        <LinkQ className="pp" to={to}>
           <img
             onContextMenu={disableRightClick}
             src={pp || "/pp.jpg"}
             alt="pp"
           />
-        </Link>
-        <Link className="username" to={to} replace onClick={close}>
+        </LinkQ>
+        <LinkQ className="username" to={to}>
           <p>{username}</p>
-        </Link>
+        </LinkQ>
         <span>•</span>
         {!isfollowing && <button>Follow</button>}
       </div>

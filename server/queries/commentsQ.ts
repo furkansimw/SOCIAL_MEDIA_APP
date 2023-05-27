@@ -55,10 +55,22 @@ const getCommentLikesQ = (
   );
 };
 
+const createSubCommentQ = (id: string, commentid: string, content: string) =>
+  db
+    .query(
+      `
+      insert into subcomments (owner, comment, content) values ($1,$2,$3)
+      returning id
+`,
+      [id, commentid, content]
+    )
+    .then((r) => r.rows[0].id);
+
 export {
   deleteCommentQ,
   getSubCommentsQ,
   commentLikeQ,
   commentUnLikeQ,
   getCommentLikesQ,
+  createSubCommentQ,
 };

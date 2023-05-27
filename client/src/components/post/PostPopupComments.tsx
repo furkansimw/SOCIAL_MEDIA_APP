@@ -1,5 +1,5 @@
 import { FC, useEffect, useRef, useState } from "react";
-import { IPost } from "../../interfaces/ISlices";
+import { IComment, IPost, ISubComment } from "../../interfaces/ISlices";
 import styled from "styled-components";
 import { shallowEqual, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../redux/store";
@@ -28,16 +28,36 @@ const PostPopupComments = () => {
 
   const [comment, setComment] = useState("");
   const commentInputRef = useRef<HTMLInputElement>(null);
+  const [isRepliying, setIsRepliying] = useState<{
+    commentid: string;
+    username: string;
+  } | null>(null);
 
   useEffect(() => {
     setComment("");
   }, [sending]);
 
+  const reply = (commentid: string, username: string) => {
+    setComment(`@${username} `);
+    setIsRepliying({ commentid, username });
+    commentInputRef.current?.focus();
+  };
+
+  useEffect(() => {
+    if (isRepliying) {
+      const { username } = isRepliying;
+      if (comment.slice(0, username.length + 2) != `@${username} `) {
+        setIsRepliying(null);
+        setComment("");
+      }
+    }
+  }, [comment]);
+
   return (
     <Container>
       <Info />
-      <Data />
-      <Bottom ref={commentInputRef} {...{ comment, setComment }} />
+      <Data reply={reply} />
+      <Bottom ref={commentInputRef} {...{ comment, setComment, isRepliying }} />
     </Container>
   );
 };

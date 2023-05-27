@@ -13,9 +13,10 @@ export interface IGetComments {
 export interface ICreateComment {
   postid: string;
   content: string;
+  commentid?: string;
   username: string;
   pp: string | null;
-  id: string | null;
+  id: string;
 }
 
 export interface ICreateAction {

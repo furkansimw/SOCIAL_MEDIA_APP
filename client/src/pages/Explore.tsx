@@ -10,6 +10,7 @@ import { getPosts } from "../api/posts";
 import LoadingBox from "../components/LoadingBox";
 import PostMini from "../components/post/PostMini";
 import styled from "styled-components";
+import LinkConverter from "../components/post/LinkConverter";
 
 const Explore = () => {
   const dispatch = useDispatch<AppDispatch>();

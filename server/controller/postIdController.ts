@@ -73,7 +73,7 @@ const postComment = asyncErrorWrapper(async (req, res) => {
   let { content }: { content?: string } = req.body;
 
   if (!content || content?.trim().length == 0) return badRequest();
-  content = content.replace(/\s+/g, " ");
+  content = content.replace(/\s+/g, " ").trim().toString();
 
   const commentId = await postCommentQ(id, postid, content);
   res.json(commentId);
