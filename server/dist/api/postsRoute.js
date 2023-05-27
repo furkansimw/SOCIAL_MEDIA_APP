@@ -8,10 +8,10 @@ const postsController_1 = require("../controller/postsController");
 const postIdController_1 = require("../controller/postIdController");
 const commenstRoute_1 = __importDefault(require("./commenstRoute"));
 const postsRoute = (0, express_1.Router)();
-const postsIdRoute = (0, express_1.Router)({ mergeParams: true });
 postsRoute.route("/").get(postsController_1.getPosts).post(postsController_1.createPost);
 postsRoute.route("/explore").get(postsController_1.getExplorePosts);
 postsRoute.route("/create").post(postsController_1.createPost);
+const postsIdRoute = (0, express_1.Router)({ mergeParams: true });
 postsRoute.use("/:postid", postsIdRoute);
 postsIdRoute.route("/").get(postIdController_1.getPost);
 postsIdRoute.route("/images").get(postIdController_1.getPostImages);
@@ -21,5 +21,5 @@ postsIdRoute.route("/like").post(postIdController_1.postLike).delete(postIdContr
 postsIdRoute.route("/comment").post(postIdController_1.postComment);
 postsIdRoute.route("/save").post(postIdController_1.postSave).delete(postIdController_1.postUnSave);
 postsIdRoute.route("/comment").post(postIdController_1.postComment);
-postsIdRoute.use("/:commentid", commenstRoute_1.default);
+postsIdRoute.use("/comments/:commentid", commenstRoute_1.default);
 exports.default = postsRoute;

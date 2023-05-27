@@ -2,7 +2,7 @@ import db from "../db/db";
 
 const getPostsQ = (id: string, offset: number, sd?: Date) => {
   const str = sd ? `and p.created < $3` : ``;
-  const values: any[] = [id, offset];
+  const values: (string | number | Date)[] = [id, offset];
   if (sd) values.push(sd);
 
   return db
@@ -23,7 +23,7 @@ const getPostsQ = (id: string, offset: number, sd?: Date) => {
 };
 const getExplorePostsQ = (id: string, offset: number, sd?: Date) => {
   const str = sd ? `and p.created < $3` : ``;
-  const values: any[] = [id, offset];
+  const values: (string | number | Date)[] = [id, offset];
   if (sd) values.push(sd);
 
   return db

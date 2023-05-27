@@ -18,11 +18,12 @@ import {
 import commentIdRoute from "./commenstRoute";
 
 const postsRoute = Router();
-const postsIdRoute = Router({ mergeParams: true });
 
 postsRoute.route("/").get(getPosts).post(createPost);
 postsRoute.route("/explore").get(getExplorePosts);
 postsRoute.route("/create").post(createPost);
+
+const postsIdRoute = Router({ mergeParams: true });
 
 postsRoute.use("/:postid", postsIdRoute);
 
@@ -35,6 +36,6 @@ postsIdRoute.route("/comment").post(postComment);
 postsIdRoute.route("/save").post(postSave).delete(postUnSave);
 postsIdRoute.route("/comment").post(postComment);
 
-postsIdRoute.use("/:commentid", commentIdRoute);
+postsIdRoute.use("/comments/:commentid", commentIdRoute);
 
 export default postsRoute;

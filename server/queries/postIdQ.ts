@@ -7,7 +7,7 @@ const getCommentsQ = (
   offset: number,
   sd?: Date
 ) => {
-  const values: any[] = [id, postid, offset];
+  const values: (string | number | Date)[] = [id, postid, offset];
   if (sd) values.push(sd);
   if (guest) values.shift();
   const str = sd ? `and c.created < $4` : ``;
@@ -76,21 +76,19 @@ const getPostLikesQ = (
   offset: number,
   sd?: Date
 ) => {
-  const values: any[] = [id, postid, offset];
-  if (sd) values.push(sd);
+  const values: (string | number | Date)[] = [id, postid, offset];
+  // if (sd) values.push(sd);
 
-  const str = sd ? `and pl.created < $4` : ``;
+  // const str = sd ? `and pl.created < $4` : ``;
 
-  return db.query(
-    `select u.username, u.pp, u.fullname, r.type from postlikes pl
-     left join users u on u.id = pl.owner
-     left join relationships r on r.owner = $1 and r.target = u.id
-     left join relationships b on (b.owner = u.id and b.target = u.id and b.type = 2) or (b.target = u.id and b.owner = u.id and b.type = 2)
-     where pl.post = $2 ${str} and b is null and
-     LIMIT 12 offset $3
+  return db
+    .query(
+      `
+      
   `,
-    values
-  );
+      values
+    )
+    .then((r) => r.rows);
 };
 
 const postLikeQ = (id: string, postid: string) =>
