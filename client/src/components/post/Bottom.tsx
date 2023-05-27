@@ -106,7 +106,7 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
           onSubmit={(e) => {
             e.preventDefault();
             if (comment.trim().length === 0) return;
-            const content = comment.replace(/\s+/g, " ");
+            const content = comment.replace(/\s+/g, " ").trim();
             dispatch(createComment({ content, postid, ...myvalues }));
           }}
         >

@@ -5,6 +5,7 @@ import {
   IGetComments,
   ICreateComment,
   ICreateAction,
+  ILikeComment,
 } from "../interfaces/IApi";
 import { IComment, IPost } from "../interfaces/ISlices";
 
@@ -44,4 +45,15 @@ export const createAction = createAsyncThunk(
   `/posts/:postid/like~{POST}`,
   ({ a, postid, t }: ICreateAction) =>
     req(`/posts/${postid}/${t}`, a ? "POST" : "DELETE")
+);
+
+export const likeComment = createAsyncThunk(
+  "/posts/:postid/comments/:commentid/like~{POST}",
+  ({ a, commentid, subcommentid, postid }: ILikeComment) =>
+    req(
+      `/posts/${postid}/comments/${commentid}${
+        subcommentid ? `/${subcommentid}` : ""
+      }/like`,
+      a ? "POST" : "DELETE"
+    )
 );

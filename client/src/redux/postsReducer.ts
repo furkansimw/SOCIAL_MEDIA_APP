@@ -12,6 +12,7 @@ import {
   getComments,
   getImages,
   getPosts,
+  likeComment,
 } from "../api/posts.ts";
 import { RootState } from "./store.ts";
 import { dateR, isFeed, postsU, profileU } from "./functions.ts";
@@ -194,7 +195,31 @@ export const profileSlice = createSlice({
         if (isFeed(back)) state.posts = postsU(posts, postid, obj);
         else state.profiles = profileU(profiles, back, obj2);
       })
-      .addCase(createAction.rejected, (state, action) => {});
+      .addCase(createAction.rejected, (state, action) => {
+        const { a, postid, t } = action.meta.arg;
+        const { posts, profiles, back } = state;
+
+        const obj = (po: IPost) =>
+          ({
+            ...po,
+            [`is${t}d`]: !a,
+            likecount:
+              t == "like" ? po.likecount + (!a ? 1 : -1) : po.likecount,
+          } as IPost);
+
+        const obj2 = (pr: IProfile) =>
+          ({
+            ...pr,
+            posts: { ...pr.posts, data: postsU(pr.posts.data, postid, obj) },
+          } as IProfile);
+
+        if (isFeed(back)) state.posts = postsU(posts, postid, obj);
+        else state.profiles = profileU(profiles, back, obj2);
+      });
+
+    builder
+      .addCase(likeComment.pending, (state, action) => {})
+      .addCase(likeComment.rejected, (state, action) => {});
   },
 });
 

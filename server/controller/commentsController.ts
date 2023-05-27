@@ -48,8 +48,15 @@ const commentUnLike = asyncErrorWrapper(async (req, res) => {
 
 const getCommentLikes = asyncErrorWrapper(async (req, res) => {
   const { id } = res.locals;
-  const { commentid } = req.params;
-  const commentLikes = await getCommentLikesQ();
+  const { commentid, postid } = req.params;
+  const { offset, sd } = conv(req.query);
+  const commentLikes = await getCommentLikesQ(
+    id,
+    postid,
+    commentid,
+    offset,
+    sd
+  );
   res.json(commentLikes);
 });
 

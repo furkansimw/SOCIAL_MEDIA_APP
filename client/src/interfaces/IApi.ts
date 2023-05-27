@@ -23,3 +23,10 @@ export interface ICreateAction {
   a: boolean;
   t: "like" | "save";
 }
+
+export interface ILikeComment {
+  a: boolean;
+  commentid: string;
+  postid: string;
+  subcommentid?: string;
+}

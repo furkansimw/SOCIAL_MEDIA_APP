@@ -37,7 +37,23 @@ const getSubCommentsQ = (
 };
 const commentLikeQ = () => {};
 const commentUnLikeQ = () => {};
-const getCommentLikesQ = () => {};
+const getCommentLikesQ = (
+  id: string,
+  postid: string,
+  commentid: string,
+  offset: number,
+  sd?: Date
+) => {
+  const values: (string | number | Date)[] = [id, postid, commentid, offset];
+  if (sd) values.push(sd);
+
+  db.query(
+    `
+    todo
+  `,
+    values
+  );
+};
 
 export {
   deleteCommentQ,

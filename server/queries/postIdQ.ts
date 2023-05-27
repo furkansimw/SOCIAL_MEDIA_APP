@@ -77,15 +77,15 @@ const getPostLikesQ = (
   sd?: Date
 ) => {
   const values: (string | number | Date)[] = [id, postid, offset];
-  // if (sd) values.push(sd);
 
-  // const str = sd ? `and pl.created < $4` : ``;
+  if (sd) values.push(sd);
+  const str = sd ? `and pl.created < $4` : ``;
 
   return db
     .query(
       `
-      
-  `,
+      todo
+      `,
       values
     )
     .then((r) => r.rows);
