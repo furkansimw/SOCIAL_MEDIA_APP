@@ -60,14 +60,18 @@ export interface ISubComment {
 }
 
 export interface IProfile {
+  loading: boolean;
   username: string;
-  followingcount: number;
-  followercount: number;
-  postcount: number;
-  id: string;
-  pp: string | null;
-  ispublic: boolean;
-  isfollowingme: boolean;
-  status: number | null;
-  posts: { loading: boolean; hasmore: boolean; data: IPost[] };
+  info?: {
+    username: string;
+    followingcount: number;
+    followercount: number;
+    postcount: number;
+    id: string;
+    pp: string | null;
+    ispublic: boolean;
+    isfollowingme: boolean;
+    status: number | null;
+    postsState: { loading: boolean; hasmore: boolean };
+  };
 }

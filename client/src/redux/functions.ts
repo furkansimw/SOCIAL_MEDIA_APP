@@ -14,7 +14,7 @@ export const profileU = (
   obj: (p: IProfile) => IProfile
 ) =>
   profiles.map((profile) => {
-    if (profile.id == id) return { ...profile, ...obj(profile) };
+    if (profile.info?.id == id) return { ...profile, ...obj(profile) };
     return profile;
   });
 

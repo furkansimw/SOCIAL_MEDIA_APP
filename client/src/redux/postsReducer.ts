@@ -4,7 +4,6 @@ import {
   IComment,
   IPost,
   IPostsSliceInitialState,
-  IProfile,
   ISubComment,
 } from "../interfaces/ISlices.ts";
 import {
@@ -16,7 +15,8 @@ import {
   likeComment,
 } from "../api/posts.ts";
 import { RootState } from "./store.ts";
-import { dateR, isFeed, postsU, profileU } from "./functions.ts";
+import { dateR, postsU } from "./functions.ts";
+import { getProfile } from "../api/profile.ts";
 
 const initialState: IPostsSliceInitialState = {
   posts: [],
@@ -75,7 +75,7 @@ export const postsSlice = createSlice({
 
     builder
       .addCase(getComments.pending, (state, action) => {
-        const { posts, profiles, back } = state;
+        const { posts } = state;
         const { postid } = action.meta.arg;
 
         const obj = (po: IPost) =>
@@ -84,17 +84,10 @@ export const postsSlice = createSlice({
             comments: { ...po.comments, loading: true },
           } as IPost);
 
-        const obj2 = (pr: IProfile) =>
-          ({
-            ...pr,
-            posts: { ...pr.posts, data: postsU(pr.posts.data, postid, obj) },
-          } as IProfile);
-
-        if (isFeed(back)) state.posts = postsU(posts, postid, obj);
-        else state.profiles = profileU(profiles, back, obj2);
+        state.posts = postsU(posts, postid, obj);
       })
       .addCase(getComments.fulfilled, (state, action) => {
-        const { posts, profiles, back } = state;
+        const { posts } = state;
         const { postid } = action.meta.arg;
         const data = action.payload.map((ap) => ({
           ...ap,
@@ -105,20 +98,12 @@ export const postsSlice = createSlice({
 
         const obj = (po: IPost) => ({ ...po, comments } as IPost);
 
-        const obj2 = (pr: IProfile) =>
-          ({
-            ...pr,
-            posts: { ...pr.posts, data: postsU(pr.posts.data, postid, obj) },
-          } as IProfile);
-
-        if (isFeed(back)) state.posts = postsU(posts, postid, obj);
-        else state.profiles = profileU(profiles, back, obj2);
-        console.log(state.posts.find((p) => p.id == postid));
+        state.posts = postsU(posts, postid, obj);
       });
 
     builder
       .addCase(createComment.pending, (state, action) => {
-        const { posts, profiles, back } = state;
+        const { posts } = state;
         const { postid } = action.meta.arg;
 
         const obj = (po: IPost) =>
@@ -126,18 +111,10 @@ export const postsSlice = createSlice({
             ...po,
             comments: { ...po.comments, sending: true },
           } as IPost);
-
-        const obj2 = (pr: IProfile) =>
-          ({
-            ...pr,
-            posts: { ...pr.posts, data: postsU(pr.posts.data, postid, obj) },
-          } as IProfile);
-
-        if (isFeed(back)) state.posts = postsU(posts, postid, obj);
-        else state.profiles = profileU(profiles, back, obj2);
+        state.posts = postsU(posts, postid, obj);
       })
       .addCase(createComment.fulfilled, (state, action) => {
-        const { posts, profiles, back } = state;
+        const { posts } = state;
         const {
           postid,
           content,
@@ -198,20 +175,13 @@ export const postsSlice = createSlice({
             },
           } as IPost);
 
-        const obj2 = (pr: IProfile) =>
-          ({
-            ...pr,
-            posts: { ...pr.posts, data: postsU(pr.posts.data, postid, obj) },
-          } as IProfile);
-
-        if (isFeed(back)) state.posts = postsU(posts, postid, obj);
-        else state.profiles = profileU(profiles, back, obj2);
+        state.posts = postsU(posts, postid, obj);
       });
 
     builder
       .addCase(createAction.pending, (state, action) => {
         const { a, postid, t } = action.meta.arg;
-        const { posts, profiles, back } = state;
+        const { posts } = state;
 
         const obj = (po: IPost) =>
           ({
@@ -220,18 +190,11 @@ export const postsSlice = createSlice({
             likecount: t == "like" ? po.likecount + (a ? 1 : -1) : po.likecount,
           } as IPost);
 
-        const obj2 = (pr: IProfile) =>
-          ({
-            ...pr,
-            posts: { ...pr.posts, data: postsU(pr.posts.data, postid, obj) },
-          } as IProfile);
-
-        if (isFeed(back)) state.posts = postsU(posts, postid, obj);
-        else state.profiles = profileU(profiles, back, obj2);
+        state.posts = postsU(posts, postid, obj);
       })
       .addCase(createAction.rejected, (state, action) => {
         const { a, postid, t } = action.meta.arg;
-        const { posts, profiles, back } = state;
+        const { posts } = state;
 
         const obj = (po: IPost) =>
           ({
@@ -241,20 +204,13 @@ export const postsSlice = createSlice({
               t == "like" ? po.likecount + (!a ? 1 : -1) : po.likecount,
           } as IPost);
 
-        const obj2 = (pr: IProfile) =>
-          ({
-            ...pr,
-            posts: { ...pr.posts, data: postsU(pr.posts.data, postid, obj) },
-          } as IProfile);
-
-        if (isFeed(back)) state.posts = postsU(posts, postid, obj);
-        else state.profiles = profileU(profiles, back, obj2);
+        state.posts = postsU(posts, postid, obj);
       });
 
     builder
       .addCase(likeComment.pending, (state, action) => {
         const { a, postid, commentid, subcommentid } = action.meta.arg;
-        const { posts, profiles, back } = state;
+        const { posts } = state;
 
         const obj3 = (data: IComment[]) =>
           data.map((d) => {
@@ -286,18 +242,11 @@ export const postsSlice = createSlice({
             comments: { ...po.comments, data: obj3(po.comments.data) },
           } as IPost);
 
-        const obj2 = (pr: IProfile) =>
-          ({
-            ...pr,
-            posts: { ...pr.posts, data: postsU(pr.posts.data, postid, obj) },
-          } as IProfile);
-
-        if (isFeed(back)) state.posts = postsU(posts, postid, obj);
-        else state.profiles = profileU(profiles, back, obj2);
+        state.posts = postsU(posts, postid, obj);
       })
       .addCase(likeComment.rejected, (state, action) => {
         const { a, postid, commentid, subcommentid } = action.meta.arg;
-        const { posts, profiles, back } = state;
+        const { posts } = state;
 
         const obj3 = (data: IComment[]) =>
           data.map((d) => {
@@ -329,15 +278,17 @@ export const postsSlice = createSlice({
             comments: { ...po.comments, data: obj3(po.comments.data) },
           } as IPost);
 
-        const obj2 = (pr: IProfile) =>
-          ({
-            ...pr,
-            posts: { ...pr.posts, data: postsU(pr.posts.data, postid, obj) },
-          } as IProfile);
-
-        if (isFeed(back)) state.posts = postsU(posts, postid, obj);
-        else state.profiles = profileU(profiles, back, obj2);
+        state.posts = postsU(posts, postid, obj);
       });
+
+    builder
+      .addCase(getProfile.pending, (state, action) => {
+        const username = action.meta.arg;
+        const { profiles } = state;
+        state.profiles = [...profiles, { loading: true, username }];
+      })
+      .addCase(getProfile.fulfilled, () => {})
+      .addCase(getProfile.rejected, () => {});
   },
 });
 
