@@ -95,9 +95,13 @@ export const postsSlice = createSlice({
           subcomments: { ...ap.subcomments, data: [] },
         })) as IComment[];
 
-        const comments = { data, hasmore: data.length == 12, loading: false };
+        const comments = { hasmore: data.length == 12, loading: false };
 
-        const obj = (po: IPost) => ({ ...po, comments } as IPost);
+        const obj = (po: IPost) =>
+          ({
+            ...po,
+            comments: { ...comments, data: [...po.comments.data, ...data] },
+          } as IPost);
 
         state.posts = postsU(posts, postid, obj);
       });
@@ -138,7 +142,7 @@ export const postsSlice = createSlice({
           isliked: false,
           likecount: 0,
           subcommentcount: 0,
-          subcomments: { data: [], hasmore: true, loading: false },
+          subcomments: { data: [], hasmore: true, loading: false, t: false },
         };
 
         const subCommentObj: ISubComment = {

@@ -45,7 +45,12 @@ export interface IComment {
   isliked: boolean;
   subcommentcount: number;
   likecount: number;
-  subcomments: { loading: boolean; hasmore: boolean; data: ISubComment[] };
+  subcomments: {
+    loading: boolean;
+    hasmore: boolean;
+    data: ISubComment[];
+    t: boolean;
+  };
 }
 
 export interface ISubComment {
