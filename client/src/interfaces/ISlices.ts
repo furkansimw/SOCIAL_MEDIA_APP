@@ -72,6 +72,6 @@ export interface IProfile {
     ispublic: boolean;
     isfollowingme: boolean;
     status: number | null;
-    postsState: { loading: boolean; hasmore: boolean };
   };
+  postsState?: { loading: boolean; hasmore: boolean };
 }

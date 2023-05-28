@@ -22,9 +22,8 @@ const getMyProfile = asyncErrorWrapper(async (req, res) => {
 
 const getProfile = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
-  if (guest) badRequest();
   const { username } = req.params;
-  const profile = await getProfileQ(id, username);
+  const profile = await getProfileQ(id, username, guest);
   res.json(profile);
 });
 

@@ -20,17 +20,23 @@ const getMyProfileQ = (id: string) =>
     .query(`select id, pp, username from users where id = $1`, [id])
     .then((r) => r.rows[0]);
 
-const getProfileQ = (id: string, username: string) =>
-  db
-    .query(
-      `
-      select u.id, username, ispublic, pp, fullname, bio, postcount::int, followercount::int, followingcount::int, f.type status, b.type = 0 isfollowingme from users u
-      left join relationships b on b.owner = u.id and b.target = $1
-      left join relationships f on f.owner = $1 and f.target = u.id
-      where u.username = $2 and (b is null or b.type != 2)
-`,
-      [id, username]
-    )
-    .then((r) => r.rows[0] || null);
+const getProfileQ = (id: string, username: string, guest: boolean) => {
+  const values = [id, username];
+  if (guest) values.shift();
+  const query = guest
+    ? `
+    select pp, fullname, username, bio, ispublic, postcount::int, followercount::int, followingcount::int from users u
+    where username = $1 and ispublic 
+  `
+    : `
+    select pp, fullname, username, bio, ispublic, postcount::int, followercount::int, followingcount::int,
+    (select type from relationships r where owner = $1 and target = u.id) status,
+    (select type from relationships r where owner = u.id and target = $1 and type = 0) is not null isfollowingme from users u
+    where username = $2 and (ispublic or exists (select 1 from relationships r where owner = $1 and target = u.id) or u.id = $1)
+    and not exists (select 1 from relationships r where owner = u.id and target = $1)
+    `;
+
+  return db.query(query, values).then((r) => r.rows[0] || null);
+};
 
 export { searchProfileQ, getMyProfileQ, getProfileQ };

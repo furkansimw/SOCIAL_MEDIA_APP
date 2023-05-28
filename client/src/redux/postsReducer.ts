@@ -4,6 +4,7 @@ import {
   IComment,
   IPost,
   IPostsSliceInitialState,
+  IProfile,
   ISubComment,
 } from "../interfaces/ISlices.ts";
 import {
@@ -287,8 +288,23 @@ export const postsSlice = createSlice({
         const { profiles } = state;
         state.profiles = [...profiles, { loading: true, username }];
       })
-      .addCase(getProfile.fulfilled, () => {})
-      .addCase(getProfile.rejected, () => {});
+      .addCase(getProfile.fulfilled, (state, action) => {
+        const username = action.meta.arg;
+        const info: any = action.payload;
+        const { profiles } = state;
+        state.profiles = profiles.map((p) => {
+          if (p.username == username) return { loading: false, username, info };
+          return p;
+        });
+      })
+      .addCase(getProfile.rejected, (state, action) => {
+        const username = action.meta.arg;
+        const { profiles } = state;
+        state.profiles = profiles.map((p) => {
+          if (p.username == username) return { ...p, loading: false };
+          return p;
+        });
+      });
   },
 });
 
