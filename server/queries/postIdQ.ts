@@ -13,14 +13,14 @@ const getCommentsQ = (
   const str = sd ? `and c.created < $4` : ``;
   const query = guest
     ? `
-        select c.*, c.subcommentcount::int, u.username, u.pp from comments c
+        select c.*, likecount::int, subcommentcount::int, u.username, u.pp from comments c
         left join users u on u.id = c.owner
         where c.post = $1
         order by c.created desc
         limit 12 offset $2
     `
     : `
-        select c.*, c.subcommentcount::int, u.username, u.pp from comments c
+        select c.*,likecount::int, subcommentcount::int, u.username, u.pp from comments c
         left join users u on u.id = c.owner
         left join relationships b on (b.owner = $1 and b.target = u.id and b.type = 2) or (b.owner = u.id and b.target = $1 and b.type = 2)
         where c.post = $2 and b is null ${str}

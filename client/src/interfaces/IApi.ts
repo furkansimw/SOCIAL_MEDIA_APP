@@ -8,6 +8,7 @@ export interface IGetComments {
   postid: string;
   offset?: number;
   sd?: string;
+  commentid?: string;
 }
 
 export interface ICreateComment {

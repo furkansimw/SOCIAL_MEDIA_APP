@@ -31,6 +31,8 @@ const PostPopupComments = () => {
   const [isRepliying, setIsRepliying] = useState<{
     commentid: string;
     username: string;
+    offset: number;
+    element?: Element;
   } | null>(null);
 
   useEffect(() => {
@@ -39,7 +41,11 @@ const PostPopupComments = () => {
 
   const reply = (commentid: string, username: string) => {
     setComment(`@${username} `);
-    setIsRepliying({ commentid, username });
+    setIsRepliying({
+      commentid,
+      username,
+      offset: dataContainerRef.current?.scrollTop || 0,
+    });
     commentInputRef.current?.focus();
   };
 
@@ -53,11 +59,19 @@ const PostPopupComments = () => {
     }
   }, [comment]);
 
+  const scrollTop = (top: number) =>
+    dataContainerRef.current?.scroll({ top, behavior: "smooth" });
+
+  const dataContainerRef = useRef<HTMLUListElement>(null);
+
   return (
     <Container>
       <Info />
-      <Data reply={reply} />
-      <Bottom ref={commentInputRef} {...{ comment, setComment, isRepliying }} />
+      <Data reply={reply} ref={dataContainerRef} />
+      <Bottom
+        ref={commentInputRef}
+        {...{ comment, setComment, isRepliying, scrollTop }}
+      />
     </Container>
   );
 };

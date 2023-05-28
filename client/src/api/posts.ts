@@ -7,7 +7,7 @@ import {
   ICreateAction,
   ILikeComment,
 } from "../interfaces/IApi";
-import { IComment, IPost } from "../interfaces/ISlices";
+import { IComment, IPost, ISubComment } from "../interfaces/ISlices";
 
 export const getPosts = createAsyncThunk(
   "/posts",
@@ -27,10 +27,12 @@ export const getImages = createAsyncThunk(
 
 export const getComments = createAsyncThunk(
   "/posts/:postid/comments",
-  ({ offset, postid, sd }: IGetComments) =>
-    req(`/posts/${postid}/comments?offset=${offset}&sd=${sd}`).then(
-      (r) => r as IComment[]
-    )
+  ({ offset, postid, sd, commentid }: IGetComments) =>
+    req(
+      `/posts/${postid}/comments/${
+        commentid ? `${commentid}/subcomments` : ``
+      }?offset=${offset}&sd=${sd}`
+    ).then((r) => r as (IComment | ISubComment)[])
 );
 
 export const createComment = createAsyncThunk(

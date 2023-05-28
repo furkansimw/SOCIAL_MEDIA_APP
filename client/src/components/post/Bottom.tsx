@@ -17,7 +17,9 @@ type BottomProps = {
   isRepliying: {
     commentid: string;
     username: string;
+    offset: number;
   } | null;
+  scrollTop: (top: number) => void;
 };
 
 export const dateCalc = (d: string) => {
@@ -59,7 +61,7 @@ export const dateCalc = (d: string) => {
 };
 
 const Bottom = forwardRef<HTMLInputElement, BottomProps>(
-  ({ comment, setComment, isRepliying }, inputRef) => {
+  ({ comment, setComment, isRepliying, scrollTop }, inputRef) => {
     const dispatch = useDispatch<AppDispatch>();
     const myvalues = useSelector(selectValues, shallowEqual);
 
@@ -113,6 +115,7 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
             e.preventDefault();
             if (comment.trim().length === 0) return;
             const content = comment.replace(/\s+/g, " ").trim();
+            if (!isRepliying) scrollTop(0);
             dispatch(
               createComment({
                 content,
@@ -140,10 +143,10 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
           )}
           <button
             disabled={
-              comment.length == 0 ||
+              comment.trim().length == 0 ||
               (isRepliying
                 ? isRepliying.username.length + 2 > comment.trim().length
-                : true)
+                : false)
             }
             type="submit"
           >

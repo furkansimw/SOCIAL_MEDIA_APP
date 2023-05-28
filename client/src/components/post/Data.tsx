@@ -5,19 +5,19 @@ import { shallowEqual, useSelector } from "react-redux";
 import { selectCurrentPost, setBack } from "../../redux/postsReducer";
 import { AppDispatch, RootState } from "../../redux/store";
 import { dateCalc } from "./Bottom";
-import { FC, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { forwardRef, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { LikeIconComment, MoreIcon2 } from "../Icons";
-import { likeComment } from "../../api/posts";
+import { getComments, likeComment } from "../../api/posts";
 import LinkConverter from "./LinkConverter";
 import LinkQ from "./LinkQ";
+import { toggleSubCommetsT } from "../../redux/postsReducer";
 
 type Props = {
   reply: (commentid: string, username: string) => void;
 };
 
-const Data: FC<Props> = ({ reply }) => {
+const Data = forwardRef<HTMLUListElement, Props>(({ reply }, ref) => {
   const postid = window.location.pathname.split("/")[2];
   const {
     comments: { data, loading },
@@ -27,15 +27,15 @@ const Data: FC<Props> = ({ reply }) => {
   )!;
 
   return (
-    <DataContainer>
+    <DataContainer ref={ref}>
       <Content />
       {data.map((comment) => (
-        <CommentItem comment={comment} reply={reply} />
+        <CommentItem key={comment.id} comment={comment} reply={reply} />
       ))}
       {loading && <LoadingBox />}
     </DataContainer>
   );
-};
+});
 
 const DataContainer = styled.ul`
   height: calc(100% - 147px - 4rem);
@@ -168,12 +168,37 @@ const DataContainer = styled.ul`
         background-color: transparent;
         margin-right: 12px;
         color: #a8a8a8;
+        font-size: 12px;
       }
       .more {
         height: 18px;
         width: 18px;
         background-color: transparent;
         display: none;
+      }
+    }
+    .view-replies {
+      margin-left: 50px;
+      margin-top: 1rem;
+      .up {
+        display: flex;
+        align-items: center;
+        button {
+          display: flex;
+          background-color: transparent;
+          align-items: center;
+          .line {
+            width: 24px;
+            background-color: #a8a8a8;
+            height: 1px;
+            margin-right: 1rem;
+          }
+          p {
+            font-size: 12px;
+            color: #a8a8a8;
+            font-weight: 600;
+          }
+        }
       }
     }
   }
@@ -224,16 +249,28 @@ const CommentItem = ({
     content,
     isliked,
     created,
+    subcomments: { data, hasmore, t, loading },
   } = comment;
 
   const postid = window.location.pathname.split("/")[2];
   const likeSubComment = () =>
     dispatch(likeComment({ a: !isliked, commentid, postid }));
+
   const date = useMemo(() => dateCalc(created), []);
 
   const replyHandle = () => reply(commentid, username);
 
-  const closeX = () => dispatch(setBack(null));
+  const view = () => {
+    if (!hasmore) dispatch(toggleSubCommetsT({ postid, commentid, t: !t }));
+    dispatch(
+      getComments({
+        postid,
+        commentid,
+        offset: data.length,
+        sd: data[0]?.created,
+      })
+    );
+  };
 
   return (
     <div className="commentitem">
@@ -260,7 +297,33 @@ const CommentItem = ({
           <MoreIcon2 />
         </button>
       </div>
-      {subcommentcount > 0 && <div className="view-replies"></div>}
+      {subcommentcount > 0 && (
+        <div className="view-replies">
+          <div className="up">
+            <button onClick={view}>
+              <div className="line"></div>
+              {subcommentcount - data.length == 0 ? (
+                <p>Hide Replies</p>
+              ) : (
+                <p>View replies ({subcommentcount - data.length})</p>
+              )}
+            </button>
+            {loading && <LoadingBox />}
+          </div>
+          {data.map((sc) => {
+            const { content, pp, username } = sc;
+            return (
+              <div className="subcomment">
+                <img src={pp || "/pp.jpg"} alt="pp" />
+                <pre>
+                  <LinkQ to={`/${username}`}>{username}</LinkQ>
+                  <LinkConverter text={content} />
+                </pre>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

@@ -34,6 +34,33 @@ export const postsSlice = createSlice({
     setBack: (state, action: PayloadAction<string | null>) => {
       state.back = action.payload;
     },
+    toggleSubCommetsT: (
+      state,
+      action: PayloadAction<{
+        postid: string;
+        commentid: string;
+        t: boolean;
+      }>
+    ) => {
+      const { postid, commentid, t } = action.payload;
+      const { posts } = state;
+
+      const obj2 = (comments: IComment[]) => ({
+        data: comments.map((c) => {
+          if (c.id == commentid)
+            return { ...c, subcomments: { ...c.subcomments, t } } as IComment;
+          return c;
+        }),
+      });
+
+      const obj = (post: IPost) =>
+        ({
+          ...post,
+          comments: { ...post.comments, ...obj2(post.comments.data) },
+        } as IPost);
+
+      state.posts = postsU(posts, postid, obj);
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -89,19 +116,14 @@ export const postsSlice = createSlice({
       })
       .addCase(getComments.fulfilled, (state, action) => {
         const { posts } = state;
-        const { postid } = action.meta.arg;
-        const data = action.payload.map((ap) => ({
-          ...ap,
-          subcomments: { ...ap.subcomments, data: [] },
-        })) as IComment[];
+        const { postid, commentid } = action.meta.arg;
 
-        const comments = { hasmore: data.length == 12, loading: false };
-
-        const obj = (po: IPost) =>
-          ({
-            ...po,
-            comments: { ...comments, data: [...po.comments.data, ...data] },
-          } as IPost);
+        if (commentid) {
+        } else {
+        }
+        const obj = (post: IPost) => {
+          return post;
+        };
 
         state.posts = postsU(posts, postid, obj);
       });
@@ -176,7 +198,7 @@ export const postsSlice = createSlice({
                       };
                     return sc;
                   })
-                : [...po.comments.data, commentobj],
+                : [commentobj, ...po.comments.data],
             },
           } as IPost);
 
@@ -312,7 +334,7 @@ export const postsSlice = createSlice({
   },
 });
 
-export const { setBack } = postsSlice.actions;
+export const { setBack, toggleSubCommetsT } = postsSlice.actions;
 
 export const selectPostsHome = (state: RootState) =>
   state.posts.posts.filter((post) => post.page == "home");

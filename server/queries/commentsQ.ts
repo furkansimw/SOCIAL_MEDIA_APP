@@ -61,15 +61,24 @@ const createSubCommentQ = (id: string, commentid: string, content: string) =>
       `
       insert into subcomments (owner, comment, content)
       SELECT $1, $2, $3
-      FROM posts p
-      where exists (
-        todo
-        )
+      FROM comments c
+      left join users u on c.owner = u.id
+      left join relationships f on f.owner = $1 and f.target = c.owner and f.type = 0
+      left join relationships b on (b.owner = c.owner and b.target = $1 and b.type = 2) or (b.owner = $1 and b.target = c.owner and b.type = 2)
+      where c.id = $2 and (ispublic or f is not null or u.id = $1) and b is null and exists (
+        SELECT 1
+        FROM comments c
+        left join posts p on c.post = p.id
+        left join users u on p.owner = u.id
+        left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
+        left join relationships b on (b.owner = p.owner and b.target = $1 and b.type = 2) or (b.owner = $1 and b.target = p.owner and b.type = 2)
+        where c.id = $2 and (ispublic or f is not null or u.id = $1) and b is null
+      )
       returning id
 `,
       [id, commentid, content]
     )
-    .then((r) => r.rows);
+    .then((r) => r.rows[0]?.id);
 
 export {
   deleteCommentQ,
