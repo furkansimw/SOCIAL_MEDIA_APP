@@ -23,6 +23,7 @@ const CommentItem = ({ comment, reply }: Props) => {
     id: commentid,
     username,
     pp,
+    likecount,
     subcommentcount,
     content,
     isliked,
@@ -30,7 +31,7 @@ const CommentItem = ({ comment, reply }: Props) => {
     subcomments: { data, hasmore, t, loading },
   } = comment;
   const postid = window.location.pathname.split("/")[2];
-  const likeSubComment = () =>
+  const likeCommentT = () =>
     dispatch(likeComment({ a: !isliked, commentid, postid }));
 
   const date = useMemo(() => dateCalc(created), []);
@@ -53,8 +54,15 @@ const CommentItem = ({ comment, reply }: Props) => {
     []
   );
 
+  const viewLikes = () => {};
+
+  const like = () => {
+    if (isliked) return;
+    dispatch(likeComment({ a: true, commentid, postid }));
+  };
+
   return (
-    <Container className={lastActive ? "lastactive" : ""}>
+    <Container onDoubleClick={like} className={lastActive ? "lastactive" : ""}>
       <div className="left">
         <div className="pp">
           <LinkQ to={`/${username}`}>
@@ -68,11 +76,16 @@ const CommentItem = ({ comment, reply }: Props) => {
             <LinkQ to={`/${username}`}>{username}</LinkQ>
             <LinkConverter text={content} />
           </pre>
-          <button onClick={likeSubComment} className={isliked ? "active" : ""}>
+          <button onClick={likeCommentT} className={isliked ? "active" : ""}>
             <LikeIconComment isactive={isliked} />
           </button>
         </div>
         <div className="down-side">
+          {likecount > 0 && (
+            <button onClick={viewLikes} className="likes">
+              {likecount} like{likecount > 1 && `s`}
+            </button>
+          )}
           <p className="date">{date}</p>
           <button className="reply" onClick={replyHandle}>
             Reply
@@ -188,8 +201,15 @@ const Container = styled.li`
       align-items: center;
       height: 18px;
       margin: 8px 0px 4px;
+      .likes {
+        font-size: 12px;
+        color: #a8a8a8;
+        margin-right: 12px;
+        font-weight: 600;
+      }
       .date {
         font-size: 12px;
+        font-weight: 600;
         color: #a8a8a8;
         margin-right: 12px;
       }
@@ -204,7 +224,7 @@ const Container = styled.li`
     }
     .view-replies {
       .up {
-        margin: 1rem 0px 0px;
+        margin: 8px 0px 8px;
         height: 18px;
         display: flex;
         align-items: center;

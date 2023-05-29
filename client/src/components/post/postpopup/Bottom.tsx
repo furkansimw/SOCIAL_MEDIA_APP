@@ -238,9 +238,10 @@ const BottomContainer = styled.div`
       width: 100%;
       height: 40px;
       border: none;
-      font-size: 14px;
       line-height: 20px;
       padding-right: 10px;
+      font-weight: 600;
+      height: 40px;
       &::placeholder {
         color: #a8a8a8;
       }
@@ -251,7 +252,9 @@ const BottomContainer = styled.div`
       font-weight: 600;
       font-size: 14px;
       top: 10px;
-      height: 20px;
+      height: 18px;
+      left: 10.5px;
+      padding-right: 4px;
     }
     button {
       color: #0095f6;

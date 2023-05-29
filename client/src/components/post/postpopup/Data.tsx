@@ -63,7 +63,7 @@ const Data = forwardRef<Refs, Props>(({ reply }, ref) => {
 });
 
 const DataContainer = styled.ul`
-  height: calc(100% - 147px - 4rem);
+  height: calc(100% - 146px - 71px);
   overflow-y: auto;
   &::-webkit-scrollbar {
     display: none;
@@ -101,7 +101,7 @@ const DataContainer = styled.ul`
       p {
         font-size: 12px;
         color: #a8a8a8;
-        margin-top: 4px;
+        margin-top: 8px;
       }
     }
   }

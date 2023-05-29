@@ -50,6 +50,8 @@ const Bg = styled.div`
 `;
 
 const Container = styled.div`
+  border-radius: 4px;
+  overflow: hidden;
   @media screen and (max-width: 1264px) {
     left: 2rem !important;
     width: calc(100% - 4rem) !important;
@@ -57,6 +59,7 @@ const Container = styled.div`
     .images {
       width: 100%;
       min-width: 500px;
+      object-fit: cover;
     }
   }
 
@@ -87,11 +90,50 @@ const Container = styled.div`
     }
   }
   animation: sc 0.1s ease-in-out forwards;
+  .like-a {
+    position: absolute;
+    left: calc(50% - 64px);
+    z-index: 10;
+    top: calc(50% - 64px);
+    background-image: url("/bg.png");
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    height: 128px;
+    width: 128px;
+    opacity: 0;
+    &.a {
+      @keyframes scsx {
+        0% {
+          opacity: 0;
+          transform: scale(0);
+        }
+        15% {
+          opacity: 0.9;
+          transform: scale(1.2);
+        }
+        30% {
+          transform: scale(0.95);
+        }
+        45%,
+        80% {
+          opacity: 0.9;
+          transform: scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(0);
+        }
+      }
+      animation: 1s scsx ease-in-out;
+    }
+  }
   .cvr {
     height: 100%;
-    width: 800px;
-    min-width: 800px;
+    max-width: 800px;
+    width: 100%;
+    min-width: 500px;
     position: relative;
+
     .layer {
       width: 100%;
       height: 100%;

@@ -81,26 +81,23 @@ const PostPopupComments = () => {
   useEffect(() => {
     if (!isRepliying) return;
     if (dataRef.current.dataContainerRef.current) {
-      const childElements = Array.from(
+      var childElements = Array.from(
         dataRef.current.dataContainerRef.current.children
       );
-
-      const index =
-        data.findIndex((obj) => obj.id == isRepliying.commentid) + 2;
+      childElements = childElements.slice(1);
+      const ii = data.findIndex((obj) => obj.id == isRepliying.commentid);
       let heightSum = 0;
-      for (let i = 0; i < index; i++) {
-        console.log(childElements[i]);
+      for (let i = 0; i <= ii; i++) {
         heightSum += childElements[i].clientHeight;
       }
 
       var subCommentClientHeight = 0;
-      var a: any = Array.from(childElements[index].children);
+      var a: any = Array.from(childElements[ii].children);
       const el: Element = a[1];
       if (el.children.length == 3) {
         subCommentClientHeight = el.children[2].clientHeight;
       }
 
-      console.log({ heightSum, subCommentClientHeight });
       setTotalHeight(heightSum + subCommentClientHeight - 8);
     }
   }, [data, isRepliying]);

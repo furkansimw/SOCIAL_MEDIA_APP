@@ -24,6 +24,7 @@ const SubCommentItem = ({
     username,
     content,
     created,
+    likecount,
     id: subcommentid,
   } = subcomment;
   const dispatch = useDispatch<AppDispatch>();
@@ -34,8 +35,16 @@ const SubCommentItem = ({
 
   const date = useMemo(() => dateCalc(created), []);
 
+  const lastActive = useMemo(
+    () =>
+      (new Date(Date.now()).getTime() - new Date(created).getTime()) / 1000 < 1,
+    []
+  );
+
+  const viewLikes = () => {};
+
   return (
-    <Container>
+    <Container className={lastActive ? "lastactive" : ""}>
       <div className="left">
         <div className="pp">
           <LinkQ to={`/${username}`}>
@@ -54,6 +63,11 @@ const SubCommentItem = ({
           </button>
         </div>
         <div className="down-side">
+          {likecount > 0 && (
+            <button onClick={viewLikes} className="likes">
+              {likecount} like{likecount > 1 && `s`}
+            </button>
+          )}
           <p className="date">{date}</p>
           <button className="reply" onClick={reply}>
             Reply
@@ -70,14 +84,32 @@ const SubCommentItem = ({
 const Container = styled.li`
   display: flex;
   align-items: start;
-  margin-top: 1rem;
+  padding: 8px 4.5px;
   width: 100%;
+  border-radius: 6px;
+  &.lastactive {
+    @keyframes l {
+      0% {
+        background-color: transparent;
+      }
+      25% {
+        background-color: transparent;
+      }
+      50% {
+        background-color: rgb(50, 50, 50);
+      }
+      100% {
+        background-color: transparent;
+      }
+    }
+    animation: 3s ease l;
+  }
   &:hover .morex {
     display: block !important;
   }
   .left {
     width: 2rem;
-    margin-right: 18px;
+    margin-right: 9px;
     min-width: 2rem;
     height: 2rem;
     width: 2rem;
@@ -96,6 +128,7 @@ const Container = styled.li`
     }
   }
   .right {
+    padding: 0px 4.5px;
     width: 100%;
     button {
       background-color: transparent;
@@ -124,10 +157,17 @@ const Container = styled.li`
       align-items: center;
       height: 18px;
       margin: 8px 0px 4px;
+      .likes {
+        font-size: 12px;
+        color: #a8a8a8;
+        margin-right: 12px;
+        font-weight: 600;
+      }
       .date {
         font-size: 12px;
         color: #a8a8a8;
         margin-right: 12px;
+        font-weight: 600;
       }
       .reply {
         font-size: 12px;
