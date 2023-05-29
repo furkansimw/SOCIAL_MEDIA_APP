@@ -12,10 +12,7 @@ import helmet from "helmet";
 
 const app = express();
 const port = process.env.PORT || 4000;
-const origin = process.env.ORIGIN || [
-  "http://localhost:5173",
-  "http://192.168.175.238:5173",
-];
+const origin = process.env.ORIGIN || "http://localhost:5173";
 
 const server = app.listen(port, async () => await create());
 
