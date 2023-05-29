@@ -99,6 +99,7 @@ const PostPopupComments = () => {
       if (el.children.length == 3) {
         subCommentClientHeight = el.children[2].clientHeight;
       }
+
       console.log({ heightSum, subCommentClientHeight });
       setTotalHeight(heightSum + subCommentClientHeight - 8);
     }
