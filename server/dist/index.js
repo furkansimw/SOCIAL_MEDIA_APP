@@ -24,7 +24,10 @@ const create_1 = __importDefault(require("./db/create"));
 const helmet_1 = __importDefault(require("helmet"));
 const app = (0, express_1.default)();
 const port = process.env.PORT || 4000;
-const origin = process.env.ORIGIN || "http://localhost:5173";
+const origin = process.env.ORIGIN || [
+    "http://localhost:5173",
+    "http://192.168.175.238:5173",
+];
 const server = app.listen(port, () => __awaiter(void 0, void 0, void 0, function* () { return yield (0, create_1.default)(); }));
 app.use(express_1.default.json({ limit: "60mb" }));
 app.use((0, cookie_parser_1.default)());
