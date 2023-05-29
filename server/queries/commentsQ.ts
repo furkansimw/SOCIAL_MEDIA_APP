@@ -25,12 +25,34 @@ const getSubCommentsQ = (
 ) => {
   const values: (string | number | Date)[] = [id, postid, commentid, offset];
   if (sd) values.push(sd);
+
+  const str = sd ? `and sc.created < $${guest ? 4 : 5}  ` : ``;
+
   const query = guest
     ? `
- 
+    select sc.*,u.username, u.pp, sc.likecount::int from subcomments sc
+    left join comments c on c.id = sc.comment
+    left join posts p on p.id = c.post
+    left join users u on u.id = p.owner
+    where sc.comment = $2 and ispublic ${str}
+    order by sc.created desc
+    limit 12 offset $3
     `
     : `
-
+    select sc.*, scou.username, scou.pp, sc.likecount::int from subcomments sc
+    left join comments c on c.id = sc.comment left join posts p on p.id = c.post
+    left join users pou on pou.id = p.owner
+    left join users scou on scou.id = sc.owner
+    left join users cou on cou.id = c.owner
+    left join relationships b on (b.owner = $1 and b.target = p.owner and b.type = 2) or (b.owner = p.owner and b.target = $1 and b.type = 2) or (b.owner = c.owner and b.target = $1 and b.type = 2) or (b.owner = c.owner and b.target = $1 and b.type = 2)
+    left join relationships pof on (pof.owner = $1 and pof.target = p.owner and pof.type = 0)
+    left join relationships cof on (cof.owner = $1 and cof.target = p.owner and cof.type = 0)
+    where sc.comment = $3 ${str} and
+    (pou.ispublic or pof is not null or pou.id = $2) and
+    (cou.ispublic or cof is not null or cou.id = $1) and
+    b is null
+    order by sc.created desc
+    limit 12 offset $4
     `;
 
   return db.query(query, values).then((r) => r.rows);
@@ -78,7 +100,7 @@ const createSubCommentQ = (id: string, commentid: string, content: string) =>
 `,
       [id, commentid, content]
     )
-    .then((r) => r.rows[0]?.id);
+    .then((r) => r.rows[0].id);
 
 export {
   deleteCommentQ,

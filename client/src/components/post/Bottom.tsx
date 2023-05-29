@@ -19,7 +19,6 @@ type BottomProps = {
     username: string;
     offset: number;
   } | null;
-  scrollTop: (top: number) => void;
 };
 
 export const dateCalc = (d: string) => {
@@ -61,7 +60,7 @@ export const dateCalc = (d: string) => {
 };
 
 const Bottom = forwardRef<HTMLInputElement, BottomProps>(
-  ({ comment, setComment, isRepliying, scrollTop }, inputRef) => {
+  ({ comment, setComment, isRepliying }, inputRef) => {
     const dispatch = useDispatch<AppDispatch>();
     const myvalues = useSelector(selectValues, shallowEqual);
 
@@ -115,7 +114,6 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
             e.preventDefault();
             if (comment.trim().length === 0) return;
             const content = comment.replace(/\s+/g, " ").trim();
-            if (!isRepliying) scrollTop(0);
             dispatch(
               createComment({
                 content,

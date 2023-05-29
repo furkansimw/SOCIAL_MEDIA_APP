@@ -1,16 +1,11 @@
-import React, { useEffect } from "react";
-import { shallowEqual, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import { AppDispatch, RootState } from "../redux/store";
-import { selectCurrentPost, setBack } from "../redux/postsReducer";
-import { useSelector } from "react-redux";
-import { useLocation, useParams } from "react-router-dom";
-import { IPost } from "../interfaces/ISlices";
-import { Swiper, SwiperSlide } from "swiper/react";
-//@ts-ignore
-import { Pagination, Navigation } from "swiper";
-import { getImages } from "../api/posts";
+import { AppDispatch } from "../redux/store";
+import { setBack } from "../redux/postsReducer";
+
 import PostPopupComments from "./post/PostPopupComments";
+import PostPopupImages from "./PostPopupImages";
 
 const PostPopup = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -134,49 +129,4 @@ const Container = styled.div`
   }
 `;
 
-const PostPopupImages = () => {
-  const dispach = useDispatch<AppDispatch>();
-  const postid = window.location.pathname.split("/")[2];
-  const cp = useSelector(
-    (s: RootState) => selectCurrentPost(s, postid),
-    shallowEqual
-  )!;
-
-  useEffect(() => {
-    if (more && !images) dispach(getImages(id));
-  }, [cp]);
-
-  const { images, cover, more, id } = cp;
-
-  if (!images)
-    return (
-      <div className="cvr">
-        <img className="cover" src={cover} alt="cover" />
-        <div className="layer"></div>
-      </div>
-    );
-
-  return (
-    <div className="images">
-      <Swiper
-        slidesPerView={1}
-        pagination={{
-          clickable: true,
-        }}
-        navigation={true}
-        modules={[Pagination, Navigation]}
-        className="mySwiper"
-      >
-        {images.map((img, index) => {
-          return (
-            <SwiperSlide>
-              <img src={img} alt={index.toString()} />
-              <div className="layer"></div>
-            </SwiperSlide>
-          );
-        })}
-      </Swiper>
-    </div>
-  );
-};
 export default PostPopup;

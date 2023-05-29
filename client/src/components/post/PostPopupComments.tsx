@@ -5,7 +5,7 @@ import { shallowEqual, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../redux/store";
 import { getComments } from "../../api/posts";
 import Info from "./Info";
-import Data from "./Data";
+import Data, { Refs } from "./Data";
 import Bottom from "./Bottom";
 import { useSelector } from "react-redux";
 import { selectCurrentPost } from "../../redux/postsReducer";
@@ -36,7 +36,11 @@ const PostPopupComments = () => {
   } | null>(null);
 
   useEffect(() => {
-    setComment("");
+    if (!sending) {
+      if (!isRepliying) scrollTop();
+
+      setComment("");
+    }
   }, [sending]);
 
   const reply = (commentid: string, username: string) => {
@@ -59,19 +63,23 @@ const PostPopupComments = () => {
     }
   }, [comment]);
 
-  const scrollTop = (top: number) =>
-    dataContainerRef.current?.scroll({ top, behavior: "smooth" });
+  const scrollTop = () =>
+    dataRef.current.dataContainerRef.current?.scroll({
+      top: (dataRef.current.contentRef.current?.clientHeight || 0) + 16,
+      behavior: "smooth",
+    });
 
   const dataContainerRef = useRef<HTMLUListElement>(null);
+
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const dataRef = useRef<Refs>({ dataContainerRef, contentRef });
 
   return (
     <Container>
       <Info />
-      <Data reply={reply} ref={dataContainerRef} />
-      <Bottom
-        ref={commentInputRef}
-        {...{ comment, setComment, isRepliying, scrollTop }}
-      />
+      <Data reply={reply} ref={dataRef} />
+      <Bottom ref={commentInputRef} {...{ comment, setComment, isRepliying }} />
     </Container>
   );
 };

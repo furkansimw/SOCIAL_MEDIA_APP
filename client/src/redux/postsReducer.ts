@@ -16,7 +16,7 @@ import {
   likeComment,
 } from "../api/posts.ts";
 import { RootState } from "./store.ts";
-import { dateR, postsU } from "./functions.ts";
+import { commentsU, dateR, postsU } from "./functions.ts";
 import { getProfile } from "../api/profile.ts";
 
 const initialState: IPostsSliceInitialState = {
@@ -104,25 +104,78 @@ export const postsSlice = createSlice({
     builder
       .addCase(getComments.pending, (state, action) => {
         const { posts } = state;
-        const { postid } = action.meta.arg;
+        const { postid, commentid: ci } = action.meta.arg;
 
-        const obj = (po: IPost) =>
-          ({
-            ...po,
-            comments: { ...po.comments, loading: true },
-          } as IPost);
+        const obj = (post: IPost): IPost => {
+          if (ci) {
+            return {
+              ...post,
+              comments: {
+                ...post.comments,
+                data: post.comments.data.map((c) => {
+                  if (c.id == ci)
+                    return {
+                      ...c,
+                      subcomments: { ...c.subcomments, loading: true },
+                    };
+                  return c;
+                }),
+              },
+            };
+          } else
+            return { ...post, comments: { ...post.comments, loading: true } };
+        };
 
         state.posts = postsU(posts, postid, obj);
       })
       .addCase(getComments.fulfilled, (state, action) => {
         const { posts } = state;
-        const { postid, commentid } = action.meta.arg;
+        const { postid, commentid: ci } = action.meta.arg;
 
-        if (commentid) {
-        } else {
-        }
-        const obj = (post: IPost) => {
-          return post;
+        const payload: any = action.payload;
+        const hasmore = payload.length == 12;
+        const loading = false;
+
+        const obj = (post: IPost): IPost => {
+          if (ci) {
+            return {
+              ...post,
+              comments: {
+                ...post.comments,
+                data: commentsU(post.comments.data, ci, (c) => ({
+                  ...c,
+                  subcomments: {
+                    ...c.subcomments,
+                    loading,
+                    hasmore,
+                    t: !hasmore,
+                    data: [...c.subcomments.data, ...payload],
+                  },
+                })),
+              },
+            };
+          } else {
+            return {
+              ...post,
+              comments: {
+                ...post.comments,
+                loading: false,
+                hasmore,
+                data: [
+                  ...post.comments.data,
+                  ...payload.map((p: any) => ({
+                    ...p,
+                    subcomments: {
+                      data: [],
+                      hasmore: true,
+                      t: false,
+                      loading: false,
+                    },
+                  })),
+                ],
+              },
+            };
+          }
         };
 
         state.posts = postsU(posts, postid, obj);
@@ -133,11 +186,10 @@ export const postsSlice = createSlice({
         const { posts } = state;
         const { postid } = action.meta.arg;
 
-        const obj = (po: IPost) =>
-          ({
-            ...po,
-            comments: { ...po.comments, sending: true },
-          } as IPost);
+        const obj = (po: IPost): IPost => ({
+          ...po,
+          comments: { ...po.comments, sending: true },
+        });
         state.posts = postsU(posts, postid, obj);
       })
       .addCase(createComment.fulfilled, (state, action) => {
@@ -178,29 +230,27 @@ export const postsSlice = createSlice({
           username,
         };
 
-        const obj = (po: IPost) =>
-          ({
-            ...po,
-            commentcount: po.commentcount + (commentid ? 0 : 1),
-            comments: {
-              ...po.comments,
-              sending: false,
-              data: commentid
-                ? po.comments.data.map((sc) => {
-                    if (sc.id == commentid)
-                      return {
-                        ...sc,
-                        subcommentcount: sc.subcommentcount + 1,
-                        subcomments: {
-                          ...sc.subcomments,
-                          data: [...sc.subcomments.data, subCommentObj],
-                        },
-                      };
-                    return sc;
-                  })
-                : [commentobj, ...po.comments.data],
-            },
-          } as IPost);
+        const obj = (po: IPost): IPost => ({
+          ...po,
+          commentcount: po.commentcount + (commentid ? 0 : 1),
+          comments: {
+            ...po.comments,
+            sending: false,
+            data: commentid
+              ? po.comments.data.map((sc) => {
+                  if (sc.id == commentid)
+                    return {
+                      ...sc,
+                      subcomments: {
+                        ...sc.subcomments,
+                        data: [...sc.subcomments.data, subCommentObj],
+                      },
+                    };
+                  return sc;
+                })
+              : [commentobj, ...po.comments.data],
+          },
+        });
 
         state.posts = postsU(posts, postid, obj);
       });

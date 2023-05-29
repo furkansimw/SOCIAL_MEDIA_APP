@@ -58,14 +58,13 @@ const getPostQ = (id: string, postid: string, guest: boolean) => {
     where p.id = $1 and ispublic
   `
     : `
-    select p.*, likecount::int, commentcount::int, pl is not null isliked, s is not null issaved, (r.type not null and r.type == 0) isfollowing from posts p
+    select p.*, likecount::int, commentcount::int, pl is not null isliked, s is not null issaved, f is not null isfollowing from posts p
     left join users u on u.id = p.owner
     left join postlikes pl on pl.post = p.id and pl.owner = $1
     left join saved s on s.post = p.id and pl.owner = $1
-    left join relationships r on r.owner = $1 and r.target = u.id
+    left join relationships f on f.owner = $1 and f.target = u.id and f.type = 0
     left join relationships b on (b.owner = u.id and b.target = $1 and b.type = 2) or (b.target = u.id and b.owner = $1 and b.type = 2)
-    left join p.id = $1 and
-    (ispublic or f is not null or u.id = $1) and b is null
+    where p.id = $2 and b is null and (ispublic or f is not null or u.id = $1)
     `;
   return db.query(query, values).then((r) => r.rows[0] || null);
 };
