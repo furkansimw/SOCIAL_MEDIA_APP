@@ -2,11 +2,7 @@ import React, { useRef, useState } from "react";
 
 const Test = () => {
   const [s, _s] = useState(0);
-  const onScroll = (e: React.UIEvent<HTMLUListElement, UIEvent>) => {
-    const el = e.target as HTMLUListElement;
-    const { clientHeight, scrollTop, scrollHeight } = el;
-    console.log({ clientHeight, scrollTop, scrollHeight });
-  };
+  const onScroll = (e: React.UIEvent<HTMLUListElement, UIEvent>) => {};
 
   return (
     <div>
@@ -32,7 +28,6 @@ const Test = () => {
                   const parentRect = parentElement.getBoundingClientRect();
                   const childRect = childElement.getBoundingClientRect();
                   const childTopOffset = childRect.top - parentRect.top;
-                  console.log(childTopOffset);
                 }}
                 className={"c" + xd.toString()}
               >

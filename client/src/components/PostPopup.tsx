@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { AppDispatch } from "../redux/store";
 import { setBack } from "../redux/postsReducer";
 
-import PostPopupComments from "./post/PostPopupComments";
+import PostPopupComments from "./post/postpopup/PostPopupComments";
 import PostPopupImages from "./PostPopupImages";
 
 const PostPopup = () => {

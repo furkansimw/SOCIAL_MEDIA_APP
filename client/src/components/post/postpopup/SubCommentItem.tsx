@@ -1,12 +1,12 @@
 import { useMemo } from "react";
-import { ISubComment } from "../../interfaces/ISlices";
+import { ISubComment } from "../../../interfaces/ISlices";
 import styled from "styled-components";
-import { LikeIconComment, MoreIcon2 } from "../Icons";
-import LinkConverter from "./LinkConverter";
-import LinkQ from "./LinkQ";
+import { LikeIconComment, MoreIcon2 } from "../../Icons";
+import LinkConverter from "../LinkConverter";
+import LinkQ from "../LinkQ";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../redux/store";
-import { likeComment } from "../../api/posts";
+import { AppDispatch } from "../../../redux/store";
+import { likeComment } from "../../../api/posts";
 import { dateCalc } from "./Bottom";
 
 const SubCommentItem = ({
@@ -33,8 +33,6 @@ const SubCommentItem = ({
     dispatch(likeComment({ a: !isliked, commentid, postid, subcommentid }));
 
   const date = useMemo(() => dateCalc(created), []);
-
-  const replyHandle = () => {};
 
   return (
     <Container>

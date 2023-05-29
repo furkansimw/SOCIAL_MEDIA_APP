@@ -9,6 +9,7 @@ const getCommentsQ = (
 ) => {
   const values: (string | number | Date)[] = [id, postid, offset];
   if (sd) values.push(sd);
+  console.log(sd);
   if (guest) values.shift();
   const str = sd ? `and c.created < $4` : ``;
   const query = guest

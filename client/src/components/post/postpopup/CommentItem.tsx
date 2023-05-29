@@ -1,24 +1,23 @@
-import { useMemo } from "react";
-import { getComments, likeComment } from "../../api/posts";
-import { toggleSubCommetsT } from "../../redux/postsReducer";
-import { LikeIconComment, MoreIcon2 } from "../Icons";
-import LoadingBox from "../LoadingBox";
-import LinkConverter from "./LinkConverter";
-import LinkQ from "./LinkQ";
+import { forwardRef, useMemo, useRef } from "react";
+import { getComments, likeComment } from "../../../api/posts";
+import { toggleSubCommetsT } from "../../../redux/postsReducer";
+import { LikeIconComment, MoreIcon2 } from "../../Icons";
+import LoadingBox from "../../LoadingBox";
+import LinkConverter from "../LinkConverter";
+import LinkQ from "../LinkQ";
 import SubCommentItem from "./SubCommentItem";
 import { useDispatch } from "react-redux";
-import { IComment } from "../../interfaces/ISlices";
-import { AppDispatch } from "../../redux/store";
+import { IComment } from "../../../interfaces/ISlices";
+import { AppDispatch } from "../../../redux/store";
 import { dateCalc } from "./Bottom";
 import styled from "styled-components";
 
-const CommentItem = ({
-  comment,
-  reply,
-}: {
+type Props = {
   comment: IComment;
   reply: (commentid: string, username: string) => void;
-}) => {
+};
+
+const CommentItem = ({ comment, reply }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
   const {
     id: commentid,
@@ -45,12 +44,17 @@ const CommentItem = ({
       offset: data.length,
       sd: data[0]?.created,
     };
-    if (hasmore) dispatch(getComments(obj));
+    if (hasmore && subcommentcount > 0) dispatch(getComments(obj));
     else dispatch(toggleSubCommetsT({ postid, commentid, t: !t }));
   };
+  const lastActive = useMemo(
+    () =>
+      (new Date(Date.now()).getTime() - new Date(created).getTime()) / 1000 < 1,
+    []
+  );
 
   return (
-    <Container>
+    <Container className={lastActive ? "lastactive" : ""}>
       <div className="left">
         <div className="pp">
           <LinkQ to={`/${username}`}>
@@ -82,7 +86,7 @@ const CommentItem = ({
             <div className="up">
               <button onClick={view}>
                 <div className="line"></div>
-                {t ? (
+                {t && !hasmore ? (
                   <p>Hide Replies</p>
                 ) : (
                   <p>
@@ -93,7 +97,7 @@ const CommentItem = ({
               </button>
               {loading && <LoadingBox />}
             </div>
-            {(hasmore || t) &&
+            {(hasmore ? data.length > 0 : t) &&
               data.map((sc) => (
                 <SubCommentItem
                   subcomment={sc}
@@ -111,8 +115,27 @@ const CommentItem = ({
 const Container = styled.li`
   display: flex;
   align-items: start;
-  margin-bottom: 1rem;
   width: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  padding: 8px 1rem;
+  &.lastactive {
+    @keyframes l {
+      0% {
+        background-color: transparent;
+      }
+      25% {
+        background-color: transparent;
+      }
+      50% {
+        background-color: rgb(50, 50, 50);
+      }
+      100% {
+        background-color: transparent;
+      }
+    }
+    animation: 3s ease l;
+  }
   &:hover .more {
     display: block !important;
   }

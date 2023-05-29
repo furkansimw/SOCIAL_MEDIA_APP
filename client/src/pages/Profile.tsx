@@ -1,26 +1,26 @@
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { AppDispatch, RootState } from "../redux/store";
+import { AppDispatch } from "../redux/store";
 import { selectProfile } from "../redux/postsReducer";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { getProfile } from "../api/profile";
 import LoadingBox from "../components/LoadingBox";
 import styled from "styled-components";
-import { MoreIcon, MoreIcon2 } from "../components/Icons";
+import { MoreIcon2 } from "../components/Icons";
 
 const Profile = () => {
   const p = useLocation().pathname.split("/");
   const _username = p[1];
-  const issaved = p[2] == "saved";
   const dispatch = useDispatch<AppDispatch>();
-  let profile = useSelector((s: RootState) => selectProfile(s, _username));
+  let profile = useSelector(selectProfile);
 
   useEffect(() => {
     if (!profile) dispatch(getProfile(_username));
   }, [_username]);
 
-  if (!profile) return;
+  if (!profile) return <></>;
+
   const { info, username } = profile;
 
   const statusController = () => {

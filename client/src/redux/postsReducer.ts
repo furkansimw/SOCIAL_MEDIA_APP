@@ -136,6 +136,23 @@ export const postsSlice = createSlice({
         const hasmore = payload.length == 12;
         const loading = false;
 
+        const ddd = (c: ISubComment[]) => {
+          const xd = [...c, ...payload]
+            .filter((x) => x.s == undefined)
+            .sort(
+              (a, b) =>
+                new Date(b.created).getTime() - new Date(a.created).getTime()
+            );
+          const xds = c
+            .filter((x) => x.s)
+            .sort(
+              (a, b) =>
+                new Date(b.created).getTime() - new Date(a.created).getTime()
+            );
+
+          return xd.concat(xds);
+        };
+
         const obj = (post: IPost): IPost => {
           if (ci) {
             return {
@@ -147,9 +164,16 @@ export const postsSlice = createSlice({
                   subcomments: {
                     ...c.subcomments,
                     loading,
-                    hasmore,
-                    t: !hasmore,
-                    data: [...c.subcomments.data, ...payload],
+                    t: !(
+                      hasmore &&
+                      c.subcomments.data.length + payload.length !=
+                        c.subcommentcount
+                    ),
+                    hasmore:
+                      hasmore &&
+                      c.subcomments.data.length + payload.length !=
+                        c.subcommentcount,
+                    data: ddd(c.subcomments.data),
                   },
                 })),
               },
@@ -167,7 +191,7 @@ export const postsSlice = createSlice({
                     ...p,
                     subcomments: {
                       data: [],
-                      hasmore: true,
+                      hasmore: p.subcommentcount != 0,
                       t: false,
                       loading: false,
                     },
@@ -216,7 +240,12 @@ export const postsSlice = createSlice({
           isliked: false,
           likecount: 0,
           subcommentcount: 0,
-          subcomments: { data: [], hasmore: true, loading: false, t: false },
+          subcomments: {
+            data: [],
+            hasmore: true,
+            loading: false,
+            t: false,
+          },
         };
 
         const subCommentObj: ISubComment = {
@@ -228,6 +257,7 @@ export const postsSlice = createSlice({
           likecount: 0,
           pp,
           username,
+          s: true,
         };
 
         const obj = (po: IPost): IPost => ({
@@ -241,8 +271,10 @@ export const postsSlice = createSlice({
                   if (sc.id == commentid)
                     return {
                       ...sc,
+                      subcommentcount: sc.subcommentcount + 1,
                       subcomments: {
                         ...sc.subcomments,
+                        t: true,
                         data: [...sc.subcomments.data, subCommentObj],
                       },
                     };
@@ -297,11 +329,15 @@ export const postsSlice = createSlice({
                   ...d,
                   subcomments: {
                     ...d.subcomments,
-                    data: d.subcomments.data.map((sc) => ({
-                      ...sc,
-                      likecount: sc.likecount + (a ? 1 : -1),
-                      isliked: a,
-                    })),
+                    data: d.subcomments.data.map((sc) => {
+                      if (sc.id == subcommentid)
+                        return {
+                          ...sc,
+                          likecount: sc.likecount + (a ? 1 : -1),
+                          isliked: a,
+                        };
+                      return sc;
+                    }),
                   },
                 };
               return {
@@ -398,8 +434,10 @@ export const selectPostsExplore = (state: RootState) =>
 export const selectPostsSaved = (state: RootState) =>
   state.posts.posts.filter((post) => post.page == "saved");
 
-export const selectProfile = (state: RootState, username: string) =>
-  state.posts.profiles.find((profile) => profile.username == username);
+export const selectProfile = (state: RootState) =>
+  state.posts.profiles.find(
+    (profile) => profile.username == window.location.pathname.split("/")[1]
+  );
 
 export const selectHasMore = (state: RootState) => state.posts.hasmore;
 
@@ -407,7 +445,9 @@ export const selectLoading = (state: RootState) => state.posts.loading;
 
 export const selectBack = (state: RootState) => state.posts.back;
 
-export const selectCurrentPost = (state: RootState, id: string) =>
-  state.posts.posts.find((post) => post.id == id);
+export const selectCurrentPost = (state: RootState) =>
+  state.posts.posts.find(
+    (post) => post.id == window.location.pathname.split("/")[2]
+  );
 
 export default postsSlice.reducer;

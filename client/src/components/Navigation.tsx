@@ -28,7 +28,7 @@ const Navigation = () => {
   const { pathname } = useLocation();
   const [panel, setPanel] = useState<null | "search" | "notifications">(null);
   const [createPostPopup, setCreatePostPopup] = useState(false);
-  const [moreIconActive, setMoreIconActive] = useState(false);
+  const [moreIconActive] = useState(false);
 
   const uiController = (key: string) => {
     if (createPostPopup) return key == "create";

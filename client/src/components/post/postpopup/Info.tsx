@@ -1,17 +1,13 @@
-import { Link } from "react-router-dom";
-import { DetailIcon } from "../Icons";
+import { DetailIcon } from "../../Icons";
 import styled from "styled-components";
-import { disableRightClick } from "../Navigation";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { selectCurrentPost, setBack } from "../../redux/postsReducer";
-import { AppDispatch, RootState } from "../../redux/store";
-import LinkQ from "./LinkQ";
+import { disableRightClick } from "../../Navigation";
+import { shallowEqual, useSelector } from "react-redux";
+import { selectCurrentPost } from "../../../redux/postsReducer";
+import LinkQ from "../LinkQ";
 
 const Info = () => {
-  const postid = window.location.pathname.split("/")[2];
-
   const { username, isfollowing, pp } = useSelector(
-    (s: RootState) => selectCurrentPost(s, postid),
+    selectCurrentPost,
     shallowEqual
   )!;
 

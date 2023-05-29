@@ -2,18 +2,15 @@ import { getImages } from "../api/posts";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { selectCurrentPost } from "../redux/postsReducer";
-import { AppDispatch, RootState } from "../redux/store";
+import { AppDispatch } from "../redux/store";
 import { useEffect } from "react";
 //@ts-ignore
 import { Pagination, Navigation } from "swiper";
 
 const PostPopupImages = () => {
   const dispach = useDispatch<AppDispatch>();
-  const postid = window.location.pathname.split("/")[2];
-  const cp = useSelector(
-    (s: RootState) => selectCurrentPost(s, postid),
-    shallowEqual
-  )!;
+
+  const cp = useSelector(selectCurrentPost, shallowEqual)!;
 
   useEffect(() => {
     if (more && !images) dispach(getImages(id));

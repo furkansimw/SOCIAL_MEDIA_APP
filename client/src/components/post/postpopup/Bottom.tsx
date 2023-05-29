@@ -1,15 +1,14 @@
 import styled from "styled-components";
-import LoadingBox from "../LoadingBox";
-import { createAction, createComment } from "../../api/posts";
+import LoadingBox from "../../LoadingBox";
+import { createAction, createComment } from "../../../api/posts";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { selectValues } from "../../redux/profileReducer";
-import { AppDispatch, RootState } from "../../redux/store";
+import { selectValues } from "../../../redux/profileReducer";
+import { AppDispatch, RootState } from "../../../redux/store";
 import { forwardRef, useMemo } from "react";
 import { Dispatch, SetStateAction } from "react";
-import { selectCurrentPost, setBack } from "../../redux/postsReducer";
-import { CommentIcon, LikeIcon, SaveIcon, ShareIcon } from "../Icons";
-import { Link } from "react-router-dom";
-import LinkQ from "./LinkQ";
+import { selectCurrentPost } from "../../../redux/postsReducer";
+import { CommentIcon, LikeIcon, SaveIcon, ShareIcon } from "../../Icons";
+import LinkQ from "../LinkQ";
 
 type BottomProps = {
   comment: string;
@@ -71,10 +70,7 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
       likecount,
       issaved,
       created,
-    } = useSelector(
-      (s: RootState) => selectCurrentPost(s, postid),
-      shallowEqual
-    )!;
+    } = useSelector(selectCurrentPost, shallowEqual)!;
 
     const date = useMemo(() => dateCalc(created), []);
 

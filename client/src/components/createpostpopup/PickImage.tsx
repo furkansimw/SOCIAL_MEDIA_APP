@@ -99,9 +99,7 @@ const Container = styled.div`
     opacity: 0;
     cursor: pointer;
     user-select: none;
-    &:hover {
-      background-color: red;
-    }
+
     &.t {
       cursor: default;
     }

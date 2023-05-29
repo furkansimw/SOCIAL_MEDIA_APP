@@ -26,7 +26,7 @@ const getSubCommentsQ = (
   const values: (string | number | Date)[] = [id, postid, commentid, offset];
   if (sd) values.push(sd);
 
-  const str = sd ? `and sc.created < $${guest ? 4 : 5}  ` : ``;
+  const str = sd ? `and sc.created < $${guest ? 4 : 5} ` : ``;
 
   const query = guest
     ? `

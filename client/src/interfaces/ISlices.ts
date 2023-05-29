@@ -62,6 +62,7 @@ export interface ISubComment {
   created: string;
   isliked: boolean;
   likecount: number;
+  s?: boolean;
 }
 
 export interface IProfile {

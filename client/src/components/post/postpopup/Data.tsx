@@ -1,18 +1,14 @@
 import styled from "styled-components";
-import { IComment } from "../../interfaces/ISlices";
-import LoadingBox from "../LoadingBox";
+import LoadingBox from "../../LoadingBox";
 import { shallowEqual, useSelector } from "react-redux";
-import { selectCurrentPost } from "../../redux/postsReducer";
-import { AppDispatch, RootState } from "../../redux/store";
+import { selectCurrentPost } from "../../../redux/postsReducer";
+import { AppDispatch, RootState } from "../../../redux/store";
 import { dateCalc } from "./Bottom";
 import { forwardRef, useMemo } from "react";
 import { useDispatch } from "react-redux";
-import { LikeIconComment, MoreIcon2 } from "../Icons";
-import { getComments, likeComment } from "../../api/posts";
-import LinkConverter from "./LinkConverter";
-import LinkQ from "./LinkQ";
-import { toggleSubCommetsT } from "../../redux/postsReducer";
-import SubCommentItem from "./SubCommentItem";
+import { getComments } from "../../../api/posts";
+import LinkConverter from "../LinkConverter";
+import LinkQ from "../LinkQ";
 import CommentItem from "./CommentItem";
 import React, { useImperativeHandle, useRef } from "react";
 
@@ -33,11 +29,7 @@ const Data = forwardRef<Refs, Props>(({ reply }, ref) => {
   const postid = window.location.pathname.split("/")[2];
   const {
     comments: { data, loading, hasmore },
-  } = useSelector(
-    (s: RootState) => selectCurrentPost(s, postid),
-    shallowEqual
-  )!;
-
+  } = useSelector(selectCurrentPost, shallowEqual)!;
   const onScroll = (e: React.UIEvent<HTMLUListElement, UIEvent>) => {
     const { scrollTop, clientHeight, scrollHeight } =
       e.target as HTMLUListElement;
@@ -79,9 +71,8 @@ const DataContainer = styled.ul`
   .loading-box {
     margin: 1rem 0px;
   }
-
-  padding: 1rem;
   .content {
+    padding: 1rem;
     display: flex;
     margin-bottom: 1rem;
     .pp {
@@ -117,9 +108,8 @@ const DataContainer = styled.ul`
 `;
 
 const Content = forwardRef<HTMLDivElement>((props, contentRef) => {
-  const postid = window.location.pathname.split("/")[2];
   const { pp, username, content, created } = useSelector(
-    (s: RootState) => selectCurrentPost(s, postid),
+    selectCurrentPost,
     shallowEqual
   )!;
 

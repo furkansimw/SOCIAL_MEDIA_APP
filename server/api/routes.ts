@@ -3,6 +3,7 @@ import tokenMw from "../mw/tokenMw";
 import authRoute from "./authRoute";
 import postsRoute from "./postsRoute";
 import profileRoute from "./profileRoute";
+import db from "../db/db";
 
 const apiRoute = Router();
 
