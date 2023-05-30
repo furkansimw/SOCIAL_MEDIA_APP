@@ -10,8 +10,8 @@ const getSubCommentLikes = asyncErrorWrapper(async (req, res) => {
   const { subcommentid } = req.params;
   const { offset, sd } = conv(req.query);
 
-  const subCommenLikes = await getSubCommentLikesQ();
-  res.json(subCommenLikes);
+  const sbcl = await getSubCommentLikesQ(id, subcommentid, offset, sd);
+  res.json(sbcl);
 });
 
 export {
