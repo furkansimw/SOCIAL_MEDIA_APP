@@ -2,7 +2,7 @@ import styled from "styled-components";
 import LoadingBox from "../../LoadingBox";
 import { shallowEqual, useSelector } from "react-redux";
 import { selectCurrentPost } from "../../../redux/postsReducer";
-import { AppDispatch, RootState } from "../../../redux/store";
+import { AppDispatch } from "../../../redux/store";
 import { dateCalc } from "./Bottom";
 import { forwardRef, useMemo } from "react";
 import { useDispatch } from "react-redux";

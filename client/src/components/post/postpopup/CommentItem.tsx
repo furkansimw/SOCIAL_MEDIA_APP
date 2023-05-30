@@ -1,4 +1,4 @@
-import { forwardRef, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { getComments, likeComment } from "../../../api/posts";
 import { toggleSubCommetsT } from "../../../redux/postsReducer";
 import { LikeIconComment, MoreIcon2 } from "../../Icons";

@@ -2,11 +2,10 @@ import { FC } from "react";
 import { IPost } from "../../interfaces/ISlices";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { disableRightClick } from "../Navigation";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../redux/store";
 import { setBack } from "../../redux/postsReducer";
-import { MoreIcon, MoreIconImages } from "../Icons";
+import { MoreIconImages } from "../Icons";
 
 type props = {
   post: IPost;
