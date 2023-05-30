@@ -149,6 +149,9 @@ const Container = styled.div`
   .content {
     height: calc(100% - 42px);
     overflow-y: auto;
+    .loading-box {
+      margin: 2rem 0px;
+    }
     li {
       display: flex;
       height: 60px;
@@ -191,6 +194,7 @@ const Container = styled.div`
         font-size: 14px;
         font-weight: 600;
         color: #fafafa;
+
         &:hover {
           opacity: 0.8;
         }

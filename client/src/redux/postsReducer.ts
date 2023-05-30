@@ -425,8 +425,10 @@ export const { setBack, toggleSubCommetsT } = postsSlice.actions;
 export const selectPostsHome = (state: RootState) =>
   state.posts.posts.filter((post) => post.page == "home");
 
-export const selectPostsProfile = (state: RootState, username: string) =>
-  state.posts.posts.filter((post) => post.username == username);
+export const selectPostsProfile = (state: RootState) =>
+  state.posts.posts.filter(
+    (post) => post.username == window.location.pathname.split("/")[1]
+  );
 
 export const selectPostsExplore = (state: RootState) =>
   state.posts.posts.filter((post) => post.page == "explore");
