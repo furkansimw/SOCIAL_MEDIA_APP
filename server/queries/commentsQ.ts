@@ -1,4 +1,5 @@
 import db from "../db/db";
+import blocked from "../functions/blocked";
 import then from "../functions/then";
 
 const deleteCommentQ = (id: string, postid: string, commentid: string) =>
@@ -43,7 +44,7 @@ const getSubCommentsQ = (
     left join comments c on c.id = sc.comment left join posts p on p.id = c.post
     left join users pou on pou.id = p.owner
     left join users scou on scou.id = sc.owner
-    left join relationships b on (b.owner = $1 and b.target = p.owner and b.type = 2) or (b.owner = p.owner and b.target = $1 and b.type = 2) or (b.owner = c.owner and b.target = $1 and b.type = 2) or (b.owner = c.owner and b.target = $1 and b.type = 2)
+    ${blocked("c.owner, p.owner")}
     left join relationships pof on (pof.owner = $1 and pof.target = p.owner and pof.type = 0)
     where sc.comment = $2 ${str} and
     (pou.ispublic or pof is not null or pou.id = $1) and
@@ -67,6 +68,8 @@ const getCommentLikesQ = (
 
   const str = sd ? ` cl.created < $4 and` : ``;
 
+  const b = blocked("p.owner, c.owner, cl.owner");
+
   return db
     .query(
       `
@@ -75,9 +78,7 @@ const getCommentLikesQ = (
     left join comments c on c.id = cl.comment
     left join posts p on p.id = c.post
     left join users pou on pou.id = p.owner
-    left join relationships pouf on pouf.owner = $1 and pouf.target = pou.id and pouf.type = 0
-    left join relationships b on (b.owner = $1 and b.target = cl.owner and b.type = 2) or (b.owner = $1 and b.target = c.owner and b.type = 2) or (b.owner = $1 and b.target = p.owner and b.type = 2)
-    or (b.owner = cl.owner and b.target = $1 and b.type = 2) or (b.owner = c.owner and b.target = $1 and b.type = 2) or (b.owner = p.owner and b.target = $1 and b.type = 2)
+    left join relationships pouf on pouf.owner = $1 and pouf.target = pou.id and pouf.type = 0 ${b}
     where commmet = $2 and ${str} b is null and (pou.ispublic or pouf is not null or pou.id = $1)
     order by cl.owner = $1, cl.created desc
     limit 12 offset $3
@@ -96,14 +97,14 @@ const createSubCommentQ = (id: string, commentid: string, content: string) =>
       FROM comments c
       left join users u on c.owner = u.id
       left join relationships f on f.owner = $1 and f.target = c.owner and f.type = 0
-      left join relationships b on (b.owner = c.owner and b.target = $1 and b.type = 2) or (b.owner = $1 and b.target = c.owner and b.type = 2)
+      ${blocked("c.owner")}
       where c.id = $2 and (ispublic or f is not null or u.id = $1) and b is null and exists (
         SELECT 1
         FROM comments c
         left join posts p on c.post = p.id
         left join users u on p.owner = u.id
         left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
-        left join relationships b on (b.owner = p.owner and b.target = $1 and b.type = 2) or (b.owner = $1 and b.target = p.owner and b.type = 2)
+        ${blocked("p.owner")}
         where c.id = $2 and (ispublic or f is not null or u.id = $1) and b is null
       )
       returning id

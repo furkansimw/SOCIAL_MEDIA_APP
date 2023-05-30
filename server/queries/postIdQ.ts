@@ -1,4 +1,5 @@
 import db from "../db/db";
+import blocked from "../functions/blocked";
 
 const getCommentsQ = (
   id: string,
@@ -81,14 +82,15 @@ const getPostLikesQ = (
   if (sd) values.push(sd);
   const str = sd ? `and pl.created < $4` : ``;
 
+  const b = blocked("pou.id, plou.id");
+
   return db
     .query(
       `
       select pl.*, plou.username, plou.pp, plou.fullname, f.type status from postlikes pl
       left join users plou on plou.id = pl.owner
       left join posts p on p.id = pl.post
-      left join users pou on pou.id = p.owner
-      left join relationships b on (b.owner = $1 and b.target = pou.id and b.type = 2) or (b.owner = pou.id and b.target = $1 and b.type = 2) or (b.owner = plou.id and b.target = $1 and b.type = 2) or (b.owner = $1 and b.target = plou.id and b.type = 2)
+      left join users pou on pou.id = p.owner ${b}
       left join relationships f on (f.owner = $1 and f.target = pl.owner)
       where pl.post = $2 ${str} and b is null
       order by pl.owner = $1, pl.created desc
@@ -107,7 +109,7 @@ const postLikeQ = (id: string, postid: string) =>
       FROM posts p
       left join users u on p.owner = u.id
       left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
-      left join relationships b on (b.owner = p.owner and b.target = $1 and b.type = 2) or (b.owner = $1 and b.target = p.owner and b.type = 2)
+      ${blocked("p.owner")}
       where p.id = $2 and (ispublic or f is not null or u.id = $1) and b is null
       `,
     [id, postid]
@@ -122,7 +124,7 @@ const postUnlikeQ = (id: string, postid: string) =>
         SELECT 1 FROM posts p
         left join users u on p.owner = u.id
         left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
-        left join relationships b on (b.owner = p.owner and f.target = $1 and f.type = 2) or (b.owner = $1 and b.target = p.owner and b.type = 2)
+        ${blocked("p.owner")}
         where p.id = $2 and (ispublic or f is not null or u.id = $1) and b is null
       );
 `,
@@ -138,7 +140,7 @@ const postCommentQ = (id: string, postid: string, content: string) =>
       FROM posts p
       left join users u on p.owner = u.id
       left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
-      left join relationships b on (b.owner = p.owner and b.target = $1 and b.type = 2) or (b.owner = $1 and b.target = p.owner and b.type = 2)
+      ${blocked("p.owner")}
       where p.id = $2 and (ispublic or f is not null or u.id = $1) and b is null
       returning id
   `,
@@ -154,7 +156,7 @@ const postSaveQ = (id: string, postid: string) =>
     FROM posts p
     left join users u on p.owner = u.id
     left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
-    left join relationships b on (b.owner = p.owner and b.target = $1 and b.type = 2) or (b.owner = $1 and b.target = p.owner and b.type = 2)
+    ${blocked("p.owner")}
     where p.id = $2 and (ispublic or f is not null or u.id = $1) and b is null
     `,
     [id, postid]
@@ -169,7 +171,7 @@ const postUnSaveQ = (id: string, postid: string) =>
         SELECT 1 FROM posts p
         left join users u on p.owner = u.id
         left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
-        left join relationships b on (b.owner = p.owner and f.target = $1 and f.type = 2) or (b.owner = $1 and b.target = p.owner and b.type = 2)
+        ${blocked("p.owner")}
         where p.id = $2 and (ispublic or f is not null or u.id = $1) and b is null
       );
 `,
