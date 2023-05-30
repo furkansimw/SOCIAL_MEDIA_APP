@@ -116,9 +116,6 @@ const Container = styled.div`
   min-width: 240px;
   max-width: 400px;
   height: 100%;
-  @media screen and (max-width: 820px) {
-    display: none;
-  }
 `;
 
 export default PostPopupComments;

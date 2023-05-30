@@ -7,7 +7,7 @@ import {
   ICreateAction,
   ILikeComment,
 } from "../interfaces/IApi";
-import { IComment, IPost, ISubComment } from "../interfaces/ISlices";
+import { IComment, IPost, ISubComment, ILikes } from "../interfaces/ISlices";
 
 export const getPosts = createAsyncThunk(
   "/posts",
@@ -61,3 +61,48 @@ export const likeComment = createAsyncThunk(
       a ? "POST" : "DELETE"
     )
 );
+
+export const getPostLikes = ({
+  id,
+  offset,
+  sd,
+}: {
+  id: string;
+  offset: number;
+  sd?: string;
+}) =>
+  req(`/posts/${id}/likes?sd=${sd}&offset=${offset}`).then(
+    (r) => r as ILikes[]
+  );
+
+export const getCommentLikes = ({
+  id,
+  offset,
+  commentid,
+  sd,
+}: {
+  id: string;
+  commentid: string;
+  offset: number;
+  sd?: string;
+}) =>
+  req(
+    `/posts/${id}/comments/${commentid}/likes?sd=${sd}&offset=${offset}`
+  ).then((r) => r as ILikes[]);
+
+export const getSubCommentLikes = ({
+  id,
+  commentid,
+  subcommentid,
+  offset,
+  sd,
+}: {
+  id: string;
+  commentid: string;
+  subcommentid: string;
+  offset: number;
+  sd?: string;
+}) =>
+  req(
+    `/posts/${id}/likes/comments/${commentid}/${subcommentid}/likes?sd=${sd}&offset=${offset}`
+  ).then((r) => r as ILikes[]);

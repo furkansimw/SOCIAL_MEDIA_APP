@@ -51,7 +51,6 @@ const Bg = styled.div`
 
 const Container = styled.div`
   border-radius: 4px;
-  overflow: hidden;
   @media screen and (max-width: 1264px) {
     left: 2rem !important;
     width: calc(100% - 4rem) !important;
@@ -75,7 +74,6 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
   max-height: 800px;
-  overflow: hidden;
   position: fixed;
   z-index: 150;
   background-color: #000;

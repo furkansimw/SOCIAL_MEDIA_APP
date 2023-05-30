@@ -27,6 +27,7 @@ const SubCommentItem = ({
     likecount,
     id: subcommentid,
   } = subcomment;
+
   const dispatch = useDispatch<AppDispatch>();
   const postid = window.location.pathname.split("/")[2];
 
@@ -41,10 +42,15 @@ const SubCommentItem = ({
     []
   );
 
+  const like = () => {
+    if (isliked) return;
+    dispatch(likeComment({ a: true, commentid, postid, subcommentid }));
+  };
+
   const viewLikes = () => {};
 
   return (
-    <Container className={lastActive ? "lastactive" : ""}>
+    <Container onDoubleClick={like} className={lastActive ? "lastactive" : ""}>
       <div className="left">
         <div className="pp">
           <LinkQ to={`/${username}`}>
@@ -109,7 +115,7 @@ const Container = styled.li`
   }
   .left {
     width: 2rem;
-    margin-right: 9px;
+    margin-right: 9px !important;
     min-width: 2rem;
     height: 2rem;
     width: 2rem;
@@ -166,6 +172,7 @@ const Container = styled.li`
       .date {
         font-size: 12px;
         color: #a8a8a8;
+        user-select: none;
         margin-right: 12px;
         font-weight: 600;
       }

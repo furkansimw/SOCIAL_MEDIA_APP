@@ -208,6 +208,7 @@ const Container = styled.li`
         font-weight: 600;
       }
       .date {
+        user-select: none;
         font-size: 12px;
         font-weight: 600;
         color: #a8a8a8;

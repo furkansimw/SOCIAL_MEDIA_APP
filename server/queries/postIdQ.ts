@@ -84,14 +84,14 @@ const getPostLikesQ = (
   return db
     .query(
       `
-      select pl.*, pou.username, pou.pp, f.type status from postlikes pl
+      select pl.*, plou.username, plou.pp, f.type status from postlikes pl
       left join users plou on plou.id = pl.owner
       left join posts p on p.id = pl.post
       left join users pou on pou.id = p.owner
       left join relationships b on (b.owner = $1 and b.target = pou.id and b.type = 2) or (b.owner = pou.id and b.target = $1 and b.type = 2) or (b.owner = plou.id and b.target = $1 and b.type = 2) or (b.owner = $1 and b.target = plou.id and b.type = 2)
       left join relationships f on (f.owner = $1 and f.target = pl.owner)
       where pl.post = $2 ${str} and b is null
-      order by pl.created desc
+      order by pl.owner = $1, pl.created desc
       limit 12 offset $3
       `,
       values

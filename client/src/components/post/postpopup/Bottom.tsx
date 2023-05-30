@@ -4,11 +4,12 @@ import { createAction, createComment } from "../../../api/posts";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { selectValues } from "../../../redux/profileReducer";
 import { AppDispatch, RootState } from "../../../redux/store";
-import { forwardRef, useMemo } from "react";
+import { forwardRef, useMemo, useState } from "react";
 import { Dispatch, SetStateAction } from "react";
 import { selectCurrentPost } from "../../../redux/postsReducer";
 import { CommentIcon, LikeIcon, SaveIcon, ShareIcon } from "../../Icons";
 import LinkQ from "../LinkQ";
+import Likes from "./Likes";
 
 type BottomProps = {
   comment: string;
@@ -67,6 +68,7 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
     const {
       comments: { sending },
       isliked,
+      id,
       likecount,
       issaved,
       created,
@@ -79,6 +81,10 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
 
     const save = () =>
       dispatch(createAction({ postid, a: !issaved, t: "save" }));
+
+    const [likesPopup, setLikesPopup] = useState(false);
+    const viewLikes = () => setLikesPopup(true);
+    const quit = () => setLikesPopup(false);
 
     return (
       <BottomContainer>
@@ -93,6 +99,7 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
             <button className="comment">
               <CommentIcon />
             </button>
+            {likesPopup && <Likes type="post" quit={quit} postid={id} />}
             <button>
               <ShareIcon />
             </button>
@@ -102,7 +109,9 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
           </button>
         </div>
         <div className="detail">
-          <p className="likecount">{likecount.toLocaleString()} likes</p>
+          <p onClick={viewLikes} className="likecount">
+            {likecount.toLocaleString()} likes
+          </p>
           <p className="date">{date}</p>
         </div>
         <form
@@ -217,11 +226,15 @@ const BottomContainer = styled.div`
       font-weight: 500;
       cursor: pointer;
       &.date {
+        user-select: none;
         cursor: default;
         font-size: 12px;
         line-height: 14px;
         color: #a8a8a8;
         font-weight: 400;
+      }
+      &.likecount {
+        font-weight: 600;
       }
     }
   }

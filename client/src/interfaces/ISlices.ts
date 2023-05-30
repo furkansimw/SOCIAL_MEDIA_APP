@@ -81,3 +81,11 @@ export interface IProfile {
   };
   postsState?: { loading: boolean; hasmore: boolean };
 }
+
+export interface ILikes {
+  username: string;
+  status: null | number;
+  pp: null | string;
+  fullname: null | string;
+  created: string;
+}
