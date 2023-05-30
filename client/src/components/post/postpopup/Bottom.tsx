@@ -83,11 +83,8 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
       dispatch(createAction({ postid, a: !issaved, t: "save" }));
 
     const [likesPopup, setLikesPopup] = useState(false);
-    const viewLikes = () => {
-      if (likecount == 0) return;
-      setLikesPopup(true);
-    };
     const quit = () => setLikesPopup(false);
+    const viewLikes = () => setLikesPopup(true);
 
     return (
       <BottomContainer>
