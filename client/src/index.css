@@ -40,3 +40,6 @@ ul {
 input {
   color: #fafafa;
 }
+a.u:hover {
+  opacity: 0.7;
+}

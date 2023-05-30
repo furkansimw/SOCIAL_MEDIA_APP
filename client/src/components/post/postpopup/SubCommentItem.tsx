@@ -57,7 +57,7 @@ const SubCommentItem = ({
     <Container onDoubleClick={like} className={lastActive ? "lastactive" : ""}>
       <div className="left">
         <div className="pp">
-          <LinkQ to={`/${username}`}>
+          <LinkQ className="u" to={`/${username}`}>
             <img src={pp || "/pp.jpg"} alt="pp" />
           </LinkQ>
         </div>
@@ -65,7 +65,9 @@ const SubCommentItem = ({
       <div className="right">
         <div className="upside">
           <pre>
-            <LinkQ to={`/${username}`}>{username}</LinkQ>
+            <LinkQ className="u" to={`/${username}`}>
+              {username}
+            </LinkQ>
             <LinkConverter text={content} />
           </pre>
           <button onClick={likeSubComment} className={isliked ? "active" : ""}>
