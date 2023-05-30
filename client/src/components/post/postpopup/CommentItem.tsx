@@ -1,4 +1,4 @@
-import { forwardRef, useMemo, useRef } from "react";
+import { forwardRef, useMemo, useRef, useState } from "react";
 import { getComments, likeComment } from "../../../api/posts";
 import { toggleSubCommetsT } from "../../../redux/postsReducer";
 import { LikeIconComment, MoreIcon2 } from "../../Icons";
@@ -11,6 +11,7 @@ import { IComment } from "../../../interfaces/ISlices";
 import { AppDispatch } from "../../../redux/store";
 import { dateCalc } from "./Bottom";
 import styled from "styled-components";
+import Likes from "./Likes";
 
 type Props = {
   comment: IComment;
@@ -54,12 +55,14 @@ const CommentItem = ({ comment, reply }: Props) => {
     []
   );
 
-  const viewLikes = () => {};
-
   const like = () => {
     if (isliked) return;
     dispatch(likeComment({ a: true, commentid, postid }));
   };
+
+  const [likesPopup, setLikesPopup] = useState(false);
+  const viewLikes = () => setLikesPopup(true);
+  const quit = () => setLikesPopup(false);
 
   return (
     <Container onDoubleClick={like} className={lastActive ? "lastactive" : ""}>
@@ -79,6 +82,14 @@ const CommentItem = ({ comment, reply }: Props) => {
           <button onClick={likeCommentT} className={isliked ? "active" : ""}>
             <LikeIconComment isactive={isliked} />
           </button>
+          {likesPopup && (
+            <Likes
+              postid={postid}
+              type="comment"
+              commentid={commentid}
+              quit={quit}
+            />
+          )}
         </div>
         <div className="down-side">
           {likecount > 0 && (

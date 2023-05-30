@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { ISubComment } from "../../../interfaces/ISlices";
 import styled from "styled-components";
 import { LikeIconComment, MoreIcon2 } from "../../Icons";
@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../redux/store";
 import { likeComment } from "../../../api/posts";
 import { dateCalc } from "./Bottom";
+import Likes from "./Likes";
 
 const SubCommentItem = ({
   subcomment,
@@ -47,7 +48,10 @@ const SubCommentItem = ({
     dispatch(likeComment({ a: true, commentid, postid, subcommentid }));
   };
 
-  const viewLikes = () => {};
+  const [likesPopup, setLikesPopup] = useState(false);
+
+  const viewLikes = () => setLikesPopup(true);
+  const quit = () => setLikesPopup(false);
 
   return (
     <Container onDoubleClick={like} className={lastActive ? "lastactive" : ""}>
@@ -73,6 +77,14 @@ const SubCommentItem = ({
             <button onClick={viewLikes} className="likes">
               {likecount} like{likecount > 1 && `s`}
             </button>
+          )}
+          {likesPopup && (
+            <Likes
+              postid={postid}
+              type="comment"
+              commentid={commentid}
+              quit={quit}
+            />
           )}
           <p className="date">{date}</p>
           <button className="reply" onClick={reply}>
