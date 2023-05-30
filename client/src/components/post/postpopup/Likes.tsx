@@ -33,7 +33,7 @@ const Likes: FC<Props> = ({ quit, postid, commentid, subcommentid, type }) => {
 
   const next = (data: ILikes[]) => {
     setLikes([...likes, ...data]);
-    setHasmore(data.length == 12);
+    setHasmore(data.length == 1);
     setLoading(false);
   };
 
@@ -89,7 +89,7 @@ const Likes: FC<Props> = ({ quit, postid, commentid, subcommentid, type }) => {
               <img src={obj.pp || "/pp.jpg"} alt="pp" />
               <div className="text">
                 <p className="username">{obj.username}</p>
-                <p className="fullname">{obj.fullname}</p>
+                {obj.fullname && <p className="fullname">{obj.fullname}</p>}
               </div>
               <button>{con(obj.status)}</button>
             </li>
@@ -149,6 +149,53 @@ const Container = styled.div`
   .content {
     height: calc(100% - 42px);
     overflow-y: auto;
+    li {
+      display: flex;
+      height: 60px;
+      padding: 0.5rem 1rem;
+      align-items: center;
+      img {
+        width: 44px;
+        height: 44px;
+        border-radius: 100%;
+        margin-right: 12px;
+      }
+      .text {
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        height: 36px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        p {
+          width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          line-height: 18px;
+          font-size: 14px;
+          &.username {
+            font-weight: 600;
+          }
+          &.fullname {
+            color: #a8a8a8;
+            font-weight: 400;
+          }
+        }
+      }
+      button {
+        margin-left: 12px;
+        padding: 8px 1rem;
+        border-radius: 8px;
+        background-color: #0095f6;
+        font-size: 14px;
+        font-weight: 600;
+        color: #fafafa;
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
   }
   @media screen and (max-width: 464px) {
     left: 2rem;

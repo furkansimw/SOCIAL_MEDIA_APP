@@ -43,13 +43,10 @@ const getSubCommentsQ = (
     left join comments c on c.id = sc.comment left join posts p on p.id = c.post
     left join users pou on pou.id = p.owner
     left join users scou on scou.id = sc.owner
-    left join users cou on cou.id = c.owner
     left join relationships b on (b.owner = $1 and b.target = p.owner and b.type = 2) or (b.owner = p.owner and b.target = $1 and b.type = 2) or (b.owner = c.owner and b.target = $1 and b.type = 2) or (b.owner = c.owner and b.target = $1 and b.type = 2)
     left join relationships pof on (pof.owner = $1 and pof.target = p.owner and pof.type = 0)
-    left join relationships cof on (cof.owner = $1 and cof.target = p.owner and cof.type = 0)
     where sc.comment = $2 ${str} and
     (pou.ispublic or pof is not null or pou.id = $1) and
-    (cou.ispublic or cof is not null or cou.id = $1) and
     b is null
     order by sc.created desc
     limit 12 offset $3
@@ -70,26 +67,18 @@ const getCommentLikesQ = (
 
   const str = sd ? ` cl.created < $4 and` : ``;
 
-  // cl commentlikes
-  // clou commentlikes from users
-  // cou comment owner from users
-  // clor commentlikes owner from relationships o = $1
-  // pou post owner from users
-  // pouf post owner user following
-
   return db
     .query(
       `
     select cl.*, clou.username, clou.pp, f.type status from commentlikes cl
     left join users clou on clou.id = cl.owner
     left join comments c on c.id = cl.comment
-    left join users cou on cou.id = c.owner
     left join posts p on p.id = c.post
-    left join relationships clor on clor.owner = $1 and clor.target = cl.owner
     left join users pou on pou.id = p.owner
     left join relationships pouf on pouf.owner = $1 and pouf.target = pou.id and pouf.type = 0
-    left join relationships b on (b.owner = $1 and b.target = clou.id and b.type = 2) or (b.owner = $1 and b.target = cou.id and b.type = 2) or (b.owner = $1 and b.target = pou.id and b.type = 2) or (b.owner = clou.id and b.target = c$1 and b.type = 2) or (b.owner = cou.id and b.target = $1 and b.type = 2) or (b.owner = pou.id and b.target = $1 and b.type = 2)
-    where commmet = $2 and ${str} and b is null and (pou.ispublic or pouf is not null or pou.id = $1)
+    left join relationships b on (b.owner = $1 and b.target = cl.owner and b.type = 2) or (b.owner = $1 and b.target = c.owner and b.type = 2) or (b.owner = $1 and b.target = p.owner and b.type = 2)
+    or (b.owner = cl.owner and b.target = $1 and b.type = 2) or (b.owner = c.owner and b.target = $1 and b.type = 2) or (b.owner = p.owner and b.target = $1 and b.type = 2)
+    where commmet = $2 and ${str} b is null and (pou.ispublic or pouf is not null or pou.id = $1)
     order by cl.owner = $1, cl.created desc
     limit 12 offset $3
   `,
