@@ -35,7 +35,7 @@ const getProfileQ = (id: string, username: string, guest: boolean) => {
     (select type from relationships r where owner = $1 and target = u.id) status,
     (select type from relationships r where owner = u.id and target = $1 and type = 0) is not null isfollowingme from users u
     where username = $2 and (ispublic or exists (select 1 from relationships r where owner = $1 and target = u.id) or u.id = $1)
-    and not exists (select 1 from relationships r where owner = u.id and target = $1)
+    and not exists (select 1 from relationships r where owner = u.id and target = $1 and type = 2)
     `;
 
   return db.query(query, values).then((r) => r.rows[0] || null);
