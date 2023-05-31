@@ -10,12 +10,13 @@ import styled from "styled-components";
 import { MoreIcon2, MoreIcon3 } from "../components/Icons";
 import Title from "../components/Title";
 import PostMini from "../components/post/PostMini";
+import ProfileNotFound from "../components/profile/ProfileNotFound.tsx";
 
 const Profile = () => {
   const p = useLocation().pathname.split("/");
   const _username = p[1];
   const dispatch = useDispatch<AppDispatch>();
-  let profile = useSelector(selectProfile, shallowEqual);
+  const profile = useSelector(selectProfile, shallowEqual);
 
   useEffect(() => {
     if (!profile) dispatch(getProfile(_username));
@@ -27,12 +28,14 @@ const Profile = () => {
   if (!profile) return <></>;
 
   const { info, username } = profile;
-
   const statusController = () => {
     if (info?.status == null) return "Follow";
   };
 
-  if (profile.loading || profile.postsState?.loading) return <></>;
+  if (profile.exists == false) return <ProfileNotFound />;
+  if (profile.loading || !profile.postsState || !profile.info) return <></>;
+
+  const { followercount, followingcount, postcount } = info!;
 
   return (
     <Container>
@@ -52,14 +55,24 @@ const Profile = () => {
               <MoreIcon3 />
             </button>
           </div>
-          <div className="details"></div>
+          <div className="details">
+            <p>
+              <span>{postcount}</span> posts
+            </p>
+            <p>
+              <span>{followercount}</span> posts
+            </p>
+            <p>
+              <span>{followingcount}</span> posts
+            </p>
+          </div>
         </div>
       </div>
       <ul>
         {posts.map((post) => (
           <PostMini post={post} />
         ))}
-        {profile.postsState?.loading && <LoadingBox />}
+        {profile.postsState.loading && <LoadingBox />}
       </ul>
     </Container>
   );

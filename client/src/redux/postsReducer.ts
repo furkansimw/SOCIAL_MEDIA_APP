@@ -418,7 +418,11 @@ export const postsSlice = createSlice({
         const username = action.meta.arg;
         const { profiles } = state;
 
-        const obj = (p: IProfile): IProfile => ({ ...p, loading: false });
+        const obj = (p: IProfile): IProfile => ({
+          ...p,
+          loading: false,
+          exists: false,
+        });
 
         state.profiles = profileU(profiles, username, obj);
       });

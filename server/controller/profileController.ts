@@ -1,5 +1,5 @@
 import conv from "../functions/converter";
-import { asyncErrorWrapper, badRequest } from "../mw/error";
+import { asyncErrorWrapper, badRequest, createError } from "../mw/error";
 import {
   searchProfileQ,
   getMyProfileQ,
@@ -26,6 +26,7 @@ const getProfile = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   const { username } = req.params;
   const profile = await getProfileQ(id, username, guest);
+  if (profile == null) createError("profile not found", 404);
   res.json(profile);
 });
 
