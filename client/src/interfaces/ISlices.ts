@@ -68,6 +68,7 @@ export interface ISubComment {
 export interface IProfile {
   loading: boolean;
   username: string;
+  exists?: boolean;
   info?: {
     username: string;
     followingcount: number;
