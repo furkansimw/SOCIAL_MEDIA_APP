@@ -6,12 +6,12 @@ const deleteCommentQ = (id: string, postid: string, commentid: string) =>
   db.query(
     `
     DELETE FROM comments c
-    WHERE cd.id = $3
+    WHERE c.id = $3
     AND exists (
       SELECT 1 FROM posts p
       left join users u on p.owner = u.id
       left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
-      left join relationships b on (b.owner = p.owner and f.target = $1 and f.type = 2) or (b.owner = $1 and b.target = p.owner and b.type = 2)
+      ${blocked("p.owner")}
       where p.id = $2 and (ispublic or f is not null or u.id = $1) and b is null
     );
   `,
@@ -40,8 +40,9 @@ const getSubCommentsQ = (
     limit 12 offset $2
     `
     : `
-    select sc.*, scou.username, scou.pp, sc.likecount::int from subcomments sc
+    select sc.*, scou.username, scou.pp, sc.likecount::int, scl is not null isliked from subcomments sc
     left join comments c on c.id = sc.comment left join posts p on p.id = c.post
+    left join subcommentlikes scl on scl.subcomment = sc.id and scl.owner = $1
     left join users pou on pou.id = p.owner
     left join users scou on scou.id = sc.owner
     ${blocked("c.owner, p.owner")}
@@ -55,8 +56,37 @@ const getSubCommentsQ = (
 
   return db.query(query, values).then(then);
 };
-const commentLikeQ = () => {};
-const commentUnLikeQ = () => {};
+const commentLikeQ = (id: string, postid: string, commentid: string) =>
+  db.query(
+    `
+    insert into commentlikes (owner, comment)
+    SELECT $1, $3
+    FROM posts p
+    left join users u on p.owner = u.id
+    left join comments c on c.id = $3
+    left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
+    ${blocked("p.owner, c.owner")}
+    where p.id = $2 and (ispublic or f is not null or u.id = $1) and b is null
+    and not exists (select 1 from commentlikes cl where cl.owner = $1 and cl.comment = $3)
+  `,
+    [id, postid, commentid]
+  );
+const commentUnLikeQ = (id: string, postid: string, commentid: string) =>
+  db.query(
+    `
+        DELETE FROM commentlikes cl
+        WHERE cl.comment = $3
+        AND exists (
+          SELECT 1 FROM posts p
+          left join users u on p.owner = u.id
+          left join comments c on c.id = $2
+          left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
+          ${blocked("p.owner, c.owner")}
+          where p.id = $2 and (u.ispublic or f is not null or u.id = $1) and b is null
+        );
+`,
+    [id, postid, commentid]
+  );
 const getCommentLikesQ = (
   id: string,
   commentid: string,
@@ -73,14 +103,15 @@ const getCommentLikesQ = (
   return db
     .query(
       `
-    select cl.*, clou.username, clou.pp, f.type status from commentlikes cl
+    select cl.*, clou.username, clou.pp, clou.fullname, clor.type status from commentlikes cl
     left join users clou on clou.id = cl.owner
     left join comments c on c.id = cl.comment
     left join posts p on p.id = c.post
     left join users pou on pou.id = p.owner
+    left join relationships clor on clor.id = cl.owner
     left join relationships pouf on pouf.owner = $1 and pouf.target = pou.id and pouf.type = 0 ${b}
-    where commmet = $2 and ${str} b is null and (pou.ispublic or pouf is not null or pou.id = $1)
-    order by cl.owner = $1, cl.created desc
+    where cl.comment = $2 and ${str} b is null and (pou.ispublic or pouf is not null or pou.id = $1)
+    order by cl.owner = $1 desc, cl.created desc
     limit 12 offset $3
   `,
       values

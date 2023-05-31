@@ -10,6 +10,7 @@ import { getPosts } from "../api/posts";
 import LoadingBox from "../components/LoadingBox";
 import PostMini from "../components/post/PostMini";
 import styled from "styled-components";
+import Title from "../components/Title";
 
 const Explore = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -24,6 +25,7 @@ const Explore = () => {
 
   return (
     <Container>
+      <Title title="Explore" />
       <div className="content">
         {posts.map((post) => (
           <PostMini key={post.id} post={post} />

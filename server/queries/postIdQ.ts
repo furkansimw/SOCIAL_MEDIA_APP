@@ -22,7 +22,8 @@ const getCommentsQ = (
         limit 12 offset $2
     `
     : `
-        select c.*,likecount::int, subcommentcount::int, u.username, u.pp from comments c
+        select c.*,likecount::int, subcommentcount::int, u.username,cl is not null isliked, u.pp from comments c
+        left join commentlikes cl on cl.comment = c.id
         left join users u on u.id = c.owner
         left join relationships b on (b.owner = $1 and b.target = u.id and b.type = 2) or (b.owner = u.id and b.target = $1 and b.type = 2)
         where c.post = $2 and b is null ${str}
@@ -93,7 +94,7 @@ const getPostLikesQ = (
       left join users pou on pou.id = p.owner ${b}
       left join relationships f on (f.owner = $1 and f.target = pl.owner)
       where pl.post = $2 ${str} and b is null
-      order by pl.owner = $1, pl.created desc
+      order by pl.owner = $1 desc, pl.created desc
       limit 12 offset $3
       `,
       values
@@ -110,7 +111,7 @@ const postLikeQ = (id: string, postid: string) =>
       left join users u on p.owner = u.id
       left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
       ${blocked("p.owner")}
-      where p.id = $2 and (ispublic or f is not null or u.id = $1) and b is null
+      where p.id = $2 and (ispublic or f is not null or u.id = $1) and b is null and not exists (select 1 from postlikes pl where pl.owner = $1 and pl.post = $2)
       `,
     [id, postid]
   );

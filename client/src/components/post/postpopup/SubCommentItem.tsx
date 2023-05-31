@@ -75,11 +75,6 @@ const SubCommentItem = ({
           </button>
         </div>
         <div className="down-side">
-          {likecount > 0 && (
-            <button onClick={viewLikes} className="likes">
-              {likecount} like{likecount > 1 && `s`}
-            </button>
-          )}
           {likesPopup && (
             <Likes
               postid={postid}
@@ -87,6 +82,11 @@ const SubCommentItem = ({
               commentid={commentid}
               quit={quit}
             />
+          )}
+          {likecount > 0 && (
+            <button onClick={viewLikes} className="likes">
+              {likecount} like{likecount > 1 && `s`}
+            </button>
           )}
           <p className="date">{date}</p>
           <button className="reply" onClick={reply}>

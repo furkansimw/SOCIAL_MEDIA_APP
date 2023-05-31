@@ -19,6 +19,7 @@ type Props = {
 };
 
 const CommentItem = ({ comment, reply }: Props) => {
+  console.log(comment.content, comment.isliked);
   const dispatch = useDispatch<AppDispatch>();
   const {
     id: commentid,

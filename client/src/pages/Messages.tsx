@@ -1,5 +1,11 @@
+import Title from "../components/Title";
+
 const Messages = () => {
-  return <div>Messages</div>;
+  return (
+    <div>
+      <Title title="Messages" />
+    </div>
+  );
 };
 
 export default Messages;

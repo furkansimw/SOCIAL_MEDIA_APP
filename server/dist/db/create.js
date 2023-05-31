@@ -173,11 +173,11 @@ const create = () => __awaiter(void 0, void 0, void 0, function* () {
     IF (TG_OP = 'INSERT') THEN
       UPDATE subcomments
       SET likecount = likecount + 1
-      WHERE id = NEW.comment;
+      WHERE id = NEW.subcomment;
     ELSIF (TG_OP = 'DELETE') THEN
       UPDATE subcomments
       SET likecount = likecount - 1
-      WHERE id = OLD.comment;
+      WHERE id = OLD.subcomment;
     END IF; 
     RETURN NULL;
   END;

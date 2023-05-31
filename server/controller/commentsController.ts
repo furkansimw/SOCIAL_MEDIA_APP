@@ -29,15 +29,15 @@ const getSubComments = asyncErrorWrapper(async (req, res) => {
 
 const commentLike = asyncErrorWrapper(async (req, res) => {
   const { id } = res.locals;
-  const { commentid } = req.params;
-  await commentLikeQ();
+  const { commentid, postid } = req.params;
+  await commentLikeQ(id, postid, commentid);
   res.json({ status: "ok" });
 });
 
 const commentUnLike = asyncErrorWrapper(async (req, res) => {
   const { id } = res.locals;
-  const { commentid } = req.params;
-  await commentUnLikeQ();
+  const { postid, commentid } = req.params;
+  await commentUnLikeQ(id, postid, commentid);
   res.json({ status: "ok" });
 });
 

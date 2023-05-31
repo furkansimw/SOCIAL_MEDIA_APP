@@ -8,6 +8,7 @@ import { getProfile } from "../api/profile";
 import LoadingBox from "../components/LoadingBox";
 import styled from "styled-components";
 import { MoreIcon2 } from "../components/Icons";
+import Title from "../components/Title";
 
 const Profile = () => {
   const p = useLocation().pathname.split("/");
@@ -31,6 +32,7 @@ const Profile = () => {
 
   return (
     <Container>
+      <Title title={username} />
       <div className="info">
         <div className="pp">
           <img src={info?.pp || "/pp.jpg"} />

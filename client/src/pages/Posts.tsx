@@ -11,6 +11,7 @@ import PostItemHome from "../components/post/PostItemHome.tsx";
 import LoadingBox from "../components/LoadingBox.tsx";
 import styled from "styled-components";
 import { shallowEqual } from "react-redux";
+import Title from "../components/Title.tsx";
 
 const Posts = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -25,6 +26,7 @@ const Posts = () => {
 
   return (
     <Container>
+      <Title title="Posts" />
       {posts.map((post) => (
         <PostItemHome post={post} />
       ))}
