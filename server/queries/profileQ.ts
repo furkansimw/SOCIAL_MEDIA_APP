@@ -1,4 +1,6 @@
 import db from "../db/db";
+import blocked from "../functions/blocked";
+import then from "../functions/then";
 
 const searchProfileQ = (id: string, u: string) =>
   db
@@ -39,4 +41,20 @@ const getProfileQ = (id: string, username: string, guest: boolean) => {
   return db.query(query, values).then((r) => r.rows[0] || null);
 };
 
-export { searchProfileQ, getMyProfileQ, getProfileQ };
+const getProfilePostsQ = (
+  id: string,
+  username: string,
+  guest: boolean,
+  offset: number,
+  sd?: Date
+) => {
+  const values: (string | Date | number)[] = [id, username, offset];
+  if (sd) values.push(sd);
+  const str = sd ? `` : ``;
+  const b = blocked("");
+  const query = guest ? `` : ``;
+
+  return db.query(query, values).then(then);
+};
+
+export { searchProfileQ, getMyProfileQ, getProfileQ, getProfilePostsQ };

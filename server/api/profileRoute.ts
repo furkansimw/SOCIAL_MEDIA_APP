@@ -4,10 +4,18 @@ import {
   searchProfile,
   getMyProfile,
   getProfile,
+  getProfilePosts,
 } from "../controller/profileController";
 
 profileRoute.route("/search").get(searchProfile);
 profileRoute.route("/my").get(getMyProfile);
-profileRoute.route("/:username").get(getProfile);
+
+const profileWithUsernameRoute = Router({ mergeParams: true });
+
+profileRoute.use("/:username", profileWithUsernameRoute);
+
+profileWithUsernameRoute.route("/").get(getProfile);
+
+profileWithUsernameRoute.route("/posts").get(getProfilePosts);
 
 export default profileRoute;

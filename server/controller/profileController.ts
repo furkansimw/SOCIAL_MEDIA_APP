@@ -1,8 +1,10 @@
+import conv from "../functions/converter";
 import { asyncErrorWrapper, badRequest } from "../mw/error";
 import {
   searchProfileQ,
   getMyProfileQ,
   getProfileQ,
+  getProfilePostsQ,
 } from "../queries/profileQ";
 
 const searchProfile = asyncErrorWrapper(async (req, res) => {
@@ -27,4 +29,12 @@ const getProfile = asyncErrorWrapper(async (req, res) => {
   res.json(profile);
 });
 
-export { searchProfile, getMyProfile, getProfile };
+const getProfilePosts = asyncErrorWrapper(async (req, res) => {
+  const { id, guest } = res.locals;
+  const { username } = req.params;
+  const { offset, sd } = conv(req.query);
+  const profilePosts = await getProfilePostsQ(id, username, guest, offset, sd);
+  res.json(profilePosts);
+});
+
+export { searchProfile, getMyProfile, getProfile, getProfilePosts };

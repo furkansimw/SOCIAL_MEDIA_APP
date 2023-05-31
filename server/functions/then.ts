@@ -1,1 +1,3 @@
-export default (any: any) => any.rows;
+import { QueryResult } from "pg";
+
+export default (any: QueryResult<any>) => any.rows;
