@@ -27,6 +27,7 @@ const Container = styled.div`
   border-right: 1px solid #262626;
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
   border-radius: 0px 1rem 1rem 0px;
+  z-index: 10;
   &.active {
     left: 0px;
   }

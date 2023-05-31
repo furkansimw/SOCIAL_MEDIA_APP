@@ -188,6 +188,8 @@ const Container = styled.div`
   height: 100vh;
   width: 360px;
   .content {
+    position: relative;
+    z-index: 20;
     background-color: #000;
     position: relative;
     border-right: 1px solid #262626;
