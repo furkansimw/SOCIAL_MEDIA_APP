@@ -50,9 +50,26 @@ const getProfilePostsQ = (
 ) => {
   const values: (string | Date | number)[] = [id, username, offset];
   if (sd) values.push(sd);
-  const str = sd ? `` : ``;
-  const b = blocked("");
-  const query = guest ? `` : ``;
+  const str = sd ? `and p.created < $${guest ? 3 : 4}` : ``;
+  const b = blocked(`p.owner`);
+  const query = guest
+    ? `
+    select p.id, cardinality(images)>1 more, images[1] cover, likecount::int,username, pp, content, p.created, u.id owner, commentcount::int from posts p
+    left join users u on u.id = p.owner
+    where username = $1 and u.ispublic ${str}
+    order by p.created desc
+    limit 12 offset $2
+  `
+    : `
+    select p.id, cardinality(images)>1 more, images[1] cover, likecount::int,username, pp, content, p.created, u.id owner, commentcount::int, s is not null issaved, pl is not null isliked from posts p    
+    left join users u on u.id = p.owner
+    left join saved s on s.owner = $1 and s.post = p.id
+    left join postlikes pl on pl.owner = $1 and pl.post = p.id
+    left join relationships f on f.owner = $1 and f.target = u.id and f.type = 0
+    ${b}
+    where username = $2 and (u.ispublic or f is not null or u.id = $1) and b is null ${str}
+    limit 12 offset $3
+    `;
 
   return db.query(query, values).then(then);
 };

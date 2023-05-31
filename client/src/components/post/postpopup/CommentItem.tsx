@@ -238,11 +238,12 @@ const Container = styled.li`
       }
     }
     .view-replies {
+      margin-top: 1rem;
       .up {
-        margin: 8px 0px 8px;
         height: 18px;
         display: flex;
         align-items: center;
+        margin-bottom: 0.5rem;
         .loading-box {
           width: 20px;
           height: 20px;

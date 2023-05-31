@@ -16,8 +16,8 @@ import {
   likeComment,
 } from "../api/posts.ts";
 import { RootState } from "./store.ts";
-import { commentsU, dateR, postsU } from "./functions.ts";
-import { getProfile } from "../api/profile.ts";
+import { commentsU, dateR, postsU, profileU } from "./functions.ts";
+import { getProfile, getProfilePosts } from "../api/profile.ts";
 
 const initialState: IPostsSliceInitialState = {
   posts: [],
@@ -398,24 +398,69 @@ export const postsSlice = createSlice({
       .addCase(getProfile.pending, (state, action) => {
         const username = action.meta.arg;
         const { profiles } = state;
-        state.profiles = [...profiles, { loading: true, username }];
+        const obj = { loading: true, username };
+        state.profiles = [...profiles, obj];
       })
       .addCase(getProfile.fulfilled, (state, action) => {
         const username = action.meta.arg;
         const info: any = action.payload;
         const { profiles } = state;
-        state.profiles = profiles.map((p) => {
-          if (p.username == username) return { loading: false, username, info };
-          return p;
+
+        const obj = (p: IProfile): IProfile => ({
+          ...p,
+          loading: false,
+          username,
+          info,
         });
+        state.profiles = profileU(profiles, username, obj);
       })
       .addCase(getProfile.rejected, (state, action) => {
         const username = action.meta.arg;
         const { profiles } = state;
-        state.profiles = profiles.map((p) => {
-          if (p.username == username) return { ...p, loading: false };
-          return p;
-        });
+
+        const obj = (p: IProfile): IProfile => ({ ...p, loading: false });
+
+        state.profiles = profileU(profiles, username, obj);
+      });
+
+    builder
+      .addCase(getProfilePosts.pending, (state, action) => {
+        const { profiles } = state;
+        const { username } = action.meta.arg;
+        const postsState = { loading: true, hasmore: true };
+        const obj = (p: IProfile): IProfile => ({ ...p, postsState });
+        state.profiles = profileU(profiles, username, obj);
+      })
+      .addCase(getProfilePosts.fulfilled, (state, action) => {
+        const { profiles, posts } = state;
+
+        const { username } = action.meta.arg;
+        const payload: IPost[] = (action.payload as IPost[]).map(
+          (p: IPost) => ({
+            ...p,
+            page: username,
+            comments: {
+              data: [],
+              hasmore: true,
+              loading: false,
+              sending: false,
+            },
+          })
+        );
+
+        const postsState = { loading: false, hasmore: payload.length == 12 };
+
+        const obj = (p: IProfile): IProfile => ({ ...p, postsState });
+        state.posts = [...posts, ...payload];
+
+        state.profiles = profileU(profiles, username, obj);
+      })
+      .addCase(getProfilePosts.rejected, (state, action) => {
+        const { profiles } = state;
+        const { username } = action.meta.arg;
+        const postsState = { loading: false, hasmore: false };
+        const obj = (p: IProfile): IProfile => ({ ...p, postsState });
+        state.profiles = profileU(profiles, username, obj);
       });
   },
 });
@@ -439,7 +484,7 @@ export const selectPostsSaved = (state: RootState) =>
 export const selectProfile = (state: RootState) =>
   state.posts.profiles.find(
     (profile) => profile.username == window.location.pathname.split("/")[1]
-  );
+  )!;
 
 export const selectHasMore = (state: RootState) => state.posts.hasmore;
 
@@ -450,6 +495,6 @@ export const selectBack = (state: RootState) => state.posts.back;
 export const selectCurrentPost = (state: RootState) =>
   state.posts.posts.find(
     (post) => post.id == window.location.pathname.split("/")[2]
-  );
+  )!;
 
 export default postsSlice.reducer;

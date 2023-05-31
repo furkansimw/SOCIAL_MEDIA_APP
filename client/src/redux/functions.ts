@@ -1,4 +1,4 @@
-import { IComment, IPost } from "../interfaces/ISlices";
+import { IComment, IPost, IProfile } from "../interfaces/ISlices";
 
 export const dateR = (str: string) => new Date(str).getTime();
 
@@ -16,4 +16,14 @@ export const commentsU = (
   comments.map((c) => {
     if (c.id == commentid) return obj(c);
     return c;
+  });
+
+export const profileU = (
+  profiles: IProfile[],
+  username: string,
+  obj: (profile: IProfile) => IProfile
+): IProfile[] =>
+  profiles.map((p) => {
+    if (p.username == username) return obj(p);
+    return p;
   });

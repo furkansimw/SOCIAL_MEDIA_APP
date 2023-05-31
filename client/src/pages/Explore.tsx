@@ -15,7 +15,7 @@ import Title from "../components/Title";
 const Explore = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const posts = useSelector(selectPostsExplore);
+  const posts = useSelector(selectPostsExplore, shallowEqual);
   const { explore: loading } = useSelector(selectLoading, shallowEqual);
   const { explore: hasmore } = useSelector(selectHasMore, shallowEqual);
 
