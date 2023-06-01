@@ -3,7 +3,9 @@ const conv = (obj: any) => {
   if (sd == "undefined" || !sd) sd = undefined;
   if (sd) sd = new Date(sd);
   offset = parseInt(offset || 0) || 0;
-  return { sd, offset };
+  const _offset: number = offset;
+  const _date: Date | undefined = sd;
+  return { sd: _date, offset: _offset };
 };
 
 export default conv;

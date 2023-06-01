@@ -1,13 +1,13 @@
 import { shallowEqual, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { AppDispatch } from "../redux/store";
+import { AppDispatch, RootState } from "../redux/store";
 import { selectPostsProfile, selectProfile } from "../redux/postsReducer";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { getProfile, getProfilePosts } from "../api/profile";
 import LoadingBox from "../components/LoadingBox";
 import styled from "styled-components";
-import { MoreIcon2, MoreIcon3 } from "../components/Icons";
+import { MoreIcon3 } from "../components/Icons";
 import Title from "../components/Title";
 import PostMini from "../components/post/PostMini";
 import ProfileNotFound from "../components/profile/ProfileNotFound.tsx";
@@ -16,14 +16,20 @@ const Profile = () => {
   const p = useLocation().pathname.split("/");
   const _username = p[1];
   const dispatch = useDispatch<AppDispatch>();
-  const profile = useSelector(selectProfile, shallowEqual);
+  const profile = useSelector(
+    (s: RootState) => selectProfile(s, _username),
+    shallowEqual
+  );
 
   useEffect(() => {
     if (!profile) dispatch(getProfile(_username));
     if (!profile) dispatch(getProfilePosts({ username: _username, offset: 0 }));
   }, [_username]);
 
-  const posts = useSelector(selectPostsProfile, shallowEqual);
+  const posts = useSelector(
+    (s: RootState) => selectPostsProfile(s, _username),
+    shallowEqual
+  );
 
   if (!profile) return <></>;
 
@@ -70,7 +76,7 @@ const Profile = () => {
       </div>
       <ul>
         {posts.map((post) => (
-          <PostMini post={post} />
+          <PostMini post={post} back={username} />
         ))}
         {profile.postsState.loading && <LoadingBox />}
       </ul>

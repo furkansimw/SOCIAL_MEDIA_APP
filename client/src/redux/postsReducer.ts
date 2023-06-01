@@ -474,10 +474,8 @@ export const { setBack, toggleSubCommetsT } = postsSlice.actions;
 export const selectPostsHome = (state: RootState) =>
   state.posts.posts.filter((post) => post.page == "home");
 
-export const selectPostsProfile = (state: RootState) =>
-  state.posts.posts.filter(
-    (post) => post.username == window.location.pathname.split("/")[1]
-  );
+export const selectPostsProfile = (state: RootState, username: string) =>
+  state.posts.posts.filter((post) => post.username == username);
 
 export const selectPostsExplore = (state: RootState) =>
   state.posts.posts.filter((post) => post.page == "explore");
@@ -485,10 +483,8 @@ export const selectPostsExplore = (state: RootState) =>
 export const selectPostsSaved = (state: RootState) =>
   state.posts.posts.filter((post) => post.page == "saved");
 
-export const selectProfile = (state: RootState) =>
-  state.posts.profiles.find(
-    (profile) => profile.username == window.location.pathname.split("/")[1]
-  )!;
+export const selectProfile = (state: RootState, username: string) =>
+  state.posts.profiles.find((profile) => profile.username == username)!;
 
 export const selectHasMore = (state: RootState) => state.posts.hasmore;
 

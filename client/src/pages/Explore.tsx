@@ -28,7 +28,7 @@ const Explore = () => {
       <Title title="Explore" />
       <div className="content">
         {posts.map((post) => (
-          <PostMini key={post.id} post={post} />
+          <PostMini key={post.id} post={post} back="explore" />
         ))}
       </div>
       {loading && <LoadingBox />}

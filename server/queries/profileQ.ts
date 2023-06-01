@@ -74,7 +74,12 @@ const getProfilePostsQ = (
   return db.query(query, values).then(then);
 };
 
-const getMySavedQ = (id: string, offset: number, sd?: Date) => db.query(``);
+const getMySavedQ = (id: string, offset: number, sd?: Date) => {
+  const values: (string | number | Date)[] = [id, offset];
+  if (sd) values.push(sd);
+
+  return db.query(``, values).then(then);
+};
 
 const followUserQ = (id: string, username: string) => db.query(``);
 

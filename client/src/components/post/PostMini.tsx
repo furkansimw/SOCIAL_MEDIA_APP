@@ -9,16 +9,17 @@ import { MoreIconImages } from "../Icons";
 
 type props = {
   post: IPost;
+  back: string;
 };
 
-const PostMini: FC<props> = ({ post }) => {
+const PostMini: FC<props> = ({ post, back }) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { cover, id, likecount, commentcount, more } = post;
 
   const tap = () => {
     window.history.pushState(null, "", `/p/${id}`);
-    dispatch(setBack("explore"));
+    dispatch(setBack(back));
   };
 
   return (
