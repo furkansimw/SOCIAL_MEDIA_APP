@@ -5,6 +5,11 @@ import {
   getMyProfileQ,
   getProfileQ,
   getProfilePostsQ,
+  getMySavedQ,
+  followUserQ,
+  unFollowUserQ,
+  blockUserQ,
+  unBlockUserQ,
 } from "../queries/profileQ";
 
 const searchProfile = asyncErrorWrapper(async (req, res) => {
@@ -38,4 +43,54 @@ const getProfilePosts = asyncErrorWrapper(async (req, res) => {
   res.json(profilePosts);
 });
 
-export { searchProfile, getMyProfile, getProfile, getProfilePosts };
+const getMySaved = asyncErrorWrapper(async (req, res) => {
+  const { id, guest } = res.locals;
+  if (guest) badRequest();
+  const { offset, sd } = conv(req.query);
+  const mySaved = await getMySavedQ(id, offset, sd);
+  res.json(mySaved);
+});
+
+const followUser = asyncErrorWrapper(async (req, res) => {
+  const { id, guest } = res.locals;
+  if (guest) badRequest();
+  const { username } = req.params;
+  const status = await followUserQ(id, username);
+  res.json(status);
+});
+
+const unFollowUser = asyncErrorWrapper(async (req, res) => {
+  const { id, guest } = res.locals;
+  if (guest) badRequest();
+  const { username } = req.params;
+  await unFollowUserQ(id, username);
+  res.json({ status: "ok" });
+});
+
+const blockUser = asyncErrorWrapper(async (req, res) => {
+  const { id, guest } = res.locals;
+  if (guest) badRequest();
+  const { username } = req.params;
+  await blockUserQ(id, username);
+  res.json({ status: "ok" });
+});
+
+const unBlockUser = asyncErrorWrapper(async (req, res) => {
+  const { id, guest } = res.locals;
+  if (guest) badRequest();
+  const { username } = req.params;
+  await unBlockUserQ(id, username);
+  res.json({ status: "ok" });
+});
+
+export {
+  searchProfile,
+  getMyProfile,
+  getProfile,
+  getProfilePosts,
+  getMySaved,
+  followUser,
+  unFollowUser,
+  blockUser,
+  unBlockUser,
+};

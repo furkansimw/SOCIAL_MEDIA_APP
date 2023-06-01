@@ -74,4 +74,24 @@ const getProfilePostsQ = (
   return db.query(query, values).then(then);
 };
 
-export { searchProfileQ, getMyProfileQ, getProfileQ, getProfilePostsQ };
+const getMySavedQ = (id: string, offset: number, sd?: Date) => db.query(``);
+
+const followUserQ = (id: string, username: string) => db.query(``);
+
+const unFollowUserQ = (id: string, username: string) => db.query(``);
+
+const blockUserQ = (id: string, username: string) => db.query(``);
+
+const unBlockUserQ = (id: string, username: string) => db.query(``);
+
+export {
+  searchProfileQ,
+  getMyProfileQ,
+  getProfileQ,
+  getProfilePostsQ,
+  getMySavedQ,
+  followUserQ,
+  unFollowUserQ,
+  blockUserQ,
+  unBlockUserQ,
+};
