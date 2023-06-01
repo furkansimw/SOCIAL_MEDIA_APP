@@ -21,13 +21,7 @@ type Props = {
   subcommentid?: string;
 };
 
-const Likes: FC<Props> = ({
-  quit,
-  postid: id,
-  commentid,
-  subcommentid,
-  type,
-}) => {
+const Likes: FC<Props> = ({ quit, postid, commentid, subcommentid, type }) => {
   const [loading, setLoading] = useState(true);
   const [hasmore, setHasmore] = useState(true);
   const [likes, setLikes] = useState<ILikes[]>([]);
@@ -48,44 +42,39 @@ const Likes: FC<Props> = ({
   };
 
   useEffect(() => {
-    const offset = 0;
-    if (type == "post") getPostLikes({ id, offset }).then(next);
+    if (type == "post") getPostLikes({ postid }).then(next);
     else if (type == "comment")
-      getCommentLikes({ id, commentid: commentid!, offset }).then(next);
+      getCommentLikes({ postid, commentid: commentid! }).then(next);
     else
       getSubCommentLikes({
-        id,
+        postid,
         commentid: commentid!,
         subcommentid: subcommentid!,
-        offset,
       }).then(next);
   }, []);
 
   const onScroll = (e: React.UIEvent<HTMLUListElement, UIEvent>) => {
+    const { created: date, id } = likes[likes.length - 1];
+
     if (loading || !hasmore) return;
     const { scrollTop, clientHeight, scrollHeight } = e.target as Element;
     if (scrollTop + clientHeight + 40 > scrollHeight) {
       setLoading(true);
-      if (type == "post")
-        getPostLikes({
-          id,
-          offset: likes.length,
-          sd: likes[0].created,
-        }).then(next);
+      if (type == "post") getPostLikes({ postid, id, date }).then(next);
       else if (type == "comment")
         getCommentLikes({
-          id,
+          postid,
           commentid: commentid!,
-          offset: likes.length,
-          sd: likes[0].created,
+          id,
+          date,
         }).then(next);
       else
         getSubCommentLikes({
-          id,
+          postid,
           commentid: commentid!,
           subcommentid: subcommentid!,
-          offset: likes.length,
-          sd: likes[0].created,
+          id,
+          date,
         }).then(next);
     }
   };

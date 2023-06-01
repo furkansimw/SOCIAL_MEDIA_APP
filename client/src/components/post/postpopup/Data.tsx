@@ -39,8 +39,8 @@ const Data = forwardRef<Refs, Props>(({ reply }, ref) => {
       dispatch(
         getComments({
           postid,
-          offset: data.length,
-          sd: data[0].created,
+          id: data[data.length - 1]?.id,
+          date: data[data.length - 1]?.created,
         })
       );
     }

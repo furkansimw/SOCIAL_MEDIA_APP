@@ -1,11 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import req from "./req";
-
-type IProfilePosts = {
-  username: string;
-  offset: number;
-  sd?: string;
-};
+import { IGetProfilePosts } from "../interfaces/IApi";
 
 export const getMyProfile = createAsyncThunk("/profile/my", () =>
   req("/profile/my")
@@ -18,6 +13,6 @@ export const getProfile = createAsyncThunk(
 
 export const getProfilePosts = createAsyncThunk(
   "/profile/:username/posts",
-  ({ username, offset, sd }: IProfilePosts) =>
-    req(`/profile/${username}/posts?offset=${offset}&sd=${sd}`)
+  ({ username, date, id }: IGetProfilePosts) =>
+    req(`/profile/${username}/posts?date=${date}&id=${id}`)
 );

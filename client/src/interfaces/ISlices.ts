@@ -84,6 +84,7 @@ export interface IProfile {
 }
 
 export interface ILikes {
+  id: string;
   username: string;
   status: null | number;
   pp: null | string;

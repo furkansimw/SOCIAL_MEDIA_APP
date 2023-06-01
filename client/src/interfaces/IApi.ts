@@ -46,3 +46,7 @@ export interface IGetCommentLikes extends ILast {
 export interface IGetSubCommentLikes extends IGetCommentLikes {
   subcommentid: string;
 }
+
+export interface IGetProfilePosts extends ILast {
+  username: string;
+}

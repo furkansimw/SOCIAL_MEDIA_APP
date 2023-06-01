@@ -10,35 +10,35 @@ import styled from "styled-components";
 import { MoreIcon3 } from "../components/Icons";
 import Title from "../components/Title";
 import PostMini from "../components/post/PostMini";
-import ProfileNotFound from "../components/profile/ProfileNotFound.tsx";
+import NotFound from "../components/NotFound.tsx";
 
 const Profile = () => {
   const p = useLocation().pathname.split("/");
-  const _username = p[1];
+  const username = p[1];
   const dispatch = useDispatch<AppDispatch>();
   const profile = useSelector(
-    (s: RootState) => selectProfile(s, _username),
+    (s: RootState) => selectProfile(s, username),
     shallowEqual
   );
 
   useEffect(() => {
-    if (!profile) dispatch(getProfile(_username));
-    if (!profile) dispatch(getProfilePosts({ username: _username, offset: 0 }));
-  }, [_username]);
+    if (!profile) dispatch(getProfile(username));
+    if (!profile) dispatch(getProfilePosts({ username }));
+  }, [username]);
 
   const posts = useSelector(
-    (s: RootState) => selectPostsProfile(s, _username),
+    (s: RootState) => selectPostsProfile(s, username),
     shallowEqual
   );
 
   if (!profile) return <></>;
 
-  const { info, username } = profile;
+  const { info } = profile;
   const statusController = () => {
     if (info?.status == null) return "Follow";
   };
 
-  if (profile.exists == false) return <ProfileNotFound />;
+  if (profile.exists == false) return <NotFound />;
   if (profile.loading || !profile.postsState || !profile.info) return <></>;
 
   const { followercount, followingcount, postcount } = info!;

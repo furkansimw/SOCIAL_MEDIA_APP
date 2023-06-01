@@ -41,13 +41,10 @@ const CommentItem = ({ comment, reply }: Props) => {
   const replyHandle = () => reply(commentid, username);
 
   const view = () => {
-    const obj = {
-      postid,
-      commentid,
-      offset: data.length,
-      sd: data[0]?.created,
-    };
-    if (hasmore && subcommentcount > 0) dispatch(getComments(obj));
+    const date = data[data.length - 1]?.created,
+      id = data[data.length - 1]?.id;
+    if (hasmore && subcommentcount > 0)
+      dispatch(getComments({ postid, commentid, date, id }));
     else dispatch(toggleSubCommetsT({ postid, commentid, t: !t }));
   };
   const lastActive = useMemo(
