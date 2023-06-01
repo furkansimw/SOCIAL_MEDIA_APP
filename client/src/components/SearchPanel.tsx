@@ -1,6 +1,7 @@
-import { FormEvent, forwardRef, useEffect, useState } from "react";
+import { FormEvent, forwardRef, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { searchProfile } from "../api/profile";
+import { SearchIcon2 } from "./Icons";
 
 type Props = {
   isActive: boolean;
@@ -15,12 +16,15 @@ type ISearchL = {
 const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
   ({ isActive }: Props, ref) => {
     const [state, setState] = useState("");
+    const [focus, setFocus] = useState(false);
     const [searchL, setSearchL] = useState<ISearchL[]>([]);
     const [recent, setRecent] = useState<ISearchL[]>([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
       const a = localStorage.getItem("recent");
+      inputRef.current?.focus();
+      setState("");
       try {
         if (a) {
           const r = JSON.parse(a);
@@ -33,10 +37,28 @@ const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
 
     const onSubmit = (e: FormEvent<HTMLFormElement>) => e.preventDefault();
 
-    const onChange = () => {
-      if (state.trim().length > 0) searchProfile(state).then(setSearchL);
-    };
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        if (state.trim().length > 0) {
+          setLoading(true);
+          searchProfile(state)
+            .then(setSearchL)
+            .finally(() => setLoading(false));
+        }
+      }, 200);
 
+      return () => clearTimeout(timer);
+    }, [state]);
+
+    useEffect(() => {
+      if (state.trim().length == 0) {
+        setState("");
+      }
+    }, [focus]);
+
+    const inputRef = useRef<HTMLInputElement>(null);
+    const onFocus = () => setFocus(true);
+    const onBlur = () => setFocus(false);
     return (
       <Container className={isActive ? "active" : ""} ref={ref}>
         <div className="title">
@@ -44,8 +66,24 @@ const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
         </div>
         <div className="input">
           <form onSubmit={onSubmit}>
-            <input onChange={onChange} type="text" />
-            <button type="reset"></button>
+            {!focus && state.trim().length == 0 && <SearchIcon2 />}
+            <input
+              ref={inputRef}
+              onChange={(e) => setState(e.target.value)}
+              type="text"
+              value={state}
+              onFocus={onFocus}
+              onBlur={onBlur}
+              placeholder="Search"
+            />
+            {(state.length > 0 || focus) && (
+              <button
+                onClick={() => {
+                  setFocus(false);
+                  setState("");
+                }}
+              ></button>
+            )}
           </form>
         </div>
         <ul></ul>
@@ -82,19 +120,37 @@ const Container = styled.div`
     display: flex;
     padding: 20px;
     form {
+      position: relative;
       width: 100%;
       display: flex;
+      border-radius: 8px;
+      background-color: #262626;
+      align-items: center;
+      svg {
+        margin-left: 1rem;
+      }
       input {
         width: 100%;
-
         line-height: 18px;
         padding: 3px 1rem;
-        border-radius: 8px;
         font-size: 1rem;
         height: 40px;
+        background-color: transparent;
         border: none;
         outline: none;
-        background-color: #262626;
+        padding-right: 40px;
+      }
+      button {
+        background-repeat: no-repeat;
+        background-position: -318px -333px;
+        height: 20px;
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 3;
+        width: 20px;
+        background-image: url("/bg.png");
       }
     }
   }

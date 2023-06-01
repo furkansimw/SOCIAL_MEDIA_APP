@@ -654,3 +654,36 @@ export const MoreIcon3 = () => (
     <circle cx="18" cy="12" r="1.5"></circle>
   </svg>
 );
+
+export const SearchIcon2 = () => (
+  <svg
+    aria-label="Search"
+    color="rgb(142, 142, 142)"
+    fill="rgb(142, 142, 142)"
+    height="16"
+    role="img"
+    viewBox="0 0 24 24"
+    width="16"
+  >
+    <title>Search</title>
+    <path
+      d="M19 10.5A8.5 8.5 0 1 1 10.5 2a8.5 8.5 0 0 1 8.5 8.5Z"
+      fill="none"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+    ></path>
+    <line
+      fill="none"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      x1="16.511"
+      x2="22"
+      y1="16.511"
+      y2="22"
+    ></line>
+  </svg>
+);
