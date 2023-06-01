@@ -1,15 +1,54 @@
-import { forwardRef } from "react";
+import { FormEvent, forwardRef, useEffect, useState } from "react";
 import styled from "styled-components";
+import { searchProfile } from "../api/profile";
 
 type Props = {
   isActive: boolean;
 };
 
+type ISearchL = {
+  username: string;
+  pp: string | null;
+  fullname: string | null;
+};
+
 const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
   ({ isActive }: Props, ref) => {
+    const [state, setState] = useState("");
+    const [searchL, setSearchL] = useState<ISearchL[]>([]);
+    const [recent, setRecent] = useState<ISearchL[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+      const a = localStorage.getItem("recent");
+      try {
+        if (a) {
+          const r = JSON.parse(a);
+          setRecent(r);
+        }
+      } catch (error) {
+        localStorage.removeItem("recent");
+      }
+    }, [isActive]);
+
+    const onSubmit = (e: FormEvent<HTMLFormElement>) => e.preventDefault();
+
+    const onChange = () => {
+      if (state.trim().length > 0) searchProfile(state).then(setSearchL);
+    };
+
     return (
       <Container className={isActive ? "active" : ""} ref={ref}>
-        <h1>Search Panel</h1>
+        <div className="title">
+          <h1>Search</h1>
+        </div>
+        <div className="input">
+          <form onSubmit={onSubmit}>
+            <input onChange={onChange} type="text" />
+            <button type="reset"></button>
+          </form>
+        </div>
+        <ul></ul>
       </Container>
     );
   }
@@ -17,9 +56,9 @@ const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
 
 const Container = styled.div`
   position: absolute;
-  width: 400px;
+  width: 440px;
   height: 100vh;
-  left: -400px;
+  left: -440px;
   top: 0px;
   background-color: #000;
   transition: 0.3s ease-in-out all;
@@ -30,6 +69,34 @@ const Container = styled.div`
   z-index: 10;
   &.active {
     left: 0px;
+  }
+  .title {
+    padding: 20px;
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 30px;
+    }
+  }
+  .input {
+    display: flex;
+    padding: 20px;
+    form {
+      width: 100%;
+      display: flex;
+      input {
+        width: 100%;
+
+        line-height: 18px;
+        padding: 3px 1rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        height: 40px;
+        border: none;
+        outline: none;
+        background-color: #262626;
+      }
+    }
   }
 `;
 

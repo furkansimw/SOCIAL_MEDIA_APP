@@ -17,9 +17,9 @@ const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
 
 const Container = styled.div`
   position: absolute;
-  width: 400px;
+  width: 440px;
   height: 100vh;
-  left: -400px;
+  left: -440px;
   top: 0px;
   background-color: #000;
   transition: 0.3s ease-in-out all;

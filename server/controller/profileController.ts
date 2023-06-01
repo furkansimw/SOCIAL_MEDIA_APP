@@ -13,9 +13,11 @@ import {
 } from "../queries/profileQ";
 
 const searchProfile = asyncErrorWrapper(async (req, res) => {
-  const { u } = req.query;
+  let { u } = req.query;
   const { guest, id } = res.locals;
-  if (guest || u == undefined || typeof u != "string") return badRequest();
+  if (guest || u == undefined || typeof u != "string" || u.trim().length == 0)
+    return badRequest();
+  u = u.trim();
   const result = await searchProfileQ(id, u);
   res.json(result);
 });
