@@ -7,16 +7,16 @@ import conv from "../functions/converter";
 const getPosts = asyncErrorWrapper(async (req, res) => {
   const { guest, id } = res.locals;
   if (guest) badRequest();
-  const { offset, sd } = conv(req.query);
-  const posts = await getPostsQ(id, offset, sd);
+  const last = conv(req.query);
+  const posts = await getPostsQ(id, last);
   res.json(posts);
 });
 
 const getExplorePosts = asyncErrorWrapper(async (req, res) => {
   const { guest, id } = res.locals;
   if (guest) badRequest();
-  const { offset, sd } = conv(req.query);
-  const posts = await getExplorePostsQ(id, offset, sd);
+  const last = conv(req.query);
+  const posts = await getExplorePostsQ(id, last);
   res.json(posts);
 });
 

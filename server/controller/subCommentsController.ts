@@ -29,9 +29,9 @@ const subCommentUnlike = asyncErrorWrapper(async (req, res) => {
 const getSubCommentLikes = asyncErrorWrapper(async (req, res) => {
   const { id } = res.locals;
   const { subcommentid } = req.params;
-  const { offset, sd } = conv(req.query);
+  const last = conv(req.query);
 
-  const sbcl = await getSubCommentLikesQ(id, subcommentid, offset, sd);
+  const sbcl = await getSubCommentLikesQ(id, subcommentid, last);
   res.json(sbcl);
 });
 

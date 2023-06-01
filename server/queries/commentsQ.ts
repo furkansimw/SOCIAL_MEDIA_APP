@@ -1,5 +1,6 @@
 import db from "../db/db";
 import blocked from "../functions/blocked";
+import ILast from "../functions/last";
 import then from "../functions/then";
 
 const deleteCommentQ = (id: string, postid: string, commentid: string) =>
@@ -21,13 +22,14 @@ const getSubCommentsQ = (
   guest: boolean,
   id: string,
   commentid: string,
-  offset: number,
-  sd?: Date
+  last?: ILast
 ) => {
-  const values: (string | number | Date)[] = [id, commentid, offset];
-  if (sd) values.push(sd);
+  const values: (string | number | Date)[] = [id, commentid];
+  if (last) values.push(last.date, last.id);
 
-  const str = sd ? `and sc.created < $${guest ? 3 : 4} ` : ``;
+  const str = last
+    ? `and (sc.created, sc.id) < ($${guest ? 2 : 3}, $${guest ? 3 : 4})`
+    : ``;
 
   const query = guest
     ? `
@@ -37,7 +39,7 @@ const getSubCommentsQ = (
     left join users u on u.id = p.owner
     where sc.comment = $1 and ispublic ${str}
     order by sc.created desc
-    limit 12 offset $2
+    limit 12
     `
     : `
     select sc.*, scou.username, scou.pp, sc.likecount::int, scl is not null isliked from subcomments sc
@@ -51,7 +53,7 @@ const getSubCommentsQ = (
     (pou.ispublic or pof is not null or pou.id = $1) and
     b is null
     order by sc.created desc
-    limit 12 offset $3
+    limit 12
     `;
 
   return db.query(query, values).then(then);
@@ -87,16 +89,11 @@ const commentUnLikeQ = (id: string, postid: string, commentid: string) =>
 `,
     [id, postid, commentid]
   );
-const getCommentLikesQ = (
-  id: string,
-  commentid: string,
-  offset: number,
-  sd?: Date
-) => {
-  const values: (string | number | Date)[] = [id, commentid, offset];
-  if (sd) values.push(sd);
+const getCommentLikesQ = (id: string, commentid: string, last?: ILast) => {
+  const values: (string | number | Date)[] = [id, commentid];
+  if (last) values.push(last.date, last.id);
 
-  const str = sd ? ` cl.created < $4 and` : ``;
+  const str = last ? `(cl.created, cl.id) < ($3, $4) and` : ``;
 
   const b = blocked("p.owner, c.owner, cl.owner");
 
@@ -112,7 +109,7 @@ const getCommentLikesQ = (
     left join relationships pouf on pouf.owner = $1 and pouf.target = pou.id and pouf.type = 0 ${b}
     where cl.comment = $2 and ${str} b is null and (pou.ispublic or pouf is not null or pou.id = $1)
     order by cl.owner = $1 desc, cl.created desc
-    limit 12 offset $3
+    limit 12
   `,
       values
     )

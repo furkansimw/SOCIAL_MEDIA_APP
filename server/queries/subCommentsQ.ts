@@ -1,17 +1,17 @@
 import db from "../db/db";
 import blocked from "../functions/blocked";
+import ILast from "../functions/last";
 import then from "../functions/then";
 
 const getSubCommentLikesQ = (
   id: string,
   subcommentid: string,
-  offset: number,
-  sd?: Date
+  last?: ILast
 ) => {
-  const values: (string | number | Date)[] = [id, subcommentid, offset];
-  if (sd) values.push(sd);
+  const values: (string | number | Date)[] = [id, subcommentid];
+  if (last) values.push(last.date, last.id);
 
-  const str = sd ? `and scl.created < $4` : ``;
+  const str = last ? `and (scl.created, scl.id) < ($3, $4)` : ``;
   const b = blocked("p.owner, c.owner, sc.owner");
   return db
     .query(
@@ -26,7 +26,7 @@ const getSubCommentLikesQ = (
         left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0 ${b}
         WHERE scl.subcomment = $2 ${str} and (u.ispublic or f is not null or u.id = $1) and b is null
         order by scl.owner = $1 desc, scl.created desc
-        limit 12 offset $3
+        limit 12
     `,
       values
     )

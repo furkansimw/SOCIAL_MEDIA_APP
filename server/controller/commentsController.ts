@@ -22,8 +22,8 @@ const getSubComments = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   const { commentid } = req.params;
 
-  const { offset, sd } = conv(req.query);
-  const subcomments = await getSubCommentsQ(guest, id, commentid, offset, sd);
+  const last = conv(req.query);
+  const subcomments = await getSubCommentsQ(guest, id, commentid, last);
   res.json(subcomments);
 });
 
@@ -44,8 +44,8 @@ const commentUnLike = asyncErrorWrapper(async (req, res) => {
 const getCommentLikes = asyncErrorWrapper(async (req, res) => {
   const { id } = res.locals;
   const { commentid } = req.params;
-  const { offset, sd } = conv(req.query);
-  const commentLikes = await getCommentLikesQ(id, commentid, offset, sd);
+  const last = conv(req.query);
+  const commentLikes = await getCommentLikesQ(id, commentid, last);
   res.json(commentLikes);
 });
 

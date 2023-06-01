@@ -15,11 +15,11 @@ import {
 const getComments = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   const { postid } = req.params;
-  const { offset, sd } = conv(req.query);
+  const last = conv(req.query);
   // if out of session can only see first 12 comments
-  if (guest && (offset >= 12 || sd != undefined)) badRequest();
+  if (guest && last) badRequest();
 
-  const postComments = await getCommentsQ(id, postid, guest, offset, sd);
+  const postComments = await getCommentsQ(id, postid, guest, last);
   res.json(postComments);
 });
 
@@ -45,9 +45,9 @@ const getPostLikes = asyncErrorWrapper(async (req, res) => {
 
   const { postid } = req.params;
 
-  const { offset, sd } = conv(req.query);
+  const last = conv(req.query);
 
-  const postLikes = await getPostLikesQ(id, postid, offset, sd);
+  const postLikes = await getPostLikesQ(id, postid, last);
   res.json(postLikes);
 });
 

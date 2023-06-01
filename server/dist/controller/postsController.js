@@ -22,8 +22,8 @@ const getPosts = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, 
     const { guest, id } = res.locals;
     if (guest)
         (0, error_1.badRequest)();
-    const { offset, sd } = (0, converter_1.default)(req.query);
-    const posts = yield (0, postsQ_1.getPostsQ)(id, offset, sd);
+    const last = (0, converter_1.default)(req.query);
+    const posts = yield (0, postsQ_1.getPostsQ)(id, last);
     res.json(posts);
 }));
 exports.getPosts = getPosts;
@@ -31,8 +31,8 @@ const getExplorePosts = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(v
     const { guest, id } = res.locals;
     if (guest)
         (0, error_1.badRequest)();
-    const { offset, sd } = (0, converter_1.default)(req.query);
-    const posts = yield (0, postsQ_1.getExplorePostsQ)(id, offset, sd);
+    const last = (0, converter_1.default)(req.query);
+    const posts = yield (0, postsQ_1.getExplorePostsQ)(id, last);
     res.json(posts);
 }));
 exports.getExplorePosts = getExplorePosts;

@@ -6,15 +6,18 @@ import {
   ICreateComment,
   ICreateAction,
   ILikeComment,
+  IGetPostLikes,
+  IGetCommentLikes,
+  IGetSubCommentLikes,
 } from "../interfaces/IApi";
 import { IComment, IPost, ISubComment, ILikes } from "../interfaces/ISlices";
 
 export const getPosts = createAsyncThunk(
   "/posts",
-  ({ explore, offset, sd }: IPosts) =>
-    req(
-      `${explore ? `/posts/explore` : `/posts`}?offset=${offset}&sd=${sd}`
-    ).then((r) => r as IPost[])
+  ({ explore, date, id }: IPosts) =>
+    req(`${explore ? `/posts/explore` : `/posts`}?date=${date}&id=${id}`).then(
+      (r) => r as IPost[]
+    )
 );
 
 export const createPost = (images: string[], content: string | null) =>
@@ -27,11 +30,11 @@ export const getImages = createAsyncThunk(
 
 export const getComments = createAsyncThunk(
   "/posts/:postid/comments",
-  ({ offset, postid, sd, commentid }: IGetComments) =>
+  ({ id, postid, date, commentid }: IGetComments) =>
     req(
       `/posts/${postid}/comments/${
         commentid ? `${commentid}/subcomments` : ``
-      }?offset=${offset}&sd=${sd}`
+      }?date=${date}&id=${id}`
     ).then((r) => r as (IComment | ISubComment)[])
 );
 
@@ -62,47 +65,28 @@ export const likeComment = createAsyncThunk(
     )
 );
 
-export const getPostLikes = ({
-  id,
-  offset,
-  sd,
-}: {
-  id: string;
-  offset: number;
-  sd?: string;
-}) =>
-  req(`/posts/${id}/likes?sd=${sd}&offset=${offset}`).then(
+export const getPostLikes = ({ id, postid, date }: IGetPostLikes) =>
+  req(`/posts/${postid}/likes?date=${date}&id=${id}`).then(
     (r) => r as ILikes[]
   );
 
 export const getCommentLikes = ({
   id,
-  offset,
+  date,
   commentid,
-  sd,
-}: {
-  id: string;
-  commentid: string;
-  offset: number;
-  sd?: string;
-}) =>
+  postid,
+}: IGetCommentLikes) =>
   req(
-    `/posts/${id}/comments/${commentid}/likes?sd=${sd}&offset=${offset}`
+    `/posts/${postid}/comments/${commentid}/likes?date=${date}&id=${id}`
   ).then((r) => r as ILikes[]);
 
 export const getSubCommentLikes = ({
-  id,
   commentid,
+  postid,
   subcommentid,
-  offset,
-  sd,
-}: {
-  id: string;
-  commentid: string;
-  subcommentid: string;
-  offset: number;
-  sd?: string;
-}) =>
+  date,
+  id,
+}: IGetSubCommentLikes) =>
   req(
-    `/posts/${id}/likes/comments/${commentid}/${subcommentid}/likes?sd=${sd}&offset=${offset}`
+    `/posts/${postid}/likes/comments/${commentid}/${subcommentid}/likes?date=${date}&id=${id}`
   ).then((r) => r as ILikes[]);

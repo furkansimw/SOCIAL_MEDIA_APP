@@ -38,16 +38,16 @@ const getProfile = asyncErrorWrapper(async (req, res) => {
 const getProfilePosts = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   const { username } = req.params;
-  const { offset, sd } = conv(req.query);
-  const profilePosts = await getProfilePostsQ(id, username, guest, offset, sd);
+  const last = conv(req.query);
+  const profilePosts = await getProfilePostsQ(id, username, guest, last);
   res.json(profilePosts);
 });
 
 const getMySaved = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   if (guest) badRequest();
-  const { offset, sd } = conv(req.query);
-  const mySaved = await getMySavedQ(id, offset, sd);
+  const last = conv(req.query);
+  const mySaved = await getMySavedQ(id, last);
   res.json(mySaved);
 });
 

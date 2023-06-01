@@ -1,13 +1,14 @@
-export interface IPosts {
-  explore?: boolean;
-  offset?: number;
-  sd?: string;
+export interface ILast {
+  id?: string;
+  date?: string;
 }
 
-export interface IGetComments {
+export interface IPosts extends ILast {
+  explore?: boolean;
+}
+
+export interface IGetComments extends ILast {
   postid: string;
-  offset?: number;
-  sd?: string;
   commentid?: string;
 }
 
@@ -31,4 +32,17 @@ export interface ILikeComment {
   commentid: string;
   postid: string;
   subcommentid?: string;
+}
+
+export interface IGetPostLikes extends ILast {
+  postid: string;
+}
+
+export interface IGetCommentLikes extends ILast {
+  postid: string;
+  commentid: string;
+}
+
+export interface IGetSubCommentLikes extends IGetCommentLikes {
+  subcommentid: string;
 }

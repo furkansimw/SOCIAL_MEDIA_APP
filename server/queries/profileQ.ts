@@ -1,5 +1,6 @@
 import db from "../db/db";
 import blocked from "../functions/blocked";
+import ILast from "../functions/last";
 import then from "../functions/then";
 
 const searchProfileQ = (id: string, u: string) =>
@@ -45,20 +46,23 @@ const getProfilePostsQ = (
   id: string,
   username: string,
   guest: boolean,
-  offset: number,
-  sd?: Date
+  last?: ILast
 ) => {
-  const values: (string | Date | number)[] = [id, username, offset];
-  if (sd) values.push(sd);
-  const str = sd ? `and p.created < $${guest ? 3 : 4}` : ``;
+  const values: (string | Date | number)[] = [id, username];
+  if (last) values.push(last.date, last.id);
+  const str = last
+    ? `and (p.created, p.id) < ($${guest ? 2 : 3}, $${guest ? 3 : 4})`
+    : ``;
+
   const b = blocked(`p.owner`);
+
   const query = guest
     ? `
     select p.id, cardinality(images)>1 more, images[1] cover, likecount::int,username, pp, content, p.created, u.id owner, commentcount::int from posts p
     left join users u on u.id = p.owner
     where username = $1 and u.ispublic ${str}
     order by p.created desc
-    limit 12 offset $2
+    limit 12
   `
     : `
     select p.id, cardinality(images)>1 more, images[1] cover, likecount::int,username, pp, content, p.created, u.id owner, commentcount::int, s is not null issaved, pl is not null isliked from posts p    
@@ -68,16 +72,16 @@ const getProfilePostsQ = (
     left join relationships f on f.owner = $1 and f.target = u.id and f.type = 0
     ${b}
     where username = $2 and (u.ispublic or f is not null or u.id = $1) and b is null ${str}
-    limit 12 offset $3
+    limit 12
     `;
 
   return db.query(query, values).then(then);
 };
 
-const getMySavedQ = (id: string, offset: number, sd?: Date) => {
-  const values: (string | number | Date)[] = [id, offset];
-  if (sd) values.push(sd);
-  const str = sd ? `and p.created < $3` : ``;
+const getMySavedQ = (id: string, last?: ILast) => {
+  const values: (string | number | Date)[] = [id];
+  if (last) values.push(last.date, last.id);
+  const str = last ? `and (p.created, p.id) < ($2, $3)` : ``;
   const b = blocked("p.owner");
   return db
     .query(
@@ -87,7 +91,7 @@ const getMySavedQ = (id: string, offset: number, sd?: Date) => {
       left join users u on u.id = p.owner ${b}
       left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
       where s.owner = $1 and (u.ispublic or f is not null or u.id = $1) and b is null ${str}
-      limit 12 offset $3
+      limit 12
   `,
       values
     )

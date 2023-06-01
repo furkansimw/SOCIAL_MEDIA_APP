@@ -1,25 +1,24 @@
 import db from "../db/db";
 import blocked from "../functions/blocked";
+import ILast from "../functions/last";
 
 const getCommentsQ = (
   id: string,
   postid: string,
   guest: boolean,
-  offset: number,
-  sd?: Date
+  last?: ILast
 ) => {
-  const values: (string | number | Date)[] = [id, postid, offset];
-  if (sd) values.push(sd);
-  console.log(sd);
+  const values: (string | number | Date)[] = [id, postid];
+  if (last) values.push(last.date, last.id);
   if (guest) values.shift();
-  const str = sd ? `and c.created < $4` : ``;
+  const str = last ? `and (c.created, c.id) < ($3, $4)` : ``;
   const query = guest
     ? `
         select c.*, likecount::int, subcommentcount::int, u.username, u.pp from comments c
         left join users u on u.id = c.owner
         where c.post = $1
         order by c.created desc
-        limit 12 offset $2
+        limit 12
     `
     : `
         select c.*,likecount::int, subcommentcount::int, u.username,cl is not null isliked, u.pp from comments c
@@ -28,7 +27,7 @@ const getCommentsQ = (
         left join relationships b on (b.owner = $1 and b.target = u.id and b.type = 2) or (b.owner = u.id and b.target = $1 and b.type = 2)
         where c.post = $2 and b is null ${str}
         order by c.owner = $2, created desc
-        limit 12 offset $3
+        limit 12
         `;
   return db.query(query, values).then((r) => r.rows);
 };
@@ -72,16 +71,12 @@ const getPostQ = (id: string, postid: string, guest: boolean) => {
   return db.query(query, values).then((r) => r.rows[0] || null);
 };
 
-const getPostLikesQ = (
-  id: string,
-  postid: string,
-  offset: number,
-  sd?: Date
-) => {
-  const values: (string | number | Date)[] = [id, postid, offset];
+const getPostLikesQ = (id: string, postid: string, last?: ILast) => {
+  const values: (string | number | Date)[] = [id, postid];
 
-  if (sd) values.push(sd);
-  const str = sd ? `and pl.created < $4` : ``;
+  if (last) values.push(last.date, last.id);
+
+  const str = last ? `and (pl.created, pl.id) < ($3, $4)` : ``;
 
   const b = blocked("pou.id, plou.id");
 
@@ -95,7 +90,7 @@ const getPostLikesQ = (
       left join relationships f on (f.owner = $1 and f.target = pl.owner)
       where pl.post = $2 ${str} and b is null
       order by pl.owner = $1 desc, pl.created desc
-      limit 12 offset $3
+      limit 12
       `,
       values
     )

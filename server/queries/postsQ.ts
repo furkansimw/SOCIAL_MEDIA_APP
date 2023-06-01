@@ -1,9 +1,10 @@
 import db from "../db/db";
+import ILast from "../functions/last";
 
-const getPostsQ = (id: string, offset: number, sd?: Date) => {
-  const str = sd ? `and p.created < $3` : ``;
-  const values: (string | number | Date)[] = [id, offset];
-  if (sd) values.push(sd);
+const getPostsQ = (id: string, last?: ILast) => {
+  const str = last ? `and and (p.created, p.id) < ($2, $3)` : ``;
+  const values: (string | number | Date)[] = [id];
+  if (last) values.push(last.date, last.id);
 
   return db
     .query(
@@ -15,16 +16,16 @@ const getPostsQ = (id: string, offset: number, sd?: Date) => {
       left join saved s on s.owner = $1 and s.post = p.id
       where f is not null ${str}
       order by p.created desc
-      limit 12 offset $2
+      limit 12
   `,
       values
     )
     .then((r) => r.rows);
 };
-const getExplorePostsQ = (id: string, offset: number, sd?: Date) => {
-  const str = sd ? `and p.created < $3` : ``;
-  const values: (string | number | Date)[] = [id, offset];
-  if (sd) values.push(sd);
+const getExplorePostsQ = (id: string, last?: ILast) => {
+  const str = last ? `and (p.created, p.id) < ($2, $3)` : ``;
+  const values: (string | number | Date)[] = [id];
+  if (last) values.push(last.date, last.id);
 
   return db
     .query(
@@ -36,7 +37,7 @@ const getExplorePostsQ = (id: string, offset: number, sd?: Date) => {
       left join saved s on s.owner = $1 and s.post = p.id
       where ispublic and r is null and p.owner != $1 ${str} 
       order by p.created desc 
-      limit 12 offset $2
+      limit 12
   `,
       values
     )
