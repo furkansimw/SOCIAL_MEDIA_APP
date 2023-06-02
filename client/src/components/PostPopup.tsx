@@ -26,12 +26,6 @@ const PostPopup = () => {
     if (e.key == "Escape") close();
   };
 
-  const a = useSelector(selectCurrentPost);
-
-  useEffect(() => {
-    alert("changed");
-  }, [a]);
-
   useEffect(() => {
     const worker = (e: PopStateEvent) => dispatch(setBack(null));
     window.addEventListener("popstate", worker);

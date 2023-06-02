@@ -10,6 +10,7 @@ export interface IPostsSliceInitialState {
   back: null | string;
   hasmore: { home: boolean; explore: boolean };
   loading: { home: boolean; explore: boolean };
+  currentId: string | null;
 }
 
 export interface IPost {

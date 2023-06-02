@@ -16,7 +16,7 @@ import { MoreIcon3, SettingsIcon } from "../components/Icons";
 import Title from "../components/Title";
 import PostMini from "../components/post/PostMini";
 import NotFound from "../components/NotFound.tsx";
-import { selectIsLoggedin, selectValues } from "../redux/profileReducer.ts";
+import { selectValues } from "../redux/profileReducer.ts";
 import { disableRightClick } from "../components/Navigation.tsx";
 import Priv from "../components/profile/Priv.tsx";
 
@@ -83,6 +83,16 @@ const Profile = () => {
   const b = k(followercount);
   const c = k(followingcount);
 
+  const onScroll = (e: React.UIEvent<HTMLUListElement, UIEvent>) => {
+    const { hasmore, loading } = postsState;
+    if (loading || !hasmore) return;
+    const { scrollTop, scrollHeight, clientHeight } = e.target as Element;
+    if (scrollTop + clientHeight + 100 >= clientHeight) {
+      const { created: date, id } = posts[posts.length - 1];
+      dispatch(getProfilePosts({ username, date, id }));
+    }
+  };
+
   return (
     <Container>
       <Title title={username} />
@@ -131,7 +141,7 @@ const Profile = () => {
         </div>
       </div>
       <Priv info={info} />
-      <ul>
+      <ul onScroll={onScroll}>
         {posts.map((post) => (
           <PostMini post={post} back={username} />
         ))}

@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../redux/store";
-import { setBack } from "../../redux/postsReducer";
+import { setBack, setCurrentPostId } from "../../redux/postsReducer";
 import { MoreIconImages } from "../Icons";
 
 type props = {

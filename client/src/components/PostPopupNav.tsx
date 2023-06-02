@@ -2,28 +2,52 @@ import React, { memo, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { ArrowLeft, ArrowRight } from "./Icons";
 import { shallowEqual, useSelector } from "react-redux";
-import { selectpostsForBack } from "../redux/postsReducer";
+import {
+  selectBack,
+  selectProfile,
+  selectpostsForBack,
+  setCurrentPostId,
+} from "../redux/postsReducer";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../redux/store";
+import { AppDispatch, RootState } from "../redux/store";
+import { getProfilePosts } from "../api/profile";
 
 const PostPopupNav = () => {
   const posts = useSelector(selectpostsForBack, shallowEqual);
-  const currentPostId = window.location.pathname.split("/")[2];
 
   const [index, setIndex] = useState(
-    posts.findIndex((p) => p.id == currentPostId)
+    posts.findIndex((p) => p.id == window.location.pathname.split("/")[2])
   );
 
   const dispatch = useDispatch<AppDispatch>();
 
   const next = () => {
+    setIndex(index + 1);
     window.history.pushState(null, "", `/p/${posts[index + 1].id}`);
-    dispatch(setCurrentPostId(currentPostId));
+    dispatch(setCurrentPostId(window.location.pathname.split("/")[2]));
   };
 
+  const username = useSelector(selectBack, shallowEqual)!;
+
+  const { postsState } = useSelector(
+    (s: RootState) => selectProfile(s, username),
+    shallowEqual
+  );
+
+  useEffect(() => {
+    if (!postsState) return;
+    const { hasmore, loading } = postsState;
+    if (index == posts.length - 1 && hasmore && !loading) {
+      const username = window.location.pathname.split("/")[2];
+      const { created: date, id } = posts[posts.length - 1];
+      dispatch(getProfilePosts({ username, date, id }));
+    }
+  }, [index]);
+
   const back = () => {
+    setIndex(index - 1);
     window.history.pushState(null, "", `/p/${posts[index - 1].id}`);
-    dispatch(setCurrentPostId(currentPostId));
+    dispatch(setCurrentPostId(window.location.pathname.split("/")[2]));
   };
   return (
     <Container>

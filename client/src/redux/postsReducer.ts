@@ -25,6 +25,7 @@ const initialState: IPostsSliceInitialState = {
   back: null,
   hasmore: { home: true, explore: true },
   loading: { home: true, explore: true },
+  currentId: null,
 };
 
 export const postsSlice = createSlice({
@@ -60,6 +61,9 @@ export const postsSlice = createSlice({
         } as IPost);
 
       state.posts = postsU(posts, postid, obj);
+    },
+    setCurrentPostId: (state, action: PayloadAction<string | null>) => {
+      state.currentId = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -496,7 +500,8 @@ export const postsSlice = createSlice({
   },
 });
 
-export const { setBack, toggleSubCommetsT } = postsSlice.actions;
+export const { setBack, toggleSubCommetsT, setCurrentPostId } =
+  postsSlice.actions;
 
 export const selectPostsHome = (state: RootState) =>
   state.posts.posts.filter((post) => post.page == "home");
@@ -520,7 +525,7 @@ export const selectLoading = (state: RootState) => state.posts.loading;
 export const selectBack = (state: RootState) => state.posts.back;
 
 export const selectCurrentPost = (state: RootState) =>
-  state.posts.posts.find((post) => post.id == "id")!;
+  state.posts.posts.find((post) => post.id == state.posts.currentId)!;
 
 export const selectpostsForBack = (state: RootState) =>
   state.posts.posts.filter((post) => post.page == state.posts.back);
