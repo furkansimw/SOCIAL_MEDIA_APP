@@ -1,25 +1,6 @@
 # [View Demo](LINK)
 
-<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
-
 <a name="readme-top"></a>
-
-<!--
-*** Thanks for checking out the Best-README-Template. If you have a suggestion
-*** that would make this better, please fork the repo and create a pull request
-*** or simply open an issue with the tag "enhancement".
-*** Don't forget to give the project a star!
-*** Thanks again! Now go create something AMAZING! :D
--->
-
-<!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
 
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
@@ -31,24 +12,19 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="vite.svg" alt="Logo" width="80" height="80">
+  <a href="https://github.com/furkansimw/SOCIAL_MEDIA_APP/#readme">
+    <img src="./client/public/vite.svg" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">FULL STACK SOCIAL MEDIA APP</h3>
+  <h1 align="center">FULL STACK SOCIAL MEDIA APP</h1>
 
-  <p align="center">
-    An awesome README template to jumpstart your projects!
-    <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
+  <h5 align="center">
+    <a style="font-size:1rem" href="DEMOLINK">View Demo</a>
     ·
-    <a href="https://github.com/furkansimw/SOCIAL_MEDIA_APP/issues">Report Bug</a>
+    <a style="font-size:1rem" href="https://github.com/furkansimw/SOCIAL_MEDIA_APP/issues">Report Bug</a>
     ·
-    <a href="https://github.com/furkansimw/SOCIAL_MEDIA_APP/issues">Request Feature</a>
-  </p>
+    <a style="font-size:1rem" href="https://github.com/furkansimw/SOCIAL_MEDIA_APP/issues">Request Feature</a>
+  </h5>
 </div>
 
 <!-- TABLE OF CONTENTS -->
@@ -58,6 +34,7 @@
     <li>
       <a href="#about-the-project">About The Project</a>
       <ul>
+        <li><a href="#screen-shots">Screen Shots</a></li>
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
@@ -81,26 +58,31 @@
 
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-
 GERCEK BIR SOSYAL MEDYA UYGULAMASI HESAP OLUSTURMA POST PAYLASMA ANLIK MESAJLASMA POSTLARA YORUM YAPMA PROFIL OZELLIKLERI BIOGRAFI HESAP GIZLI/ACIK EGER HESAP GIZLI ACIK VEYA KAPALI OLMASI DURUMDA OTURUM DISI GIRILEN HESAPLARIN FOTOGRAF IZINLERI DUZELTILMESI & YORUM YAPMAK, BEGENI ISLEMLERI ICIN OTURUM ACMA GEREKMESI, EGER BIR HESAP ENGELLENIR ISE VEYA ENGEL YERSEK ONUN POSTLARINI GOREMEYIZ YORUMLARINI GOREMEYIZ BUTUN ILISKILER KESILIR (API TARAFINDAN KORUMALI)
 
 Use the `BLANK_README.md` to get started.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+### Screen Shots
+
+<img id="screenshots src="x"/><br>
+<img src="x"/><br>
+<img src="x"/><br>
+<img src="x"/><br>
+<img src="x"/><br>
+<img src="x"/><br>
+
 ### Built With
 
 This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 
-- [![Next][Next.js]][Next-url]
-- [![React][React.js]][React-url]
-- [![Vue][Vue.js]][Vue-url]
-- [![Angular][Angular.io]][Angular-url]
-- [![Svelte][Svelte.dev]][Svelte-url]
-- [![Laravel][Laravel.com]][Laravel-url]
-- [![Bootstrap][Bootstrap.com]][Bootstrap-url]
-- [![JQuery][JQuery.com]][JQuery-url]
+- <a href="https://reactjs.org"><img src="https://react.dev/favicon.ico" alt="SocketIO" height="30"></a>
+- [![Typescript][typescript]][typescript-url]
+- [![NodeJS][node]][node-url]
+- [![ExpressJS][express]][express-url]
+- <a href="https://www.postgresql.org/favicon.ico" target="_blank"><img src="https://www.postgresql.org/favicon.ico" alt="SocketIO" height="30"></a>
+- <a href="https://socket.io/"><img src="https://camo.githubusercontent.com/3ba298842d34904ad3ae5b56d1c5e11bb745cd9b109073783dcbbd07883c01fd/68747470733a2f2f736f636b65742e696f2f696d616765732f6c6f676f2d6461726b2e737667" alt="SocketIO" height="30"></a>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -124,33 +106,34 @@ This is an example of how to list things you need to use the software and how to
 
 _Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. Clone the repo
    ```sh
-   git clone https://github.com/your_username_/Project-Name.git
+   git clone https://github.com/furkansimw/SOCIAL_MEDIA_APP
    ```
-3. Install NPM packages
+2. Server for Install NPM Packages and normal start (npm run start) developement for (npm run dev)
    ```sh
-   npm install
+   cd server && npm install && npm run start
    ```
-4. Enter your API in `config.js`
+3. Client for Install NPM Packages and Start
+   ```sh
+   cd client && npm install && npm run dev
+   ```
+4. Enter your System Environment Variables for client `client/.env`
    ```js
-   const API_KEY = "ENTER YOUR API";
+   const API_URL = "YOUR API URL without /api";
+   ```
+5. Enter your System Environment Variables for server `server/.env`
+   ```js
+    DB_URL=postgres://postgres:123456@127.0.0.1:5432/
+    JWT_SECRET=***
+    CLOUDINARY_CLOUD_NAME=***
+    CLOUDINARY_API_KEY=***
+    CLOUDINARY_API_SECRET=***
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- USAGE EXAMPLES -->
-
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/furkansimw/SOCIAL_MEDIA_APP/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -209,32 +192,28 @@ Use this space to list resources you find helpful and would like to give credit 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
-[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge
-[forks-url]: https://github.com/othneildrew/Best-README-Template/network/members
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
-[stars-url]: https://github.com/othneildrew/Best-README-Template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
-[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
+[contributors-shield]: https://img.shields.io/badge/contributors-0-green?style=for-the-badge
+[contributors-url]: https://github.com/furkansimw/SOCIAL_MEDIA_APP/graphs/contributors
+[forks-shield]: https://img.shields.io/badge/FORKS-0-blue?style=for-the-badge
+[forks-url]: https://github.com/furkansimw/SOCIAL_MEDIA_APP/network/members
+[stars-shield]: https://img.shields.io/badge/STARS-1-blue?style=for-the-badge
+[stars-url]: https://github.com/furkansimw/SOCIAL_MEDIA_APP/stargazers
+[issues-shield]: https://img.shields.io/badge/ISSUES-0-yellow?style=for-the-badge
+[issues-url]: https://github.com/furkansimw/SOCIAL_MEDIA_APP/issues
 [license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
-[license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
+[license-url]: https://github.com/furkansimw/SOCIAL_MEDIA_APP/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/othneildrew
+[linkedin-url]: https://www.linkedin.com/in/furkan-%C5%9Fim%C5%9Fek-215b33246/
 [product-screenshot]: images/screenshot.png
-[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
-[Next-url]: https://nextjs.org/
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [React-url]: https://reactjs.org/
-[Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
-[Vue-url]: https://vuejs.org/
-[Angular.io]: https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white
-[Angular-url]: https://angular.io/
-[Svelte.dev]: https://img.shields.io/badge/Svelte-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00
-[Svelte-url]: https://svelte.dev/
-[Laravel.com]: https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white
-[Laravel-url]: https://laravel.com
-[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
-[Bootstrap-url]: https://getbootstrap.com
-[JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
-[JQuery-url]: https://jquery.com
+[express]: https://expressjs.com/images/favicon.png
+[express-url]: https://expressjs.com/
+[node]: https://nodejs.org/static/images/favicons/favicon.png
+[node-url]: https://nodejs.org
+[postgre]: https://www.postgresql.org/favicon.ico
+[postgre-url]: https://www.postgresql.org/
+[socket]: https://camo.githubusercontent.com/3ba298842d34904ad3ae5b56d1c5e11bb745cd9b109073783dcbbd07883c01fd/68747470733a2f2f736f636b65742e696f2f696d616765732f6c6f676f2d6461726b2e737667
+[socket-url]: https://socket.io/
+[typescript]: https://camo.githubusercontent.com/b9e906aef319c32b64efb7b1713fed89c784ba17bc314e3320ce845b794be407/68747470733a2f2f7777772e747970657363726970746c616e672e6f72672f66617669636f6e2d33327833322e706e673f763d3839343461303561386236303138353564653131366338613536643362336165
+[typescript-url]: https://www.typescriptlang.org/
