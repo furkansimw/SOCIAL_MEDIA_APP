@@ -18,7 +18,7 @@ const server = app.listen(port, async () => await create());
 app.use((req, res, next) => {
   setTimeout(() => {
     next();
-  }, 500);
+  }, 0);
 });
 
 app.use(express.json({ limit: "60mb" }));

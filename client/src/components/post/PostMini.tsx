@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../redux/store";
-import { setBack } from "../../redux/postsReducer";
+import { setBack, setCurrentPostId } from "../../redux/postsReducer";
 import { MoreIconImages } from "../Icons";
 
 type props = {
@@ -19,6 +19,7 @@ const PostMini: FC<props> = ({ post, back }) => {
 
   const tap = () => {
     window.history.pushState(null, "", `/p/${id}`);
+    dispatch(setCurrentPostId(id));
     dispatch(setBack(back));
   };
 

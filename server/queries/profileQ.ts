@@ -100,20 +100,17 @@ const getMySavedQ = (id: string, last?: ILast) => {
 };
 
 const followUserQ = (id: string, userid: string) =>
-  db
-    .query(
-      `
+  db.query(
+    `
       INSERT INTO relationships (owner, target, type)
       SELECT $1, $2,
             CASE WHEN u.ispublic = true THEN 0 ELSE 1 END
       FROM users u
       ${blocked("u.id")}
       where u.id = $2 and b is null and not exists (select 1 from relationships r where r.owner = $1 and r.target = $2)
-      returning type
     `,
-      [id, userid]
-    )
-    .then((r) => r.rows[0]?.type);
+    [id, userid]
+  );
 
 const unFollowUserQ = (id: string, userid: string) =>
   db.query(`delete from relationships where owner = $1 and target = $2`, [

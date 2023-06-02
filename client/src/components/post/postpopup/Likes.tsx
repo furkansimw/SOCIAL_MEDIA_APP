@@ -118,12 +118,13 @@ const Likes: FC<Props> = ({ quit, postid, commentid, subcommentid, type }) => {
 
 const Bg = styled.div`
   background-color: rgba(0, 0, 0, 0.5);
-  width: 100vw;
-  height: 100vh;
+  width: 200vw;
+  height: 200vh;
   position: fixed;
   top: 0px;
   left: 0px;
   z-index: 1300;
+  transform: translate(-10%, -10%);
 `;
 
 const Container = styled.div`

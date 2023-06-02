@@ -71,11 +71,13 @@ export interface IProfile {
   username: string;
   exists?: boolean;
   info?: {
+    bio: string | null;
     username: string;
     followingcount: number;
     followercount: number;
     postcount: number;
     id: string;
+    fullname: string | null;
     pp: string | null;
     ispublic: boolean;
     isfollowingme: boolean;

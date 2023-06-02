@@ -242,7 +242,7 @@ export const postsSlice = createSlice({
           subcommentcount: 0,
           subcomments: {
             data: [],
-            hasmore: true,
+            hasmore: false,
             loading: false,
             t: false,
           },
@@ -520,8 +520,9 @@ export const selectLoading = (state: RootState) => state.posts.loading;
 export const selectBack = (state: RootState) => state.posts.back;
 
 export const selectCurrentPost = (state: RootState) =>
-  state.posts.posts.find(
-    (post) => post.id == window.location.pathname.split("/")[2]
-  )!;
+  state.posts.posts.find((post) => post.id == "id")!;
+
+export const selectpostsForBack = (state: RootState) =>
+  state.posts.posts.filter((post) => post.page == state.posts.back);
 
 export default postsSlice.reducer;
