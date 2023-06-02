@@ -1,10 +1,20 @@
-import { FormEvent, forwardRef, useEffect, useRef, useState } from "react";
+import {
+  FormEvent,
+  forwardRef,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import styled from "styled-components";
 import { searchProfile } from "../api/profile";
-import { SearchIcon2 } from "./Icons";
+import { RemoveIcon2, SearchIcon2 } from "./Icons";
+import LoadingBox from "./LoadingBox";
+import { Link } from "react-router-dom";
 
 type Props = {
   isActive: boolean;
+  close: () => void;
 };
 
 type ISearchL = {
@@ -13,8 +23,8 @@ type ISearchL = {
   fullname: string | null;
 };
 
-const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
-  ({ isActive }: Props, ref) => {
+const SearchPanel = forwardRef<HTMLDivElement, Props>(
+  ({ isActive, close }: Props, ref) => {
     const [state, setState] = useState("");
     const [focus, setFocus] = useState(false);
     const [searchL, setSearchL] = useState<ISearchL[]>([]);
@@ -25,6 +35,7 @@ const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
       const a = localStorage.getItem("recent");
       inputRef.current?.focus();
       setState("");
+      setLoading(false);
       try {
         if (a) {
           const r = JSON.parse(a);
@@ -37,28 +48,52 @@ const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
 
     const onSubmit = (e: FormEvent<HTMLFormElement>) => e.preventDefault();
 
-    useEffect(() => {
-      const timer = setTimeout(() => {
+    useLayoutEffect(() => {
+      setLoading(state.trim().length != 0);
+      setSearchL([]);
+      var timer: any;
+      clearTimeout(timer);
+
+      timer = setTimeout(() => {
         if (state.trim().length > 0) {
-          setLoading(true);
           searchProfile(state)
             .then(setSearchL)
-            .finally(() => setLoading(false));
+            .finally(() => {
+              setLoading(false);
+            });
         }
-      }, 200);
+      }, 500);
 
       return () => clearTimeout(timer);
     }, [state]);
 
     useEffect(() => {
-      if (state.trim().length == 0) {
-        setState("");
-      }
+      if (state.trim().length == 0) setState("");
     }, [focus]);
 
     const inputRef = useRef<HTMLInputElement>(null);
     const onFocus = () => setFocus(true);
     const onBlur = () => setFocus(false);
+
+    const onClick = (i: ISearchL) => {
+      let b = recent;
+
+      if (b.find((_) => _.username == i.username)?.username) {
+        b = b.filter((_) => _.username != i.username);
+      }
+      b = [i, ...b];
+      b = b.filter((_, index) => index < 20);
+      setRecent(b);
+      localStorage.setItem("recent", JSON.stringify(b));
+      close();
+    };
+
+    const clearAll = () => setRecent([]);
+
+    useEffect(() => {
+      localStorage.setItem("recent", JSON.stringify(recent));
+    }, [recent]);
+
     return (
       <Container className={isActive ? "active" : ""} ref={ref}>
         <div className="title">
@@ -86,7 +121,46 @@ const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
             )}
           </form>
         </div>
-        <ul></ul>
+        {state.trim().length == 0 && (
+          <div className="rp">
+            <p className="r">Recent</p>
+            {recent.length > 0 && <button onClick={clearAll}>Clear all</button>}
+          </div>
+        )}
+        <ul className={state.trim().length == 0 ? `f` : ``}>
+          {!loading && searchL.length == 0 && state.trim().length != 0 && (
+            <p className="nf">No results found.</p>
+          )}
+          {loading && <LoadingBox />}
+          {!loading &&
+            (state.trim().length > 0 ? searchL : recent).map((i) => {
+              const { username, pp, fullname } = i;
+              return (
+                <li>
+                  <Link to={`/${username}`} onClick={() => onClick(i)}>
+                    <img src={pp || "/pp.jpg"} alt="pp" />
+                    <div className="text">
+                      <p className="username">{username}</p>
+                      <p className="fullname">{fullname}</p>
+                      {state.trim().length == 0 && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setRecent((prev) =>
+                              prev.filter((_) => _.username != username)
+                            );
+                          }}
+                        >
+                          <RemoveIcon2 />
+                        </button>
+                      )}
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
+        </ul>
       </Container>
     );
   }
@@ -104,7 +178,8 @@ const Container = styled.div`
   border-right: 1px solid #262626;
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
   border-radius: 0px 1rem 1rem 0px;
-  z-index: 10;
+  z-index: 50;
+  overflow: hidden;
   &.active {
     left: 0px;
   }
@@ -116,9 +191,12 @@ const Container = styled.div`
       line-height: 30px;
     }
   }
+
   .input {
+    border-bottom: 1px solid #262626;
     display: flex;
-    padding: 20px;
+    padding: 10px 20px;
+    padding-bottom: 2rem;
     form {
       position: relative;
       width: 100%;
@@ -132,7 +210,7 @@ const Container = styled.div`
       input {
         width: 100%;
         line-height: 18px;
-        padding: 3px 1rem;
+        padding: 12px 1rem;
         font-size: 1rem;
         height: 40px;
         background-color: transparent;
@@ -154,6 +232,100 @@ const Container = styled.div`
       }
     }
   }
+  .rp {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 20px;
+    width: 100;
+    .r {
+      font-weight: 600;
+    }
+    button {
+      color: #0095f6;
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+  }
+  ul {
+    height: calc(100% - 150px);
+    position: relative;
+    &.f {
+      height: calc(100% - 210px);
+    }
+    &::-webkit-scrollbar-thumb {
+      width: 8px;
+      background-color: #363636;
+      border-radius: 8px;
+      &:active {
+        background-color: #404040;
+      }
+    }
+    &::-webkit-scrollbar {
+      width: 8px;
+      background-color: #161616;
+    }
+    width: 100%;
+    overflow-y: auto;
+
+    .loading-box {
+      top: 0px;
+      left: 0px;
+      height: 100%;
+      position: absolute;
+      svg {
+        height: 24px;
+      }
+    }
+    .nf {
+      color: #a8a8a8;
+      font-size: 14px;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    li {
+      position: relative;
+      a {
+        &:hover {
+          background-color: #121212;
+        }
+        display: flex;
+        height: 60px;
+        width: 100%;
+        padding: 8px 24px;
+      }
+      img {
+        width: 44px;
+        height: 44px;
+        object-fit: cover;
+        border-radius: 100%;
+        margin-right: 12px;
+      }
+      .text {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        p {
+          font-size: 14px;
+          &.username {
+            font-weight: 600;
+          }
+          &.fullname {
+            color: #a8a8a8;
+          }
+        }
+      }
+      button {
+        position: absolute;
+        right: 24px;
+        top: 22px;
+        width: 1rem;
+        height: 1rem;
+      }
+    }
+  }
 `;
 
-export default NotificationsPanel;
+export default SearchPanel;

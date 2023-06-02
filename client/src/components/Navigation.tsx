@@ -104,7 +104,11 @@ const Navigation = () => {
 
   return (
     <>
-      <SearchPanel isActive={panel == "search"} ref={searchPanelRef} />
+      <SearchPanel
+        close={closePanel}
+        isActive={panel == "search"}
+        ref={searchPanelRef}
+      />
       <NotificationsPanel
         isActive={panel == "notifications"}
         ref={notificationPanelRef}
@@ -189,7 +193,7 @@ const Container = styled.div`
   width: 360px;
   .content {
     position: relative;
-    z-index: 20;
+    z-index: 70;
     background-color: #000;
     position: relative;
     border-right: 1px solid #262626;
