@@ -28,11 +28,11 @@ const getProfileQ = (id: string, username: string, guest: boolean) => {
   if (guest) values.shift();
   const query = guest
     ? `
-    select pp, fullname, username, bio, ispublic, postcount::int, followercount::int, followingcount::int from users u
+    select id, pp, fullname, username, bio, ispublic, postcount::int, followercount::int, followingcount::int from users u
     where username = $1
   `
     : `
-    select pp, fullname, username, bio, ispublic, postcount::int, followercount::int, followingcount::int,
+    select id, pp, fullname, username, bio, ispublic, postcount::int, followercount::int, followingcount::int,
     (select type from relationships r where owner = $1 and target = u.id) status,
     (select type from relationships r where owner = u.id and target = $1 and type = 0) is not null isfollowingme from users u
     where username = $2 
@@ -104,16 +104,16 @@ const followUserQ = (id: string, userid: string) =>
     .query(
       `
       INSERT INTO relationships (owner, target, type)
-      SELECT $1, $2, type,
-            CASE WHEN u.ispublic = true THEN 1 ELSE 0 END
-      FROM users
+      SELECT $1, $2,
+            CASE WHEN u.ispublic = true THEN 0 ELSE 1 END
+      FROM users u
       ${blocked("u.id")}
       where u.id = $2 and b is null and not exists (select 1 from relationships r where r.owner = $1 and r.target = $2)
       returning type
     `,
       [id, userid]
     )
-    .then((r) => r.rows[0].type);
+    .then((r) => r.rows[0]?.type);
 
 const unFollowUserQ = (id: string, userid: string) =>
   db.query(`delete from relationships where owner = $1 and target = $2`, [

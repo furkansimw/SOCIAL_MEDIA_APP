@@ -4,7 +4,12 @@ import { AppDispatch, RootState } from "../redux/store";
 import { selectPostsProfile, selectProfile } from "../redux/postsReducer";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { getProfile, getProfilePosts } from "../api/profile";
+import {
+  blockUser,
+  followUser,
+  getProfile,
+  getProfilePosts,
+} from "../api/profile";
 import LoadingBox from "../components/LoadingBox";
 import styled from "styled-components";
 import { MoreIcon3 } from "../components/Icons";
@@ -37,14 +42,30 @@ const Profile = () => {
   if (!profile) return <></>;
 
   const { info, postsState, loading } = profile;
-  const statusController = () => {
-    if (info?.status == null) return "Follow";
-  };
 
   if (profile.exists == false) return <NotFound />;
   if (loading || !postsState || !info) return <></>;
 
-  const { followercount, followingcount, postcount } = info!;
+  const {
+    followercount,
+    followingcount,
+    postcount,
+    status,
+    ispublic,
+    id: userid,
+  } = info!;
+  const statusClick = () => {
+    if (status == 2) dispatch(blockUser({ a: false, userid, ispublic }));
+    else {
+      if (status == null) dispatch(followUser({ a: true, userid, ispublic }));
+      else dispatch(followUser({ a: false, userid, ispublic }));
+    }
+  };
+
+  const statusController = () => {
+    if (status == null) return "Follow";
+    return ["Following", "Requested", "Blocked"][status];
+  };
 
   return (
     <Container>
@@ -56,7 +77,10 @@ const Profile = () => {
         <div className="text">
           <div className="up">
             <p className="username">{username}</p>
-            <button className={`state ${statusController()}`}>
+            <button
+              onClick={statusClick}
+              className={`state ${statusController()}`}
+            >
               {statusController()}
             </button>
             <button className="message">Message</button>

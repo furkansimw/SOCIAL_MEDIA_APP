@@ -79,7 +79,7 @@ export interface IProfile {
     pp: string | null;
     ispublic: boolean;
     isfollowingme: boolean;
-    status: number | null;
+    status: 0 | 1 | 2 | null;
   };
   postsState?: { loading: boolean; hasmore: boolean };
 }

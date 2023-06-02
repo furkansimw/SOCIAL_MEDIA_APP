@@ -29,7 +29,7 @@ const server = app.listen(port, () => __awaiter(void 0, void 0, void 0, function
 app.use((req, res, next) => {
     setTimeout(() => {
         next();
-    }, 1000);
+    }, 500);
 });
 app.use(express_1.default.json({ limit: "60mb" }));
 app.use((0, cookie_parser_1.default)());

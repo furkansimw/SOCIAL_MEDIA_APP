@@ -58,6 +58,7 @@ const followUser = asyncErrorWrapper(async (req, res) => {
   const { userid } = req.body;
   if (guest || !userid) badRequest();
   const status = await followUserQ(id, userid);
+  if (status == undefined) badRequest();
   res.json(status);
 });
 

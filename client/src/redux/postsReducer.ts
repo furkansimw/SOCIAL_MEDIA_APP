@@ -17,7 +17,7 @@ import {
 } from "../api/posts.ts";
 import { RootState } from "./store.ts";
 import { commentsU, dateR, postsU, profileU } from "./functions.ts";
-import { getProfile, getProfilePosts } from "../api/profile.ts";
+import { followUser, getProfile, getProfilePosts } from "../api/profile.ts";
 
 const initialState: IPostsSliceInitialState = {
   posts: [],
@@ -465,6 +465,33 @@ export const postsSlice = createSlice({
         const postsState = { loading: false, hasmore: false };
         const obj = (p: IProfile): IProfile => ({ ...p, postsState });
         state.profiles = profileU(profiles, username, obj);
+      });
+    builder
+      .addCase(followUser.pending, (state, action) => {
+        const { profiles } = state;
+        const { userid, ispublic, a } = action.meta.arg;
+
+        state.profiles = profiles.map((p) => {
+          if (p.info?.id == userid)
+            return {
+              ...p,
+              info: { ...p.info, status: a ? (ispublic ? 0 : 1) : null },
+            };
+          else return p;
+        });
+      })
+      .addCase(followUser.rejected, (state, action) => {
+        const { profiles } = state;
+        const { userid, ispublic, a } = action.meta.arg;
+
+        state.profiles = profiles.map((p) => {
+          if (p.info?.id == userid)
+            return {
+              ...p,
+              info: { ...p.info, status: !a ? (ispublic ? 0 : 1) : null },
+            };
+          else return p;
+        });
       });
   },
 });
