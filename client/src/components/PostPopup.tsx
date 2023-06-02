@@ -1,22 +1,36 @@
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { shallowEqual, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { AppDispatch } from "../redux/store";
-import { setBack } from "../redux/postsReducer";
-
+import {
+  selectBack,
+  selectCurrentPost,
+  setBack,
+  setCurrentPostId,
+} from "../redux/postsReducer";
 import PostPopupComments from "./post/postpopup/PostPopupComments";
 import PostPopupImages from "./PostPopupImages";
+import PostPopupNav from "./PostPopupNav";
+import { useSelector } from "react-redux";
 
 const PostPopup = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const back = useSelector(selectBack, shallowEqual);
   const close = () => {
-    window.history.back();
+    window.history.replaceState("", "", back);
     dispatch(setBack(null));
+    dispatch(setCurrentPostId(null));
   };
 
   const worker2 = (e: KeyboardEvent) => {
     if (e.key == "Escape") close();
   };
+
+  const a = useSelector(selectCurrentPost);
+
+  useEffect(() => {
+    alert("changed");
+  }, [a]);
 
   useEffect(() => {
     const worker = (e: PopStateEvent) => dispatch(setBack(null));
@@ -35,6 +49,7 @@ const PostPopup = () => {
         <PostPopupImages />
         <PostPopupComments />
       </Container>
+      <PostPopupNav />
     </>
   );
 };
@@ -51,9 +66,9 @@ const Bg = styled.div`
 
 const Container = styled.div`
   border-radius: 4px;
-  @media screen and (max-width: 1264px) {
-    left: 2rem !important;
-    width: calc(100% - 4rem) !important;
+  @media screen and (max-width: 1328px) {
+    left: 4rem !important;
+    width: calc(100% - 8rem) !important;
     .cvr,
     .images {
       width: 100%;

@@ -19,6 +19,7 @@ const PostMini: FC<props> = ({ post, back }) => {
 
   const tap = () => {
     window.history.pushState(null, "", `/p/${id}`);
+    dispatch(setCurrentPostId(id));
     dispatch(setBack(back));
   };
 
