@@ -121,7 +121,7 @@ _Below is an example of how you can instruct your audience on installing and set
    ```
 5. Enter your System Environment Variables for server `server/.env`
    ```js
-    DB_URL=postgres://postgres:123456@127.0.0.1:5432/
+    DB_URL=***
     JWT_SECRET=***
     CLOUDINARY_CLOUD_NAME=***
     CLOUDINARY_API_KEY=***
