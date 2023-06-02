@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import req from "./req";
-import { IGetProfilePosts } from "../interfaces/IApi";
+import { IGetProfilePosts, IFollowUser } from "../interfaces/IApi";
 
 export const getMyProfile = createAsyncThunk("/profile/my", () =>
   req("/profile/my")
@@ -19,3 +19,17 @@ export const getProfilePosts = createAsyncThunk(
 
 export const searchProfile = (u: string) =>
   req(`/profile/search?u=${u}`).then((r) => r as any);
+
+export const followUser = createAsyncThunk(
+  "/profile/:username/follow~{POST|DELETE}",
+  ({ a, userid }: IFollowUser) =>
+    req(`/profile/follow`, a ? "POST" : "DELETE", { userid }).then(
+      (r: any) => r as 0 | 1
+    )
+);
+
+export const blockUser = createAsyncThunk(
+  "/profile/:username/block~{POST|DELETE}",
+  ({ a, userid }: IFollowUser) =>
+    req(`/profile/block`, a ? "POST" : "DELETE", { userid })
+);

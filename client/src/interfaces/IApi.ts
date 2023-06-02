@@ -50,3 +50,8 @@ export interface IGetSubCommentLikes extends IGetCommentLikes {
 export interface IGetProfilePosts extends ILast {
   username: string;
 }
+
+export interface IFollowUser {
+  userid: string;
+  a: boolean;
+}

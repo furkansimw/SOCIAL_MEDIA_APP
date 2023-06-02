@@ -86,8 +86,9 @@ const getMySavedQ = (id: string, last?: ILast) => {
   return db
     .query(
       `
-      select s.*, p.id, cardinality(images)>1 more, images[1] cover, likecount::int,username, pp, content, p.created, u.id owner, commentcount::int, s is not null issaved, pl is not null isliked from saved
+      select s.*, p.id, cardinality(images)>1 more, images[1] cover, likecount::int,username, pp, content, p.created, u.id owner, commentcount::int, s is not null issaved, pl is not null isliked from saved s
       left join posts p on p.id = s.post
+      left join postlikes pl on pl.owner = $1 and pl.post = p.id
       left join users u on u.id = p.owner ${b}
       left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
       where s.owner = $1 and (u.ispublic or f is not null or u.id = $1) and b is null ${str}
@@ -108,6 +109,7 @@ const followUserQ = (id: string, userid: string) =>
       FROM users
       ${blocked("u.id")}
       where u.id = $2 and b is null and not exists (select 1 from relationships r where r.owner = $1 and r.target = $2)
+      returning type
     `,
       [id, userid]
     )

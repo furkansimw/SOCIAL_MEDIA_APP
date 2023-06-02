@@ -15,14 +15,14 @@ import {
 profileRoute.route("/search").get(searchProfile);
 profileRoute.route("/my").get(getMyProfile);
 profileRoute.route("/mysaved").get(getMySaved);
+profileRoute.route("/follow").post(followUser).delete(unFollowUser);
+profileRoute.route("/block").post(blockUser).delete(unBlockUser);
 
 const profileWithUsernameRoute = Router({ mergeParams: true });
 
 profileRoute.use("/:username", profileWithUsernameRoute);
 
 profileWithUsernameRoute.route("/").get(getProfile);
-profileWithUsernameRoute.route("/follow").post(followUser).delete(unFollowUser);
-profileWithUsernameRoute.route("/block").post(blockUser).delete(unBlockUser);
 profileWithUsernameRoute.route("/posts").get(getProfilePosts);
 
 export default profileRoute;
