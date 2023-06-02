@@ -7,6 +7,7 @@ const init = () => document.cookie.includes("isloggedin=true");
 
 const initialState: IProfileInitialState = {
   isloggedin: init(),
+  loginPopupActive: false,
   values: {
     username: "",
     pp: null,
@@ -21,6 +22,9 @@ export const profileSlice = createSlice({
     toggleSetIsloggedin: (state) => {
       state.isloggedin = !state.isloggedin;
     },
+    toggleSetLoginPopupActive: (state) => {
+      state.loginPopupActive = !state.loginPopupActive;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getMyProfile.fulfilled, (state, action) => {
@@ -33,9 +37,13 @@ export const profileSlice = createSlice({
   },
 });
 
-export const { toggleSetIsloggedin } = profileSlice.actions;
+export const { toggleSetIsloggedin, toggleSetLoginPopupActive } =
+  profileSlice.actions;
 
 export const selectProfile = (state: RootState) => state.profile;
 export const selectValues = (state: RootState) => state.profile.values;
+export const selectIsLoggedin = (state: RootState) => state.profile.isloggedin;
+export const selectPostPopupActive = (state: RootState) =>
+  state.profile.loginPopupActive;
 
 export default profileSlice.reducer;

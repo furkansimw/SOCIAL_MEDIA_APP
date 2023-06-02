@@ -1,5 +1,6 @@
 export interface IProfileInitialState {
   isloggedin: boolean;
+  loginPopupActive: boolean;
   values: { username: string; pp: string | null; id: string };
 }
 

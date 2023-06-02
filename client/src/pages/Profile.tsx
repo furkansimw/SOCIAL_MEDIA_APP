@@ -11,6 +11,9 @@ import { MoreIcon3 } from "../components/Icons";
 import Title from "../components/Title";
 import PostMini from "../components/post/PostMini";
 import NotFound from "../components/NotFound.tsx";
+import { selectIsLoggedin } from "../redux/profileReducer.ts";
+import { disableRightClick } from "../components/Navigation.tsx";
+import Priv from "../components/profile/Priv.tsx";
 
 const Profile = () => {
   const p = useLocation().pathname.split("/");
@@ -33,13 +36,13 @@ const Profile = () => {
 
   if (!profile) return <></>;
 
-  const { info } = profile;
+  const { info, postsState, loading } = profile;
   const statusController = () => {
     if (info?.status == null) return "Follow";
   };
 
   if (profile.exists == false) return <NotFound />;
-  if (profile.loading || !profile.postsState || !profile.info) return <></>;
+  if (loading || !postsState || !info) return <></>;
 
   const { followercount, followingcount, postcount } = info!;
 
@@ -48,7 +51,7 @@ const Profile = () => {
       <Title title={username} />
       <div className="info">
         <div className="pp">
-          <img src={info?.pp || "/pp.jpg"} />
+          <img onContextMenu={disableRightClick} src={info?.pp || "/pp.jpg"} />
         </div>
         <div className="text">
           <div className="up">
@@ -74,11 +77,12 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      <Priv info={info} />
       <ul>
         {posts.map((post) => (
           <PostMini post={post} back={username} />
         ))}
-        {profile.postsState.loading && <LoadingBox />}
+        {postsState?.loading && <LoadingBox />}
       </ul>
     </Container>
   );
@@ -101,33 +105,48 @@ const Container = styled.div`
       }
     }
   }
-
+  .priv {
+    max-width: calc(906px + 4rem);
+    width: 100%;
+    border: 1px solid #262626;
+    text-align: center;
+    padding: 40px;
+    p {
+      font-size: 14px;
+      margin-top: 6px;
+    }
+    span {
+      cursor: pointer;
+      color: #0095f6;
+      font-weight: 600;
+      cursor: pointer;
+      &.us {
+        color: #fff;
+      }
+    }
+  }
   .info {
     display: flex;
     max-width: calc(906px + 4rem);
     align-items: center;
-    padding: 4rem;
-    justify-content: start;
+    padding: 4rem 2rem;
     width: 100%;
     @media screen and (max-width: 800px) {
       .pp,
       img {
-        min-width: 120px !important;
-        max-width: 120px !important;
-        min-height: 120px !important;
-        max-height: 120px !important;
+        width: 120px !important;
+        height: 120px !important;
       }
     }
     .pp {
       min-width: 150px;
-      max-width: 300px;
       width: 100%;
       height: 150px;
-      margin-right: 2rem;
+      flex: 1;
       display: flex;
       justify-content: center;
       img {
-        min-width: 150px;
+        width: 150px;
         height: 150px;
         object-fit: cover;
         border-radius: 100%;
@@ -135,7 +154,7 @@ const Container = styled.div`
     }
     .text {
       height: 100%;
-      width: 100%;
+      flex: 2;
       .up {
         margin-bottom: 20px;
         display: flex;

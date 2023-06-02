@@ -12,6 +12,7 @@ import PostPage from "./pages/PostPage";
 import Profile from "./pages/Profile";
 import PostPopup from "./components/PostPopup";
 import { selectCurrentPost } from "./redux/postsReducer";
+import LoginPopup from "./components/LoginPopup";
 
 const App = () => {
   const { isloggedin } = useSelector(selectProfile);
@@ -19,6 +20,7 @@ const App = () => {
 
   return (
     <Container>
+      {!isloggedin && <LoginPopup />}
       {isloggedin && <Navigation />}
       <View>
         <Routes>

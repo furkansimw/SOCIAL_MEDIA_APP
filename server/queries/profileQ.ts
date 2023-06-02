@@ -29,13 +29,13 @@ const getProfileQ = (id: string, username: string, guest: boolean) => {
   const query = guest
     ? `
     select pp, fullname, username, bio, ispublic, postcount::int, followercount::int, followingcount::int from users u
-    where username = $1 and ispublic 
+    where username = $1
   `
     : `
     select pp, fullname, username, bio, ispublic, postcount::int, followercount::int, followingcount::int,
     (select type from relationships r where owner = $1 and target = u.id) status,
     (select type from relationships r where owner = u.id and target = $1 and type = 0) is not null isfollowingme from users u
-    where username = $2 and (ispublic or exists (select 1 from relationships r where owner = $1 and target = u.id) or u.id = $1)
+    where username = $2 
     and not exists (select 1 from relationships r where owner = u.id and target = $1 and type = 2)
     `;
 
@@ -53,7 +53,7 @@ const getProfilePostsQ = (
   const str = last
     ? `and (p.created, p.id) < ($${guest ? 2 : 3}, $${guest ? 3 : 4})`
     : ``;
-
+  if (guest) values.shift();
   const b = blocked(`p.owner`);
 
   const query = guest
