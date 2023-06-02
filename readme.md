@@ -78,7 +78,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
 - [![Typescript][typescript]][typescript-url]
 - [![NodeJS][node]][node-url]
 - [![ExpressJS][express]][express-url]
-- <a href="https://www.postgresql.org/favicon.ico" target="_blank"><img src="https://www.postgresql.org/favicon.ico" alt="SocketIO" height="30"></a>
+- <a href="https://www.postgresql.org" target="_blank"><img src="https://www.postgresql.org/favicon.ico" alt="SocketIO" height="30"></a>
 - <a href="https://socket.io/"><img src="https://camo.githubusercontent.com/3ba298842d34904ad3ae5b56d1c5e11bb745cd9b109073783dcbbd07883c01fd/68747470733a2f2f736f636b65742e696f2f696d616765732f6c6f676f2d6461726b2e737667" alt="SocketIO" height="30"></a>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
