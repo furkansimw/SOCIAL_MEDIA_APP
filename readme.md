@@ -18,7 +18,7 @@
 
   <h1 align="center">FULL STACK SOCIAL MEDIA APP</h1>
 
-  <h5 style="font-size:2rem" align="center">
+  <h5 align="center">
     <a href="DEMOLINK">View Demo</a>
     ·
     <a  href="https://github.com/furkansimw/SOCIAL_MEDIA_APP/issues">Report Bug</a>
