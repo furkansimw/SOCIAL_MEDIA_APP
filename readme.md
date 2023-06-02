@@ -45,8 +45,6 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -60,7 +58,6 @@
 
 GERCEK BIR SOSYAL MEDYA UYGULAMASI HESAP OLUSTURMA POST PAYLASMA ANLIK MESAJLASMA POSTLARA YORUM YAPMA PROFIL OZELLIKLERI BIOGRAFI HESAP GIZLI/ACIK EGER HESAP GIZLI ACIK VEYA KAPALI OLMASI DURUMDA OTURUM DISI GIRILEN HESAPLARIN FOTOGRAF IZINLERI DUZELTILMESI & YORUM YAPMAK, BEGENI ISLEMLERI ICIN OTURUM ACMA GEREKMESI, EGER BIR HESAP ENGELLENIR ISE VEYA ENGEL YERSEK ONUN POSTLARINI GOREMEYIZ YORUMLARINI GOREMEYIZ BUTUN ILISKILER KESILIR (API TARAFINDAN KORUMALI)
 
-Use the `BLANK_README.md` to get started.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
