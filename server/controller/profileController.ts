@@ -55,33 +55,33 @@ const getMySaved = asyncErrorWrapper(async (req, res) => {
 
 const followUser = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
-  if (guest) badRequest();
-  const { username } = req.params;
-  const status = await followUserQ(id, username);
+  const { userid } = req.body;
+  if (guest || !userid) badRequest();
+  const status = await followUserQ(id, userid);
   res.json(status);
 });
 
 const unFollowUser = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
-  if (guest) badRequest();
-  const { username } = req.params;
-  await unFollowUserQ(id, username);
+  const { userid } = req.body;
+  if (guest || !userid) badRequest();
+  await unFollowUserQ(id, userid);
   res.json({ status: "ok" });
 });
 
 const blockUser = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
-  if (guest) badRequest();
-  const { username } = req.params;
-  await blockUserQ(id, username);
+  const { userid } = req.body;
+  if (guest || !userid) badRequest();
+  await blockUserQ(id, userid);
   res.json({ status: "ok" });
 });
 
 const unBlockUser = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
-  if (guest) badRequest();
-  const { username } = req.params;
-  await unBlockUserQ(id, username);
+  const { userid } = req.body;
+  if (guest || !userid) badRequest();
+  await unBlockUserQ(id, userid);
   res.json({ status: "ok" });
 });
 

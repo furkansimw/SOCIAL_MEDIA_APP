@@ -98,13 +98,50 @@ const getMySavedQ = (id: string, last?: ILast) => {
     .then(then);
 };
 
-const followUserQ = (id: string, username: string) => db.query(``);
+const followUserQ = (id: string, userid: string) =>
+  db
+    .query(
+      `
+      INSERT INTO relationships (owner, target, type)
+      SELECT $1, $2, type,
+            CASE WHEN u.ispublic = true THEN 1 ELSE 0 END
+      FROM users
+      ${blocked("u.id")}
+      where u.id = $2 and b is null and not exists (select 1 from relationships r where r.owner = $1 and r.target = $2)
+    `,
+      [id, userid]
+    )
+    .then((r) => r.rows[0].type);
 
-const unFollowUserQ = (id: string, username: string) => db.query(``);
+const unFollowUserQ = (id: string, userid: string) =>
+  db.query(`delete from relationships where owner = $1 and target = $2`, [
+    id,
+    userid,
+  ]);
 
-const blockUserQ = (id: string, username: string) => db.query(``);
+const blockUserQ = (id: string, userid: string) =>
+  db.query(
+    `
+        IF EXISTS (SELECT 1 FROM relationships WHERE owner = $1 and target = $2)
+    BEGIN
+        UPDATE relationships
+        SET type = 2
+        WHERE owner = $1 and target = $2
+    END
+    ELSE
+    BEGIN
+        INSERT INTO relationships (owner, target, type)
+        VALUES ($1, $2, 2);
+    END
+  `,
+    [id, userid]
+  );
 
-const unBlockUserQ = (id: string, username: string) => db.query(``);
+const unBlockUserQ = (id: string, userid: string) =>
+  db.query(`delete from relationships where owner = $1 and target = $2`, [
+    id,
+    userid,
+  ]);
 
 export {
   searchProfileQ,
