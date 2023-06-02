@@ -2,7 +2,7 @@ import { shallowEqual, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { AppDispatch, RootState } from "../redux/store";
 import { selectPostsProfile, selectProfile } from "../redux/postsReducer";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import {
   blockUser,
@@ -12,11 +12,11 @@ import {
 } from "../api/profile";
 import LoadingBox from "../components/LoadingBox";
 import styled from "styled-components";
-import { MoreIcon3 } from "../components/Icons";
+import { MoreIcon3, SettingsIcon } from "../components/Icons";
 import Title from "../components/Title";
 import PostMini from "../components/post/PostMini";
 import NotFound from "../components/NotFound.tsx";
-import { selectIsLoggedin } from "../redux/profileReducer.ts";
+import { selectIsLoggedin, selectValues } from "../redux/profileReducer.ts";
 import { disableRightClick } from "../components/Navigation.tsx";
 import Priv from "../components/profile/Priv.tsx";
 
@@ -38,6 +38,7 @@ const Profile = () => {
     (s: RootState) => selectPostsProfile(s, username),
     shallowEqual
   );
+  const { username: myusername } = useSelector(selectValues, shallowEqual);
 
   if (!profile) return <></>;
 
@@ -53,6 +54,8 @@ const Profile = () => {
     status,
     ispublic,
     id: userid,
+    fullname,
+    bio,
   } = info!;
   const statusClick = () => {
     if (status == 2) dispatch(blockUser({ a: false, userid, ispublic }));
@@ -67,6 +70,19 @@ const Profile = () => {
     return ["Following", "Requested", "Blocked"][status];
   };
 
+  const ismyprofile = username == myusername;
+
+  const k = (n: number) => {
+    if (n >= 1000000000) return (n / 1000000000).toFixed(1) + "B";
+    else if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
+    else if (n >= 1000) return (n / 1000).toFixed(1) + "K";
+    return n;
+  };
+
+  const a = k(postcount);
+  const b = k(followercount);
+  const c = k(followingcount);
+
   return (
     <Container>
       <Title title={username} />
@@ -77,28 +93,41 @@ const Profile = () => {
         <div className="text">
           <div className="up">
             <p className="username">{username}</p>
-            <button
-              onClick={statusClick}
-              className={`state ${statusController()}`}
-            >
-              {statusController()}
-            </button>
-            <button className="message">Message</button>
-            <button className="more">
-              <MoreIcon3 />
-            </button>
+            {ismyprofile ? (
+              <>
+                <button className="edit">Edit profile</button>
+                <button className="settings">
+                  <SettingsIcon />
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={statusClick}
+                  className={`state ${statusController()}`}
+                >
+                  {statusController()}
+                </button>
+                <button className="message">Message</button>
+                <button className="more">
+                  <MoreIcon3 />
+                </button>
+              </>
+            )}
           </div>
           <div className="details">
             <p>
-              <span>{postcount}</span> posts
+              <span>{a}</span> posts
             </p>
             <p>
-              <span>{followercount}</span> posts
+              <span>{b}</span> followers
             </p>
             <p>
-              <span>{followingcount}</span> posts
+              <span>{c}</span> following
             </p>
           </div>
+          {fullname && <div className="fullname">{fullname}</div>}
+          {bio && <pre className="bio">{bio}</pre>}
         </div>
       </div>
       <Priv info={info} />
@@ -128,6 +157,13 @@ const Container = styled.div`
         fill: #fafafa;
       }
     }
+    &.settings {
+      background-color: transparent !important;
+      padding: 0px !important;
+      &:hover {
+        opacity: 1 !important;
+      }
+    }
   }
   .priv {
     max-width: calc(906px + 4rem);
@@ -152,8 +188,8 @@ const Container = styled.div`
   .info {
     display: flex;
     max-width: calc(906px + 4rem);
-    align-items: center;
-    padding: 4rem 2rem;
+    align-items: start;
+    padding: 2rem 2rem 1rem;
     width: 100%;
     @media screen and (max-width: 800px) {
       .pp,
@@ -179,6 +215,7 @@ const Container = styled.div`
     .text {
       height: 100%;
       flex: 2;
+      overflow: hidden;
       .up {
         margin-bottom: 20px;
         display: flex;
@@ -186,6 +223,10 @@ const Container = styled.div`
         .username {
           font-size: 20px;
           margin-right: 2rem;
+          max-width: 390px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
         button {
           padding: 7px 1rem;
@@ -208,6 +249,53 @@ const Container = styled.div`
               background-color: #0095f6 !important;
               color: #fafafa;
             }
+          }
+        }
+      }
+      .details {
+        display: flex;
+        justify-content: space-between;
+        max-width: 260px;
+        width: 100%;
+        line-height: 18px;
+        margin-bottom: 1rem;
+        p {
+          cursor: pointer;
+        }
+        span {
+          font-weight: 600;
+        }
+      }
+      .fullname {
+        max-width: 450px;
+        overflow: hidden;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 18px;
+        text-overflow: ellipsis;
+        margin-bottom: 6px;
+      }
+      .bio {
+        max-width: 450px;
+        width: 100%;
+        line-height: 18px;
+        max-height: 80px;
+        overflow-y: auto;
+        font-size: 14px;
+        white-space: pre-wrap;
+        &:hover::-webkit-scrollbar {
+          display: block;
+        }
+        &::-webkit-scrollbar {
+          width: 8px;
+          display: none;
+        }
+        &::-webkit-scrollbar-thumb {
+          width: 8px;
+          border-radius: 8px;
+          background-color: #363636;
+          &:active {
+            background-color: #505050;
           }
         }
       }
