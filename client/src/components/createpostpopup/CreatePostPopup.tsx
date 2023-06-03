@@ -112,7 +112,7 @@ const CreatePostPopup: FC<Props> = ({ close }) => {
         setLoading(true);
         const postId = await createPost(updatedImages, updatedText);
         close();
-        nav(`/p${postId}`);
+        nav(`/p/${postId}`);
       } catch (error) {
         toast.error((error as any).toString());
       } finally {

@@ -11,6 +11,7 @@ export interface IPostsSliceInitialState {
   hasmore: { home: boolean; explore: boolean };
   loading: { home: boolean; explore: boolean };
   currentId: string | null;
+  offset: { home: number; explore: number };
 }
 
 export interface IPost {
@@ -83,6 +84,7 @@ export interface IProfile {
     ispublic: boolean;
     isfollowingme: boolean;
     status: 0 | 1 | 2 | null;
+    offset: number;
   };
   postsState?: { loading: boolean; hasmore: boolean };
 }

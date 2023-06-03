@@ -2,12 +2,7 @@ import { useEffect } from "react";
 import { shallowEqual, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { AppDispatch } from "../redux/store";
-import {
-  selectBack,
-  selectCurrentPost,
-  setBack,
-  setCurrentPostId,
-} from "../redux/postsReducer";
+import { selectBack, setBack, setCurrentPostId } from "../redux/postsReducer";
 import PostPopupComments from "./post/postpopup/PostPopupComments";
 import PostPopupImages from "./PostPopupImages";
 import PostPopupNav from "./PostPopupNav";
@@ -17,7 +12,7 @@ const PostPopup = () => {
   const dispatch = useDispatch<AppDispatch>();
   const back = useSelector(selectBack, shallowEqual);
   const close = () => {
-    window.history.replaceState("", "", back);
+    window.history.replaceState(null, "", `/${back}`);
     dispatch(setBack(null));
     dispatch(setCurrentPostId(null));
   };

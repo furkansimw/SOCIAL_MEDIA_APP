@@ -25,6 +25,7 @@ const initialState: IPostsSliceInitialState = {
   back: null,
   hasmore: { home: true, explore: true },
   loading: { home: true, explore: true },
+  offset: { home: 0, explore: 0 },
   currentId: null,
 };
 
@@ -64,6 +65,23 @@ export const postsSlice = createSlice({
     },
     setCurrentPostId: (state, action: PayloadAction<string | null>) => {
       state.currentId = action.payload;
+    },
+    setOffset: (
+      state,
+      action: PayloadAction<{ offset: number; page: string }>
+    ) => {
+      const { offset, page } = action.payload;
+      const { profiles } = state;
+      if (["home", "explore"].includes(page)) {
+        state.offset[page == "home" ? "home" : "explore"] = offset;
+      } else {
+        const obj = (profile: IProfile): IProfile => ({
+          ...profile,
+          info: profile.info ? { ...profile.info, offset } : undefined,
+        });
+
+        state.profiles = profileU(profiles, page, obj);
+      }
     },
   },
   extraReducers: (builder) => {
@@ -500,7 +518,7 @@ export const postsSlice = createSlice({
   },
 });
 
-export const { setBack, toggleSubCommetsT, setCurrentPostId } =
+export const { setBack, toggleSubCommetsT, setCurrentPostId, setOffset } =
   postsSlice.actions;
 
 export const selectPostsHome = (state: RootState) =>
@@ -518,10 +536,6 @@ export const selectPostsSaved = (state: RootState) =>
 export const selectProfile = (state: RootState, username: string) =>
   state.posts.profiles.find((profile) => profile.username == username)!;
 
-export const selectHasMore = (state: RootState) => state.posts.hasmore;
-
-export const selectLoading = (state: RootState) => state.posts.loading;
-
 export const selectBack = (state: RootState) => state.posts.back;
 
 export const selectCurrentPost = (state: RootState) =>
@@ -529,5 +543,11 @@ export const selectCurrentPost = (state: RootState) =>
 
 export const selectpostsForBack = (state: RootState) =>
   state.posts.posts.filter((post) => post.page == state.posts.back);
+
+export const selectMetaData = (state: RootState) => ({
+  hasmore: state.posts.hasmore,
+  loading: state.posts.loading,
+  offset: state.posts.offset,
+});
 
 export default postsSlice.reducer;

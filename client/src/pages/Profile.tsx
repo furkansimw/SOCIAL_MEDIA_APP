@@ -1,8 +1,12 @@
 import { shallowEqual, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { AppDispatch, RootState } from "../redux/store";
-import { selectPostsProfile, selectProfile } from "../redux/postsReducer";
-import { useEffect, useMemo } from "react";
+import {
+  selectPostsProfile,
+  selectProfile,
+  setOffset,
+} from "../redux/postsReducer";
+import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { useDispatch } from "react-redux";
 import {
   blockUser,
@@ -39,6 +43,22 @@ const Profile = () => {
     shallowEqual
   );
   const { username: myusername } = useSelector(selectValues, shallowEqual);
+
+  const listRef = useRef<HTMLUListElement>(null);
+
+  useLayoutEffect(() => {
+    if (!profile?.info) return;
+    const offset = profile.info.offset || 0;
+    listRef.current?.scroll({ top: offset });
+  }, [profile?.info]);
+
+  useLayoutEffect(() => {
+    return () => {
+      dispatch(
+        setOffset({ page: username, offset: listRef.current?.scrollTop ?? 0 })
+      );
+    };
+  }, []);
 
   if (!profile) return <></>;
 
@@ -87,14 +107,14 @@ const Profile = () => {
     const { hasmore, loading } = postsState;
     if (loading || !hasmore) return;
     const { scrollTop, scrollHeight, clientHeight } = e.target as Element;
-    if (scrollTop + clientHeight + 100 >= clientHeight) {
+    if (scrollTop + clientHeight + 100 >= scrollHeight) {
       const { created: date, id } = posts[posts.length - 1];
       dispatch(getProfilePosts({ username, date, id }));
     }
   };
 
   return (
-    <Container>
+    <Container ref={listRef}>
       <Title title={username} />
       <div className="info">
         <div className="pp">
@@ -151,7 +171,7 @@ const Profile = () => {
   );
 };
 
-const Container = styled.div`
+const Container = styled.ul`
   height: 100vh;
   display: flex;
   width: 100%;

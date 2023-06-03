@@ -1,10 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../redux/store";
 import {
-  selectHasMore,
-  selectLoading,
+  selectMetaData,
   selectPostsExplore,
+  setOffset,
 } from "../redux/postsReducer";
 import { getPosts } from "../api/posts";
 import LoadingBox from "../components/LoadingBox";
@@ -16,15 +16,39 @@ const Explore = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const posts = useSelector(selectPostsExplore, shallowEqual);
-  const { explore: loading } = useSelector(selectLoading, shallowEqual);
-  const { explore: hasmore } = useSelector(selectHasMore, shallowEqual);
+
+  const {
+    hasmore: { explore: hasmore },
+    loading: { explore: loading },
+    offset: { explore: offset },
+  } = useSelector(selectMetaData, shallowEqual);
 
   useEffect(() => {
     if (posts.length == 0 && hasmore) dispatch(getPosts({ explore: true }));
   }, []);
 
+  const onScroll = (e: React.UIEvent<HTMLUListElement, UIEvent>) => {
+    if (loading || !hasmore) return;
+    const { scrollTop, scrollHeight, clientHeight } = e.target as Element;
+    if (scrollTop + clientHeight + 100 >= scrollHeight) {
+      const { created: date, id } = posts[posts.length - 1];
+      dispatch(getPosts({ explore: true, date, id }));
+    }
+  };
+
+  const listRef = useRef<HTMLUListElement>(null);
+
+  useLayoutEffect(() => {
+    listRef.current!.scroll({ top: offset });
+
+    return () => {
+      const offset = listRef.current!.scrollTop;
+      dispatch(setOffset({ page: "explore", offset }));
+    };
+  }, []);
+
   return (
-    <Container>
+    <Container ref={listRef} onScroll={onScroll}>
       <Title title="Explore" />
       <div className="content">
         {posts.map((post) => (

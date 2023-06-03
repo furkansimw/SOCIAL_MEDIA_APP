@@ -13,6 +13,7 @@ type Props = {
 const LinkQ: FC<Props> = (props) => {
   const dispatch = useDispatch<AppDispatch>();
   const closex = () => dispatch(setBack(null));
+
   return (
     <Link to={props.to} className={props.className} onClick={closex} replace>
       {props.children}

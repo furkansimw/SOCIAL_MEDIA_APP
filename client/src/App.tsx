@@ -11,12 +11,12 @@ import Messages from "./pages/Messages";
 import PostPage from "./pages/PostPage";
 import Profile from "./pages/Profile";
 import PostPopup from "./components/PostPopup";
-import { selectCurrentPost } from "./redux/postsReducer";
+import { selectBack } from "./redux/postsReducer";
 import LoginPopup from "./components/LoginPopup";
 
 const App = () => {
   const { isloggedin } = useSelector(selectProfile);
-  const back = useSelector(selectCurrentPost, shallowEqual);
+  const back = useSelector(selectBack, shallowEqual);
 
   return (
     <Container>

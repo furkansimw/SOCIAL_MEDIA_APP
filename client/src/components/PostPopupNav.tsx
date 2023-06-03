@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight } from "./Icons";
 import { shallowEqual, useSelector } from "react-redux";
 import {
   selectBack,
+  selectMetaData,
   selectProfile,
   selectpostsForBack,
   setCurrentPostId,
@@ -11,6 +12,7 @@ import {
 import { useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
 import { getProfilePosts } from "../api/profile";
+import { getPosts } from "../api/posts";
 
 const PostPopupNav = () => {
   const posts = useSelector(selectpostsForBack, shallowEqual);
@@ -21,43 +23,73 @@ const PostPopupNav = () => {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const next = () => {
+  const nextF = () => {
+    if (index == posts.length - 1) return;
     setIndex(index + 1);
     window.history.pushState(null, "", `/p/${posts[index + 1].id}`);
     dispatch(setCurrentPostId(window.location.pathname.split("/")[2]));
   };
 
-  const username = useSelector(selectBack, shallowEqual)!;
+  const back = useSelector(selectBack, shallowEqual);
 
-  const { postsState } = useSelector(
-    (s: RootState) => selectProfile(s, username),
+  const username = back ? back : window.location.pathname.split("/")[1];
+
+  const a = useSelector(
+    (s: RootState) =>
+      ["explore", "home"].includes(back!)
+        ? selectMetaData(s)
+        : selectProfile(s, username),
     shallowEqual
   );
 
   useEffect(() => {
-    if (!postsState) return;
-    const { hasmore, loading } = postsState;
-    if (index == posts.length - 1 && hasmore && !loading) {
-      const username = window.location.pathname.split("/")[2];
-      const { created: date, id } = posts[posts.length - 1];
-      dispatch(getProfilePosts({ username, date, id }));
+    if (["explore", "home"].includes(back!)) {
+      const {
+        hasmore: { [back!]: hasmore },
+        loading: { [back!]: loading },
+      } = a as any;
+      if (index == posts.length - 1 && hasmore && !loading) {
+        const { created: date, id } = posts[posts.length - 1];
+        dispatch(getPosts({ explore: back == "explore", date, id }));
+      }
+    } else {
+      const { hasmore, loading } = a as any;
+      if (index == posts.length - 1 && hasmore && !loading) {
+        const username = window.location.pathname.split("/")[2];
+        const { created: date, id } = posts[posts.length - 1];
+        dispatch(getProfilePosts({ username, date, id }));
+      }
     }
   }, [index]);
 
-  const back = () => {
+  useEffect(() => {
+    const worker = (e: KeyboardEvent) => {
+      if (e.key == "ArrowLeft") backF();
+      else if (e.key == "ArrowRight") nextF();
+    };
+    window.addEventListener("keydown", worker);
+    return () => {
+      window.removeEventListener("keydown", worker);
+    };
+  }, [index]);
+
+  const backF = () => {
+    if (index == 0) return;
+
     setIndex(index - 1);
     window.history.pushState(null, "", `/p/${posts[index - 1].id}`);
     dispatch(setCurrentPostId(window.location.pathname.split("/")[2]));
   };
+
   return (
     <Container>
       {index > 0 && (
-        <button className="leftnav" onClick={back}>
+        <button className="leftnav" onClick={backF}>
           <ArrowLeft />
         </button>
       )}
       {index < posts.length - 1 && (
-        <button className="rightnav" onClick={next}>
+        <button className="rightnav" onClick={nextF}>
           <ArrowRight />
         </button>
       )}

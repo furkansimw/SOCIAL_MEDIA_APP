@@ -4,13 +4,14 @@ import { disableRightClick } from "../../Navigation";
 import { shallowEqual, useSelector } from "react-redux";
 import { selectCurrentPost } from "../../../redux/postsReducer";
 import LinkQ from "../LinkQ";
+import { selectValues } from "../../../redux/profileReducer";
 
 const Info = () => {
   const { username, isfollowing, pp } = useSelector(
     selectCurrentPost,
     shallowEqual
   )!;
-
+  const { username: myusername } = useSelector(selectValues, shallowEqual);
   const to = `/${username}`;
 
   return (
@@ -26,8 +27,12 @@ const Info = () => {
         <LinkQ className="username" to={to}>
           <p>{username}</p>
         </LinkQ>
-        <span>•</span>
-        {!isfollowing && <button>Follow</button>}
+        {!isfollowing && username != myusername && (
+          <>
+            <span>•</span>
+            <button>Follow</button>
+          </>
+        )}
       </div>
       <button className="d">
         <DetailIcon />
