@@ -142,6 +142,18 @@ const unBlockUserQ = (id: string, userid: string) =>
     userid,
   ]);
 
+const getMyProfileDetailQ = (id: string) =>
+  db
+    .query(
+      `select id, username,ispublic, email, pp, bio, fullname from users
+       where id = $1
+  `,
+      [id]
+    )
+    .then((r) => r.rows[0]);
+
+const updateProfileQ = () => {};
+
 export {
   searchProfileQ,
   getMyProfileQ,
@@ -152,4 +164,6 @@ export {
   unFollowUserQ,
   blockUserQ,
   unBlockUserQ,
+  getMyProfileDetailQ,
+  updateProfileQ,
 };

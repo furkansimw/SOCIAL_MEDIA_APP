@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import req from "./req";
-import { IGetProfilePosts, ISC } from "../interfaces/IApi";
+import { IGetProfilePosts, ISC, IE } from "../interfaces/IApi";
 
 export const getMyProfile = createAsyncThunk("/profile/my", () =>
   req("/profile/my")
@@ -33,3 +33,7 @@ export const blockUser = createAsyncThunk(
   ({ a, userid }: ISC) =>
     req(`/profile/block`, a ? "POST" : "DELETE", { userid })
 );
+
+export const accountDetail = () => req(`/profile/edit`).then((r: any) => r);
+
+export const updateProfile = (obj: any) => req(`/profile/edit`, "POST", obj);

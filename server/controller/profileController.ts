@@ -10,6 +10,8 @@ import {
   unFollowUserQ,
   blockUserQ,
   unBlockUserQ,
+  getMyProfileDetailQ,
+  updateProfileQ,
 } from "../queries/profileQ";
 
 const searchProfile = asyncErrorWrapper(async (req, res) => {
@@ -85,6 +87,16 @@ const unBlockUser = asyncErrorWrapper(async (req, res) => {
   res.json({ status: "ok" });
 });
 
+const getMyProfileDetail = asyncErrorWrapper(async (req, res) => {
+  const { id, guest } = res.locals;
+  if (guest) badRequest();
+  const detail = await getMyProfileDetailQ(id);
+  res.json(detail);
+});
+const updateProfile = asyncErrorWrapper(async (req, res) => {
+  res.json({ status: "ok" });
+});
+
 export {
   searchProfile,
   getMyProfile,
@@ -95,4 +107,6 @@ export {
   unFollowUser,
   blockUser,
   unBlockUser,
+  getMyProfileDetail,
+  updateProfile,
 };

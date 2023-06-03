@@ -55,3 +55,11 @@ export interface ISC {
   userid: string;
   a: boolean;
 }
+
+export interface IE {
+  pp: string | null;
+  username: string;
+  bio: string | null;
+  email: string;
+  ispublic: boolean;
+}

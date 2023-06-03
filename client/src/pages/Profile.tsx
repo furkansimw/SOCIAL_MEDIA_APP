@@ -1,5 +1,5 @@
 import { shallowEqual, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { AppDispatch, RootState } from "../redux/store";
 import {
   selectPostsProfile,
@@ -137,7 +137,9 @@ const Profile = () => {
             <p className="username">{username}</p>
             {ismyprofile ? (
               <>
-                <button className="edit">Edit profile</button>
+                <Link to={`/account/edit`} className="edit">
+                  Edit profile
+                </Link>
                 <button className="settings">
                   <SettingsIcon />
                 </button>
@@ -393,35 +395,26 @@ const Container = styled.ul`
 
           white-space: nowrap;
         }
-        button {
+        button,
+        a {
           padding: 7px 1rem;
-
           border-radius: 8px;
-
           color: #000;
-
           background-color: #fafafa;
-
           margin-right: 1rem;
-
           font-weight: 600;
-
           font-size: 14px;
-
           &:hover {
             opacity: 0.8;
           }
           &.more {
             padding: 0px;
-
             background-color: transparent;
-
             opacity: 1 !important;
           }
           &.state {
             &.Follow {
               background-color: #0095f6 !important;
-
               color: #fafafa;
             }
           }

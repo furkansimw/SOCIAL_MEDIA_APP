@@ -43,7 +43,7 @@ const PostPopup = () => {
   );
 };
 
-const Bg = styled.div`
+export const Bg = styled.div`
   background-color: rgba(0, 0, 0, 0.6);
   width: 100vw;
   height: 100vh;

@@ -31,8 +31,8 @@ const App = () => {
           {isloggedin && (
             <>
               <Route path="/explore" element={<Explore />} />
-              <Route path="/direct/inbox" element={<EditProfile />} />
-              <Route path="/acccounts/edit" element={<Messages />} />
+              <Route path="/direct/inbox" element={<Messages />} />
+              <Route path="/account/edit" element={<EditProfile />} />
             </>
           )}
         </Routes>
