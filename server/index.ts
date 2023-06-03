@@ -15,11 +15,6 @@ const port = process.env.PORT || 4000;
 const origin = process.env.ORIGIN || "http://localhost:5173";
 
 const server = app.listen(port, async () => await create());
-app.use((req, res, next) => {
-  setTimeout(() => {
-    next();
-  }, 2200);
-});
 
 app.use(express.json({ limit: "60mb" }));
 app.use(cookieParser());
