@@ -12,7 +12,7 @@ const PostPopup = () => {
   const dispatch = useDispatch<AppDispatch>();
   const back = useSelector(selectBack, shallowEqual);
   const close = () => {
-    window.history.replaceState(null, "", `/${back}`);
+    window.history.replaceState(null, "", `/${back == "home" ? "" : back}`);
     dispatch(setBack(null));
     dispatch(setCurrentPostId(null));
   };
@@ -38,7 +38,7 @@ const PostPopup = () => {
         <PostPopupImages />
         <PostPopupComments />
       </Container>
-      <PostPopupNav />
+      {back != "home" && <PostPopupNav />}
     </>
   );
 };

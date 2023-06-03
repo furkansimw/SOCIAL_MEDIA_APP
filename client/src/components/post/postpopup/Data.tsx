@@ -65,6 +65,7 @@ const Data = forwardRef<Refs, Props>(({ reply }, ref) => {
 const DataContainer = styled.ul`
   height: calc(100% - 146px - 71px);
   overflow-y: auto;
+  width: 100%;
   &::-webkit-scrollbar {
     display: none;
   }
@@ -74,7 +75,18 @@ const DataContainer = styled.ul`
   .content {
     padding: 1rem;
     display: flex;
+    width: 324px;
     margin-bottom: 1rem;
+    pre {
+      width: 100%;
+      text-overflow: ellipsis;
+      word-wrap: break-word;
+      font-size: 14px;
+      line-height: 18px;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+    }
     .pp {
       margin-right: 18px;
       a {
@@ -94,7 +106,8 @@ const DataContainer = styled.ul`
     }
     .text {
       font-size: 14px;
-      a {
+      width: 100%;
+      .username {
         margin-right: 4px;
         font-weight: 600;
       }
@@ -124,8 +137,10 @@ const Content = forwardRef<HTMLDivElement>((props, contentRef) => {
       </div>
       <div className="text">
         <pre>
-          <LinkQ to={`/${username}`}>{username}</LinkQ>
-          <LinkConverter text={content || ""} />
+          <LinkQ className="username" to={`/${username}`}>
+            {username}
+          </LinkQ>
+          {content && <LinkConverter text={content} />}
         </pre>
         <p>{date}</p>
       </div>

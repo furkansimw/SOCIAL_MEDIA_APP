@@ -43,14 +43,14 @@ const PostPopupNav = () => {
   );
 
   useEffect(() => {
-    if (["explore", "home"].includes(back!)) {
+    if (back == "explore") {
       const {
-        hasmore: { [back!]: hasmore },
-        loading: { [back!]: loading },
+        hasmore: { [back]: hasmore },
+        loading: { [back]: loading },
       } = a as any;
       if (index == posts.length - 1 && hasmore && !loading) {
         const { created: date, id } = posts[posts.length - 1];
-        dispatch(getPosts({ explore: back == "explore", date, id }));
+        dispatch(getPosts({ explore: true, date, id }));
       }
     } else {
       const { hasmore, loading } = a as any;

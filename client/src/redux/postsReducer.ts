@@ -525,7 +525,7 @@ export const selectPostsHome = (state: RootState) =>
   state.posts.posts.filter((post) => post.page == "home");
 
 export const selectPostsProfile = (state: RootState, username: string) =>
-  state.posts.posts.filter((post) => post.username == username);
+  state.posts.posts.filter((post) => post.page == username);
 
 export const selectPostsExplore = (state: RootState) =>
   state.posts.posts.filter((post) => post.page == "explore");

@@ -65,7 +65,7 @@ const getProfilePostsQ = (
     limit 12
   `
     : `
-    select p.id, cardinality(images)>1 more, images[1] cover, likecount::int,username, pp, content, p.created, u.id owner, commentcount::int, s is not null issaved, pl is not null isliked from posts p    
+    select p.id, cardinality(images)>1 more, images[1] cover, likecount::int,username, pp, content, p.created, u.id owner, commentcount::int, s is not null issaved, pl is not null isliked, f is not null isfollowing from posts p    
     left join users u on u.id = p.owner
     left join saved s on s.owner = $1 and s.post = p.id
     left join postlikes pl on pl.owner = $1 and pl.post = p.id

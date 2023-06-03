@@ -9,7 +9,7 @@ const getPostsQ = (id: string, last?: ILast) => {
   return db
     .query(
       `
-      select p.*, likecount::int, commentcount::int, pl is not null isliked, s is not null issaved from posts p
+      select p.*,u.username ,u.pp, likecount::int, commentcount::int, pl is not null isliked, s is not null issaved from posts p
       left join users u on u.id = p.owner
       left join relationships f on f.owner = $1 and f.target = u.id and f.type = 0
       left join postlikes pl on pl.owner = $1 and pl.post = p.id

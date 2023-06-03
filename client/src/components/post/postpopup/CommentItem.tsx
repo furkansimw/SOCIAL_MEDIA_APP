@@ -62,8 +62,8 @@ const CommentItem = ({ comment, reply }: Props) => {
   const quit = () => setLikesPopup(false);
 
   return (
-    <Container onDoubleClick={like} className={lastActive ? "lastactive" : ""}>
-      <div className="left">
+    <Container className={lastActive ? "lastactive" : ""}>
+      <div className="left" onDoubleClick={like}>
         <div className="pp">
           <LinkQ className="u" to={`/${username}`}>
             <img src={pp || "/pp.jpg"} alt="pp" />
@@ -71,9 +71,9 @@ const CommentItem = ({ comment, reply }: Props) => {
         </div>
       </div>
       <div className="right">
-        <div className="upside">
+        <div className="upside" onDoubleClick={like}>
           <pre>
-            <LinkQ className="u" to={`/${username}`}>
+            <LinkQ className="username" to={`/${username}`}>
               {username}
             </LinkQ>
             <LinkConverter text={content} />
@@ -90,7 +90,7 @@ const CommentItem = ({ comment, reply }: Props) => {
             />
           )}
         </div>
-        <div className="down-side">
+        <div className="down-side" onDoubleClick={like}>
           {likecount > 0 && (
             <button onClick={viewLikes} className="likes">
               {likecount} like{likecount > 1 && `s`}
@@ -197,7 +197,7 @@ const Container = styled.li`
         width: 100%;
         white-space: pre-wrap;
         font-size: 14px;
-        a {
+        .username {
           font-weight: 600;
           margin-right: 4px;
         }

@@ -313,6 +313,7 @@ const Container = styled.ul`
         overflow-y: auto;
         font-size: 14px;
         white-space: pre-wrap;
+        word-wrap: break-word;
         &:hover::-webkit-scrollbar {
           display: block;
         }

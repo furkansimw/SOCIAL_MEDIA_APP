@@ -253,7 +253,7 @@ const BottomContainer = styled.div`
       border: none;
       line-height: 20px;
       padding-right: 10px;
-      font-weight: 600;
+      font-weight: 400;
       height: 40px;
       &::placeholder {
         color: #a8a8a8;

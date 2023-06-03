@@ -19,7 +19,7 @@ const PostPopupComments = () => {
 
   useEffect(() => {
     if (hasmore && data.length == 0) dispatch(getComments({ postid }));
-  }, []);
+  }, [postid]);
 
   const [comment, setComment] = useState("");
   const commentInputRef = useRef<HTMLInputElement>(null);
@@ -35,15 +35,6 @@ const PostPopupComments = () => {
     _i(true);
   }, []);
 
-  useEffect(() => {
-    if (!i) return;
-    if (!sending) {
-      if (isRepliying) scrollTop(totalHeight);
-      else scrollTop(dataRef.current.contentRef.current!.clientHeight || 0);
-      setComment("");
-    }
-  }, [sending]);
-
   const reply = (commentid: string, username: string) => {
     setComment(`@${username} `);
     setIsRepliying({
@@ -53,6 +44,14 @@ const PostPopupComments = () => {
     });
     commentInputRef.current?.focus();
   };
+  useEffect(() => {
+    if (!i) return;
+    if (!sending) {
+      if (isRepliying) scrollTop(totalHeight);
+      else scrollTop(dataRef.current.contentRef.current!.clientHeight || 0);
+      setComment("");
+    }
+  }, [sending]);
 
   useEffect(() => {
     if (isRepliying) {
@@ -65,7 +64,6 @@ const PostPopupComments = () => {
   }, [comment]);
 
   const [totalHeight, setTotalHeight] = useState(0);
-
   const scrollTop = (top: number) =>
     startSmoothScroll(dataRef.current.dataContainerRef.current!, top, 500);
 
@@ -81,24 +79,14 @@ const PostPopupComments = () => {
   useEffect(() => {
     if (!isRepliying) return;
     if (dataRef.current.dataContainerRef.current) {
-      var childElements = Array.from(
-        dataRef.current.dataContainerRef.current.children
-      );
-      childElements = childElements.slice(1);
-      const ii = data.findIndex((obj) => obj.id == isRepliying.commentid);
+      var cE = Array.from(dataRef.current.dataContainerRef.current.children);
+      cE = cE.slice(1);
+      const cCI = data.findIndex((obj) => obj.id == isRepliying.commentid);
       let heightSum = 0;
-      for (let i = 0; i <= ii; i++) {
-        heightSum += childElements[i].clientHeight;
-      }
-
-      var subCommentClientHeight = 0;
-      var a: any = Array.from(childElements[ii].children);
-      const el: Element = a[1];
-      if (el.children.length == 3) {
-        subCommentClientHeight = el.children[2].clientHeight;
-      }
-
-      setTotalHeight(heightSum + subCommentClientHeight - 8);
+      for (let i = 0; i <= cCI; i++) heightSum += cE[i].clientHeight;
+      setTotalHeight(
+        heightSum + dataRef.current.contentRef.current?.clientHeight!
+      );
     }
   }, [data, isRepliying]);
 

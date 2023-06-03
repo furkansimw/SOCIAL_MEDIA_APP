@@ -2,17 +2,22 @@ import { DetailIcon } from "../../Icons";
 import styled from "styled-components";
 import { disableRightClick } from "../../Navigation";
 import { shallowEqual, useSelector } from "react-redux";
-import { selectCurrentPost } from "../../../redux/postsReducer";
+import { selectCurrentPost, selectProfile } from "../../../redux/postsReducer";
 import LinkQ from "../LinkQ";
 import { selectValues } from "../../../redux/profileReducer";
+import { RootState } from "../../../redux/store";
 
 const Info = () => {
-  const { username, isfollowing, pp } = useSelector(
-    selectCurrentPost,
+  const { username, pp } = useSelector(selectCurrentPost, shallowEqual)!;
+  const { username: myusername } = useSelector(selectValues, shallowEqual);
+  const profile = useSelector(
+    (s: RootState) => selectProfile(s, username),
     shallowEqual
   )!;
-  const { username: myusername } = useSelector(selectValues, shallowEqual);
+
   const to = `/${username}`;
+
+  const isfollowing = profile?.info?.status == 0;
 
   return (
     <InfoContainer>
@@ -27,7 +32,7 @@ const Info = () => {
         <LinkQ className="username" to={to}>
           <p>{username}</p>
         </LinkQ>
-        {!isfollowing && username != myusername && (
+        {username != myusername && !isfollowing && (
           <>
             <span>•</span>
             <button>Follow</button>

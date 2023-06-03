@@ -19,11 +19,20 @@ const Posts = () => {
   } = useSelector(selectMetaData, shallowEqual);
 
   useEffect(() => {
-    if (posts.length == 0 && hasmore) dispatch(getPosts({}));
+    if (posts.length == 0) dispatch(getPosts({}));
   }, []);
 
+  const onScroll = (e: React.UIEvent<HTMLUListElement, UIEvent>) => {
+    if (loading || !hasmore) return;
+    const { created: date, id } = posts[posts.length - 1];
+    const { scrollTop, scrollHeight, clientHeight } = e.target as Element;
+    if (scrollTop + clientHeight + 100 >= scrollHeight) {
+      dispatch(getPosts({ date, id }));
+    }
+  };
+
   return (
-    <Container>
+    <Container onScroll={onScroll}>
       <Title title="Posts" />
       {posts.map((post) => (
         <PostItemHome post={post} />
@@ -37,13 +46,18 @@ const Container = styled.ul`
   overflow-x: hidden;
   width: 100%;
   overflow-y: auto;
-  max-width: 450px;
-  margin: 2rem;
   display: flex;
-  align-items: start;
+  align-items: center;
   flex-direction: column;
-  justify-content: start;
-  padding: 2rem 0px;
+  padding: 1rem;
+  li {
+    max-width: 500px;
+    width: 100%;
+    min-width: 0px;
+    &:first-child {
+      border-top: none;
+    }
+  }
   .loading-box {
     margin: 2rem;
   }

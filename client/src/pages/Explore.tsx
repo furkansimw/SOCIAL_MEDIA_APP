@@ -24,7 +24,7 @@ const Explore = () => {
   } = useSelector(selectMetaData, shallowEqual);
 
   useEffect(() => {
-    if (posts.length == 0 && hasmore) dispatch(getPosts({ explore: true }));
+    if (posts.length == 0) dispatch(getPosts({ explore: true }));
   }, []);
 
   const onScroll = (e: React.UIEvent<HTMLUListElement, UIEvent>) => {
@@ -69,9 +69,9 @@ const Container = styled.ul`
   flex-direction: column;
   align-items: center;
   .content {
-    max-width: calc(906px + 4rem);
+    max-width: calc(906px + 2rem);
     width: 100%;
-    padding: 2rem;
+    padding: 1rem;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-gap: 3px;
