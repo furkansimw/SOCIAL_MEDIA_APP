@@ -20,7 +20,7 @@ import { MoreIcon3, SettingsIcon } from "../components/Icons";
 import Title from "../components/Title";
 import PostMini from "../components/post/PostMini";
 import NotFound from "../components/NotFound.tsx";
-import { selectValues } from "../redux/profileReducer.ts";
+import { selectIsLoggedin, selectValues } from "../redux/profileReducer.ts";
 import { disableRightClick } from "../components/Navigation.tsx";
 import Priv from "../components/profile/Priv.tsx";
 
@@ -65,7 +65,11 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    if (profile?.info?.status == null && profile?.info?.ispublic)
+    if (
+      profile?.info?.status == null &&
+      profile?.info?.ispublic &&
+      posts.length == 0
+    )
       dispatch(getProfilePosts({ username }));
   }, [profile?.info]);
 

@@ -16,12 +16,11 @@ import LoginPopup from "./components/LoginPopup";
 import EditProfile from "./pages/EditProfile.tsx";
 
 const App = () => {
-  const { isloggedin } = useSelector(selectProfile);
+  const { isloggedin, loginPopupActive } = useSelector(selectProfile);
   const back = useSelector(selectBack, shallowEqual);
-
   return (
     <Container>
-      {!isloggedin && <LoginPopup />}
+      {loginPopupActive && <LoginPopup />}
       {isloggedin && <Navigation />}
       <View>
         <Routes>

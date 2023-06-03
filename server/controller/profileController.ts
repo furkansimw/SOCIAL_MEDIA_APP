@@ -1,4 +1,6 @@
+import { destroy } from "../db/cloudinary";
 import conv from "../functions/converter";
+import urlConverter from "../functions/urlConverter";
 import { asyncErrorWrapper, badRequest, createError } from "../mw/error";
 import {
   searchProfileQ,
@@ -94,7 +96,49 @@ const getMyProfileDetail = asyncErrorWrapper(async (req, res) => {
   res.json(detail);
 });
 const updateProfile = asyncErrorWrapper(async (req, res) => {
-  res.json({ status: "ok" });
+  const { id, guest } = res.locals;
+  if (guest) badRequest();
+  const { pp, username, email, oldpassword, password, bio, ispublic } =
+    req.body;
+  let values: any = {};
+  try {
+    if (pp != undefined && pp != null) {
+      const url = await urlConverter(id, pp);
+      values["pp"] = url;
+    } else if (pp == null) {
+      values["pp"] = null;
+      try {
+        await destroy(`${id}-pp`, "pp");
+      } catch (error) {}
+    }
+  } catch (error) {
+    return createError((error as any).toString(), 500);
+  }
+
+  const newBio = (bio ?? "").replace(/\n{2,}/g, "\n").trim();
+  values["bio"] = newBio.length > 0 ? newBio : null;
+  values.ispublic = ispublic || false;
+  const usernamePattern =
+    "^(?=.{6,36}$)(?![_.])(?!.*[_.]{2})[a-z0-9._]+(?<![_.])$";
+  if (
+    username != undefined &&
+    new RegExp(usernamePattern).test(username) &&
+    ![
+      "explore",
+      "accounts",
+      "account",
+      "myaccount",
+      "mysaved",
+      "mysaveds",
+      "search",
+      "myprofile",
+    ].includes(username)
+  )
+    values["username"] = username;
+  if (new RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$").test(email))
+    values["email"] = email;
+  await updateProfileQ(id, values);
+  res.json(values?.pp || { status: "ok" });
 });
 
 export {

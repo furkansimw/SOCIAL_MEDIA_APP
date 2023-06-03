@@ -152,7 +152,13 @@ const getMyProfileDetailQ = (id: string) =>
     )
     .then((r) => r.rows[0]);
 
-const updateProfileQ = () => {};
+const updateProfileQ = (id: string, values: {}) =>
+  db.query(
+    `update users set ${Object.entries(values)
+      .map(([key], index) => `${key} = $${index + 2}`)
+      .join(", ")} where id = $1`,
+    [id, ...Object.values(values)]
+  );
 
 export {
   searchProfileQ,

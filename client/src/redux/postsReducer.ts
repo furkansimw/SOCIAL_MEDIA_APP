@@ -88,6 +88,13 @@ export const postsSlice = createSlice({
         state.profiles = profileU(profiles, page, obj);
       }
     },
+    setProfile: (state, action: PayloadAction<any>) => {
+      const { username } = action.payload;
+      state.profiles = state.profiles.map((p) => {
+        if (p.username == username) return { ...p, ...action.payload };
+        return p;
+      });
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -564,8 +571,13 @@ export const postsSlice = createSlice({
   },
 });
 
-export const { setBack, toggleSubCommetsT, setCurrentPostId, setOffset } =
-  postsSlice.actions;
+export const {
+  setBack,
+  toggleSubCommetsT,
+  setCurrentPostId,
+  setOffset,
+  setProfile,
+} = postsSlice.actions;
 
 export const selectPostsHome = (state: RootState) =>
   state.posts.posts.filter((post) => post.page == "home");

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import {
@@ -13,18 +13,12 @@ const LoginPopup = () => {
   const postPopupActive = useSelector(selectPostPopupActive);
   const dispatch = useDispatch<AppDispatch>();
   const close = () => dispatch(toggleSetLoginPopupActive());
-  const ref = useRef<HTMLDivElement>(null);
+
   if (!postPopupActive) return null;
   return (
     <>
-      <Bg className={postPopupActive ? "active" : ""} onClick={close} />
-      <Container
-        ref={ref}
-        style={{
-          top: `calc(50% - 200px)`,
-        }}
-        className={postPopupActive ? "active" : ""}
-      >
+      <Bg onClick={close} />
+      <Container className={postPopupActive ? "active" : ""}>
         <Login />
       </Container>
     </>
@@ -32,7 +26,7 @@ const LoginPopup = () => {
 };
 
 const Bg = styled.div`
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.2);
   width: 100vw;
   height: 100vh;
   position: fixed;
@@ -40,12 +34,6 @@ const Bg = styled.div`
   left: 0px;
   top: 0px;
   transition: 0.3s ease-in-out all;
-  opacity: 0;
-  pointer-events: none;
-  &.active {
-    pointer-events: all;
-    opacity: 1;
-  }
 `;
 
 const Container = styled.div`

@@ -36,4 +36,5 @@ export const blockUser = createAsyncThunk(
 
 export const accountDetail = () => req(`/profile/edit`).then((r: any) => r);
 
-export const updateProfile = (obj: any) => req(`/profile/edit`, "POST", obj);
+export const updateProfile = (obj: any) =>
+  req(`/profile/edit`, "POST", obj).then((r) => r as string);

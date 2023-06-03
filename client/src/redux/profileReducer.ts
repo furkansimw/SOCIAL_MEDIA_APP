@@ -37,8 +37,7 @@ export const profileSlice = createSlice({
   },
 });
 
-export const { toggleSetIsloggedin, toggleSetLoginPopupActive } =
-  profileSlice.actions;
+export const { toggleSetLoginPopupActive } = profileSlice.actions;
 
 export const selectProfile = (state: RootState) => state.profile;
 export const selectValues = (state: RootState) => state.profile.values;

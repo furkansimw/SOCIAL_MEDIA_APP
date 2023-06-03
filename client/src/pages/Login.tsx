@@ -3,11 +3,9 @@ import styled from "styled-components";
 import Title from "../components/Title";
 import { ToastContainer, toast } from "react-toastify";
 import { login, signup } from "../api/auth";
-import { toggleSetIsloggedin } from "../redux/profileReducer";
 import { useDispatch } from "react-redux";
 
 const Login = () => {
-  const dispatch = useDispatch();
   const usernamePattern =
       "^(?=.{6,36}$)(?![_.])(?!.*[_.]{2})[a-z0-9._]+(?<![_.])$",
     emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$";
@@ -43,7 +41,7 @@ const Login = () => {
     try {
       if (islogin) await login(username, password);
       else await signup(username, password, fullname, email);
-      dispatch(toggleSetIsloggedin());
+      window.location.reload();
     } catch (error) {
       toast.error((error as any).toString());
     }

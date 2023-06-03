@@ -5,6 +5,10 @@ import { IE } from "../interfaces/IApi";
 import { Bg } from "../components/PostPopup";
 import { ToastContainer, toast } from "react-toastify";
 import LoadingBox from "../components/LoadingBox";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../redux/store";
+import { setProfile } from "../redux/postsReducer";
+import { useNavigate } from "react-router-dom";
 
 const EditProfile = () => {
   useEffect(() => {
@@ -18,11 +22,21 @@ const EditProfile = () => {
 
   const [values, setValues] = useState<IE | null>(null);
 
+  const dispatch = useDispatch<AppDispatch>();
+  const nav = useNavigate();
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!changed) return;
-
-    updateProfile(values);
+    const bio = (values?.bio ?? "").replace(/\n{2,}/g, "\n").trim();
+    var a: any = values;
+    a["bio"] = bio;
+    delete a.pp;
+    updateProfile(a)
+      .then((e) => {
+        dispatch(setProfile(a));
+        nav(`/${a.username}`, { replace: true });
+      })
+      .catch(toast.error);
   };
 
   useEffect(() => {
@@ -86,11 +100,22 @@ const EditProfile = () => {
     conv(img)
       .then((r: any) => {
         updateProfile({ pp: r })
-          .then(() => setUploadingpp(false))
+          .then((url) => {
+            setUploadingpp(false);
+            const v = values!;
+            setValues({ ...v, pp: url });
+          })
           .catch((e) => toast.error(e.toString()));
       })
       .catch((e) => toast.error(e.toString()));
   };
+
+  const remove = () =>
+    updateProfile({ pp: null }).then(() => {
+      close();
+      dispatch(setProfile({ ...values!, pp: null }));
+      setValues({ ...values!, pp: null });
+    });
 
   if (values == null) return <></>;
   const { username, pp, bio, email, ispublic } = values;
@@ -194,15 +219,16 @@ const EditProfile = () => {
           />
         </div>
       </form>
-      {p && <Popup close={close} pick={pick} />}
+      {p && <Popup close={close} pick={pick} remove={remove} />}
     </Container>
   );
 };
 
 const Popup: FC<{
   close: () => void;
+  remove: () => void;
   pick: (e: React.ChangeEvent<HTMLInputElement>) => Promise<any>;
-}> = ({ close, pick }) => {
+}> = ({ close, pick, remove }) => {
   useEffect(() => {
     const worker = (e: KeyboardEvent) => {
       if (e.key == "Escape") close();
@@ -228,10 +254,7 @@ const Popup: FC<{
             onChange={pick}
           />
         </button>
-        <button
-          className="d"
-          onClick={() => updateProfile({ pp: null }).then(close)}
-        >
+        <button className="d" onClick={remove}>
           Remove Current Photo
         </button>
         <button onClick={close}>Cancel</button>
