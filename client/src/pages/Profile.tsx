@@ -65,9 +65,8 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    if (profile?.info?.status == null && profile?.info?.ispublic) {
+    if (profile?.info?.status == null && profile?.info?.ispublic)
       dispatch(getProfilePosts({ username }));
-    }
   }, [profile?.info]);
 
   if (!profile) return <></>;

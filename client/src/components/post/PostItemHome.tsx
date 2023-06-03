@@ -1,6 +1,5 @@
 import {
   FC,
-  MouseEvent,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -19,13 +18,12 @@ import { Link } from "react-router-dom";
 import {
   CommentIcon,
   LikeIcon,
-  MoreIcon,
   MoreIcon2,
   SaveIcon,
   ShareIcon,
 } from "../Icons";
 import { disableRightClick } from "../Navigation";
-import Bottom, { dateCalc } from "./postpopup/Bottom";
+import { dateCalc } from "./postpopup/Bottom";
 import Likes from "./postpopup/Likes";
 import { setBack, setCurrentPostId } from "../../redux/postsReducer";
 import LinkConverter from "./LinkConverter";
@@ -45,6 +43,7 @@ const PostItemHome: FC<props> = ({ post }) => {
     issaved,
     likecount,
     created,
+    commentcount,
   } = post;
   const dispatch = useDispatch<AppDispatch>();
   const [likeA, setLikeA] = useState(false);
@@ -168,6 +167,11 @@ const PostItemHome: FC<props> = ({ post }) => {
             more
           </button>
         )}
+        {commentcount > 0 && (
+          <p className="viewc" onClick={viewComment}>
+            View all {commentcount} comments
+          </p>
+        )}
       </div>
     </Container>
   );
@@ -177,7 +181,7 @@ const Container = styled.li`
   width: 100%;
   max-width: 500px;
   margin: 1rem 0px;
-  height: 100%;
+  height: calc(100% + 24px);
   position: relative;
   border-top: 1px solid #262626;
   @media (max-width: 669px) {
@@ -340,7 +344,7 @@ const Container = styled.li`
   }
   .detail {
     padding: 0px 1rem 0px 0px;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     p {
       font-size: 14px;
       line-height: 18px;
@@ -393,6 +397,14 @@ const Container = styled.li`
     font-size: 14px;
     font-weight: 600;
     color: #a8a8a8;
+  }
+  .viewc {
+    display: block;
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 18px;
+    color: #a8a8a8;
+    cursor: pointer;
   }
 `;
 

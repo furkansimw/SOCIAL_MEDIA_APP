@@ -20,7 +20,7 @@ const Priv: FC<Props> = ({ info }) => {
   const isloggedin = useSelector(selectIsLoggedin, shallowEqual);
   const dispatch = useDispatch<AppDispatch>();
   const loginHandle = () => dispatch(toggleSetLoginPopupActive());
-  if ([null, 1].includes(status ?? null) && !ispublic)
+  if (status != 0 && !ispublic)
     return (
       <div className="priv">
         {isloggedin ? (
