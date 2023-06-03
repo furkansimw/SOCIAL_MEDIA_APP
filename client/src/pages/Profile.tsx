@@ -6,7 +6,7 @@ import {
   selectProfile,
   setOffset,
 } from "../redux/postsReducer";
-import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import {
   blockUser,

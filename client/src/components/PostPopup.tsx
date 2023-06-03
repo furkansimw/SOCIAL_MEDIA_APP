@@ -22,7 +22,7 @@ const PostPopup = () => {
   };
 
   useEffect(() => {
-    const worker = (e: PopStateEvent) => dispatch(setBack(null));
+    const worker = () => dispatch(setBack(null));
     window.addEventListener("popstate", worker);
     window.addEventListener("keydown", worker2);
     return () => {
