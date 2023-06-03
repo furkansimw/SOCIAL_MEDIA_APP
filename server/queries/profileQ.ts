@@ -121,17 +121,17 @@ const unFollowUserQ = (id: string, userid: string) =>
 const blockUserQ = (id: string, userid: string) =>
   db.query(
     `
-        IF EXISTS (SELECT 1 FROM relationships WHERE owner = $1 and target = $2)
-    BEGIN
-        UPDATE relationships
-        SET type = 2
-        WHERE owner = $1 and target = $2
-    END
-    ELSE
-    BEGIN
-        INSERT INTO relationships (owner, target, type)
-        VALUES ($1, $2, 2);
-    END
+    WITH updated_rows AS (
+      UPDATE relationships
+      SET type = 2
+      WHERE owner = $1 AND target = $2
+      RETURNING *
+  )
+  INSERT INTO relationships (owner, target, type)
+  SELECT $1, $2, 2
+  WHERE NOT EXISTS (SELECT * FROM updated_rows);
+  
+
   `,
     [id, userid]
   );

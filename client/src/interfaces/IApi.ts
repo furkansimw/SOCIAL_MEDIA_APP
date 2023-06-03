@@ -54,5 +54,4 @@ export interface IGetProfilePosts extends ILast {
 export interface ISC {
   userid: string;
   a: boolean;
-  ispublic: boolean;
 }

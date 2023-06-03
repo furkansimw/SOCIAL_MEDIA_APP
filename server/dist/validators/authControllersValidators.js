@@ -4,7 +4,16 @@ exports.usernamePattern = exports.signUpVal = exports.loginVal = void 0;
 const loginVal = (username, password) => username &&
     password &&
     new RegExp(usernamePattern).test(username) &&
-    !["explore", "mysaved", "mysaveds", "search", "myprofile"].includes(username) &&
+    ![
+        "explore",
+        "accounts",
+        "account",
+        "myaccount",
+        "mysaved",
+        "mysaveds",
+        "search",
+        "myprofile",
+    ].includes(username) &&
     password.length >= 6 &&
     password.length <= 100;
 exports.loginVal = loginVal;

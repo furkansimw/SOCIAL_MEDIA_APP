@@ -17,7 +17,12 @@ import {
 } from "../api/posts.ts";
 import { RootState } from "./store.ts";
 import { commentsU, dateR, postsU, profileU } from "./functions.ts";
-import { followUser, getProfile, getProfilePosts } from "../api/profile.ts";
+import {
+  blockUser,
+  followUser,
+  getProfile,
+  getProfilePosts,
+} from "../api/profile.ts";
 
 const initialState: IPostsSliceInitialState = {
   posts: [],
@@ -490,8 +495,12 @@ export const postsSlice = createSlice({
       });
     builder
       .addCase(followUser.pending, (state, action) => {
-        const { profiles } = state;
-        const { userid, ispublic, a } = action.meta.arg;
+        const { profiles, posts } = state;
+        const { userid, a } = action.meta.arg;
+        const ispublic = profiles.find((p) => p.info?.id == userid)?.info
+          ?.ispublic!;
+        if (!ispublic && !a)
+          state.posts = posts.filter((p) => p.owner != userid);
 
         state.profiles = profiles.map((p) => {
           if (p.info?.id == userid)
@@ -504,7 +513,9 @@ export const postsSlice = createSlice({
       })
       .addCase(followUser.rejected, (state, action) => {
         const { profiles } = state;
-        const { userid, ispublic, a } = action.meta.arg;
+        const { userid, a } = action.meta.arg;
+        const ispublic = profiles.find((p) => p.info?.id == userid)?.info
+          ?.ispublic!;
 
         state.profiles = profiles.map((p) => {
           if (p.info?.id == userid)
@@ -513,6 +524,41 @@ export const postsSlice = createSlice({
               info: { ...p.info, status: !a ? (ispublic ? 0 : 1) : null },
             };
           else return p;
+        });
+      });
+
+    builder
+      .addCase(blockUser.pending, (state, action) => {
+        const { a, userid } = action.meta.arg;
+        const { profiles } = state;
+        state.profiles = profiles.map((p) => {
+          if (p.info?.id == userid)
+            return {
+              ...p,
+              info: p.info ? { ...p.info, status: a ? 2 : null } : undefined,
+            };
+          return p;
+        });
+      })
+      .addCase(blockUser.fulfilled, (state, action) => {
+        const { userid, a } = action.meta.arg;
+        const { posts, profiles } = state;
+        const username = profiles.find((p) => p.info?.id == userid)!.username;
+        if (a)
+          state.posts = posts.filter(
+            (p) => p.page != username || p.owner != userid
+          );
+      })
+      .addCase(blockUser.rejected, (state, action) => {
+        const { a, userid } = action.meta.arg;
+        const { profiles } = state;
+        state.profiles = profiles.map((p) => {
+          if (p.info?.id == userid)
+            return {
+              ...p,
+              info: p.info ? { ...p.info, status: !a ? 2 : null } : undefined,
+            };
+          return p;
         });
       });
   },

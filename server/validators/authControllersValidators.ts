@@ -2,9 +2,16 @@ const loginVal = (username: string, password: string) =>
   username &&
   password &&
   new RegExp(usernamePattern).test(username) &&
-  !["explore", "mysaved", "mysaveds", "search", "myprofile"].includes(
-    username
-  ) &&
+  ![
+    "explore",
+    "accounts",
+    "account",
+    "myaccount",
+    "mysaved",
+    "mysaveds",
+    "search",
+    "myprofile",
+  ].includes(username) &&
   password.length >= 6 &&
   password.length <= 100;
 

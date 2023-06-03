@@ -1,8 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../redux/store.ts";
 import { getPosts } from "../api/posts.ts";
-import { selectMetaData, selectPostsHome } from "../redux/postsReducer.ts";
+import {
+  selectMetaData,
+  selectPostsHome,
+  setOffset,
+} from "../redux/postsReducer.ts";
 import PostItemHome from "../components/post/PostItemHome.tsx";
 import LoadingBox from "../components/LoadingBox.tsx";
 import styled from "styled-components";
@@ -16,6 +20,7 @@ const Posts = () => {
   const {
     hasmore: { home: hasmore },
     loading: { home: loading },
+    offset: { home: offset },
   } = useSelector(selectMetaData, shallowEqual);
 
   useEffect(() => {
@@ -31,8 +36,19 @@ const Posts = () => {
     }
   };
 
+  const listRef = useRef<HTMLUListElement>(null);
+
+  useLayoutEffect(() => {
+    listRef.current!.scroll({ top: offset });
+
+    return () => {
+      const offset = listRef.current!.scrollTop;
+      dispatch(setOffset({ page: "home", offset }));
+    };
+  }, []);
+
   return (
-    <Container onScroll={onScroll}>
+    <Container ref={listRef} onScroll={onScroll}>
       <Title title="Posts" />
       {posts.map((post) => (
         <PostItemHome post={post} />

@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import PostPopup from "./components/PostPopup";
 import { selectBack } from "./redux/postsReducer";
 import LoginPopup from "./components/LoginPopup";
+import EditProfile from "./pages/EditProfile.tsx";
 
 const App = () => {
   const { isloggedin } = useSelector(selectProfile);
@@ -30,7 +31,8 @@ const App = () => {
           {isloggedin && (
             <>
               <Route path="/explore" element={<Explore />} />
-              <Route path="/direct/inbox" element={<Messages />} />
+              <Route path="/direct/inbox" element={<EditProfile />} />
+              <Route path="/acccounts/edit" element={<Messages />} />
             </>
           )}
         </Routes>

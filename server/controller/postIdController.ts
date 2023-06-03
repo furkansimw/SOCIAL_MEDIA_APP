@@ -76,6 +76,7 @@ const postComment = asyncErrorWrapper(async (req, res) => {
   content = content.replace(/\s+/g, " ").trim().toString();
 
   const commentId = await postCommentQ(id, postid, content);
+  if (!commentId) badRequest();
   res.json(commentId);
 });
 

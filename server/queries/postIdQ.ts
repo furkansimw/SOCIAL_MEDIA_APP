@@ -142,7 +142,7 @@ const postCommentQ = (id: string, postid: string, content: string) =>
   `,
       [id, postid, content]
     )
-    .then((r) => r.rows[0].id);
+    .then((r) => r.rows[0]?.id);
 
 const postSaveQ = (id: string, postid: string) =>
   db.query(

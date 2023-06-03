@@ -6,7 +6,7 @@ import {
   selectProfile,
   setOffset,
 } from "../redux/postsReducer";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   blockUser,
@@ -27,7 +27,11 @@ import Priv from "../components/profile/Priv.tsx";
 const Profile = () => {
   const p = useLocation().pathname.split("/");
   const username = p[1];
+  const [block, setBlock] = useState([false, false]);
+
+  const [more, setMore] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
+
   const profile = useSelector(
     (s: RootState) => selectProfile(s, username),
     shallowEqual
@@ -42,17 +46,17 @@ const Profile = () => {
     (s: RootState) => selectPostsProfile(s, username),
     shallowEqual
   );
+
   const { username: myusername } = useSelector(selectValues, shallowEqual);
 
   const listRef = useRef<HTMLUListElement>(null);
 
   useLayoutEffect(() => {
-    if (!profile?.info) return;
-    const offset = profile.info.offset || 0;
-    listRef.current?.scroll({ top: offset });
-  }, [profile?.info]);
+    if (!profile?.info || listRef.current == null) return;
 
-  useLayoutEffect(() => {
+    const offset = profile.info.offset || 0;
+
+    listRef.current?.scroll({ top: offset });
     return () => {
       dispatch(
         setOffset({ page: username, offset: listRef.current?.scrollTop ?? 0 })
@@ -60,28 +64,36 @@ const Profile = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (profile?.info?.status == null && profile?.info?.ispublic) {
+      dispatch(getProfilePosts({ username }));
+    }
+  }, [profile?.info]);
+
   if (!profile) return <></>;
 
-  const { info, postsState, loading } = profile;
+  const { postsState, loading } = profile;
 
   if (profile.exists == false) return <NotFound />;
-  if (loading || !postsState || !info) return <></>;
 
+  if (loading || !postsState || !profile.info) return <></>;
+  const { info } = profile;
   const {
     followercount,
     followingcount,
     postcount,
     status,
-    ispublic,
     id: userid,
     fullname,
     bio,
   } = info!;
+
   const statusClick = () => {
-    if (status == 2) dispatch(blockUser({ a: false, userid, ispublic }));
-    else {
-      if (status == null) dispatch(followUser({ a: true, userid, ispublic }));
-      else dispatch(followUser({ a: false, userid, ispublic }));
+    if (status == 2) {
+      setBlock([true, false]);
+    } else {
+      if (status == null) dispatch(followUser({ a: true, userid }));
+      else dispatch(followUser({ a: false, userid }));
     }
   };
 
@@ -114,7 +126,7 @@ const Profile = () => {
   };
 
   return (
-    <Container ref={listRef}>
+    <Container onScroll={onScroll} ref={listRef}>
       <Title title={username} />
       <div className="info">
         <div className="pp">
@@ -139,7 +151,7 @@ const Profile = () => {
                   {statusController()}
                 </button>
                 <button className="message">Message</button>
-                <button className="more">
+                <button className="more" onClick={() => setMore(true)}>
                   <MoreIcon3 />
                 </button>
               </>
@@ -161,15 +173,118 @@ const Profile = () => {
         </div>
       </div>
       <Priv info={info} />
-      <ul onScroll={onScroll}>
+      {block[0] && (
+        <Block
+          close={() => setBlock([false, false])}
+          username={username}
+          state={block[1]}
+          userid={userid}
+        />
+      )}
+      {more && (
+        <More
+          close={() => setMore(false)}
+          procces={() => setBlock([true, true])}
+        />
+      )}
+      <ul>
         {posts.map((post) => (
           <PostMini post={post} back={username} />
         ))}
-        {postsState?.loading && <LoadingBox />}
       </ul>
+      {postsState?.loading && <LoadingBox />}
     </Container>
   );
 };
+
+const Block = ({
+  state,
+  username,
+  close,
+  userid,
+}: {
+  state: boolean;
+
+  close: () => void;
+
+  username: string;
+
+  userid: string;
+}) => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const tap = () => {
+    dispatch(blockUser({ a: state, userid }));
+    close();
+  };
+
+  return (
+    <>
+      <Bg onClick={close} />
+      <div className="block">
+        <div className="txt">
+          <h1>
+            {state ? `Block` : `Unblock`} {username}
+          </h1>
+          <p>
+            {state
+              ? `They won't be able to find your profile, posts or story on App.
+          Instagram won't let them know you blocked them.`
+              : `They will now be able to see your posts and follow
+          you on App. Instagram won't let them know you unblocked them.`}
+          </p>
+        </div>
+        <button onClick={tap} className="b">
+          {state ? `Block` : `Unblock`}
+        </button>
+        <button onClick={close}>Cancel</button>
+      </div>
+    </>
+  );
+};
+
+const More = ({
+  close,
+  procces,
+}: {
+  close: () => void;
+  procces: () => void;
+}) => {
+  return (
+    <>
+      <Bg onClick={close} />
+      <div className="morep">
+        <button
+          onClick={() => {
+            close();
+
+            procces();
+          }}
+          className="b"
+        >
+          Block
+        </button>
+        <button onClick={close}>Cancel</button>
+      </div>
+    </>
+  );
+};
+
+const Bg = styled.div`
+  background-color: rgba(0, 0, 0, 0.5);
+
+  width: 100vw;
+
+  height: 100vh;
+
+  position: fixed;
+
+  z-index: 100;
+
+  left: 0px;
+
+  top: 0px;
+`;
 
 const Container = styled.ul`
   height: 100vh;
@@ -230,53 +345,83 @@ const Container = styled.ul`
     }
     .pp {
       min-width: 150px;
+
       width: 100%;
+
       height: 150px;
+
       flex: 1;
+
       display: flex;
+
       justify-content: center;
+
       img {
         width: 150px;
+
         height: 150px;
+
         object-fit: cover;
+
         border-radius: 100%;
       }
     }
     .text {
       height: 100%;
+
       flex: 2;
+
       overflow: hidden;
+
       .up {
         margin-bottom: 20px;
+
         display: flex;
+
         align-items: center;
+
         .username {
           font-size: 20px;
+
           margin-right: 2rem;
+
           max-width: 390px;
+
           overflow: hidden;
+
           text-overflow: ellipsis;
+
           white-space: nowrap;
         }
         button {
           padding: 7px 1rem;
+
           border-radius: 8px;
+
           color: #000;
+
           background-color: #fafafa;
+
           margin-right: 1rem;
+
           font-weight: 600;
+
           font-size: 14px;
+
           &:hover {
             opacity: 0.8;
           }
           &.more {
             padding: 0px;
+
             background-color: transparent;
+
             opacity: 1 !important;
           }
           &.state {
             &.Follow {
               background-color: #0095f6 !important;
+
               color: #fafafa;
             }
           }
@@ -284,11 +429,17 @@ const Container = styled.ul`
       }
       .details {
         display: flex;
+
         justify-content: space-between;
+
         max-width: 260px;
+
         width: 100%;
+
         line-height: 18px;
+
         margin-bottom: 1rem;
+
         p {
           cursor: pointer;
         }
@@ -298,37 +449,101 @@ const Container = styled.ul`
       }
       .fullname {
         max-width: 450px;
+
         overflow: hidden;
+
         font-size: 14px;
+
         font-weight: 600;
+
         line-height: 18px;
+
         text-overflow: ellipsis;
+
         margin-bottom: 6px;
       }
       .bio {
         max-width: 450px;
+
         width: 100%;
+
         line-height: 18px;
+
         max-height: 80px;
+
         overflow-y: auto;
+
         font-size: 14px;
+
         white-space: pre-wrap;
+
         word-wrap: break-word;
+
         &:hover::-webkit-scrollbar {
           display: block;
         }
         &::-webkit-scrollbar {
           width: 8px;
+
           display: none;
         }
         &::-webkit-scrollbar-thumb {
           width: 8px;
+
           border-radius: 8px;
+
           background-color: #363636;
+
           &:active {
             background-color: #505050;
           }
         }
+      }
+    }
+  }
+  .morep {
+    border-radius: 12px;
+    background-color: #262626;
+    width: 400px;
+    position: fixed;
+    z-index: 120;
+    top: calc(50% - 150px);
+    left: calc(50% - 200px);
+    @keyframes an {
+      0% {
+        transform: scale(1.2);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    animation: an 0.1s ease-in-out;
+    button {
+      display: block;
+
+      height: 50px;
+
+      display: flex;
+
+      justify-content: center;
+
+      align-items: center;
+
+      font-size: 14px;
+
+      color: #fafafa;
+
+      width: 100%;
+
+      border-top: 1px solid #363636;
+
+      &:first-child {
+        border-top: none;
+      }
+      &.b {
+        font-weight: 600;
+
+        color: #ed4956;
       }
     }
   }
@@ -339,6 +554,57 @@ const Container = styled.ul`
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-gap: 3px;
+  }
+  .block {
+    border-radius: 12px;
+    background-color: #262626;
+    width: 400px;
+    position: fixed;
+    z-index: 120;
+    top: calc(50% - 150px);
+    left: calc(50% - 200px);
+    @keyframes an {
+      0% {
+        transform: scale(1.2);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    animation: an 0.1s ease-in-out;
+    .txt {
+      padding: 2rem;
+      h1 {
+        color: #f5f5fe;
+        font-size: 20px;
+        font-weight: 400;
+        text-align: center;
+      }
+      p {
+        font-size: 14px;
+        color: #a8a8a8;
+        text-align: center;
+      }
+    }
+
+    button {
+      display: block;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      color: #fafafa;
+      width: 100%;
+      border-top: 1px solid #363636;
+      &:first-child {
+        border-top: none;
+      }
+      &.b {
+        font-weight: 600;
+        color: #ed4956;
+      }
+    }
   }
 `;
 

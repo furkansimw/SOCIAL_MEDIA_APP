@@ -1,4 +1,12 @@
-import { FC, MouseEvent, useEffect, useMemo, useState } from "react";
+import {
+  FC,
+  MouseEvent,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { IPost } from "../../interfaces/ISlices";
 import styled from "styled-components";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -67,6 +75,16 @@ const PostItemHome: FC<props> = ({ post }) => {
     dispatch(setBack("home"));
     dispatch(setCurrentPostId(postid));
   };
+
+  const contentRef = useRef<HTMLPreElement>(null);
+
+  useLayoutEffect(() => {
+    if (contentRef.current) setIsOverflow(contentRef.current.scrollHeight > 36);
+  }, []);
+
+  const [more, setMore] = useState(false);
+  const [isOverflow, setIsOverflow] = useState(false);
+
   return (
     <Container>
       <div className="info-s">
@@ -136,12 +154,20 @@ const PostItemHome: FC<props> = ({ post }) => {
             {likecount.toLocaleString()} likes
           </p>
         </div>
-        <pre>
+        <pre
+          ref={contentRef}
+          className={`${!more ? (isOverflow ? `o` : ``) : ``}`}
+        >
           <Link className="username" to={`/${username}`}>
             {username}
           </Link>
           {content && <LinkConverter text={content} />}
         </pre>
+        {isOverflow && !more && (
+          <button className="more" onClick={() => setMore(true)}>
+            more
+          </button>
+        )}
       </div>
     </Container>
   );
@@ -150,7 +176,7 @@ const PostItemHome: FC<props> = ({ post }) => {
 const Container = styled.li`
   width: 100%;
   max-width: 500px;
-  margin-top: 1rem;
+  margin: 1rem 0px;
   height: 100%;
   position: relative;
   border-top: 1px solid #262626;
@@ -334,22 +360,39 @@ const Container = styled.li`
     }
   }
   pre {
+    max-height: 1000px;
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     word-wrap: break-word;
     font-size: 14px;
     line-height: 18px;
+    text-overflow: ellipsis;
     word-wrap: break-word;
     white-space: pre-wrap;
     overflow-wrap: break-word;
     display: block;
+    &.o {
+      height: 36px;
+      max-height: 36px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      word-wrap: normal;
+      white-space: normal;
+      overflow-wrap: normal;
+    }
     .username {
       margin-right: 4px;
     }
     a {
       display: inline;
     }
+  }
+  .more {
+    line-height: 18px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #a8a8a8;
   }
 `;
 
