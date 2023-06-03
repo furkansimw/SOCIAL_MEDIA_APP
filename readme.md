@@ -198,7 +198,7 @@ Use this space to list resources you find helpful and would like to give credit 
 [issues-shield]: https://img.shields.io/badge/ISSUES-0-yellow?style=for-the-badge
 [issues-url]: https://github.com/furkansimw/SOCIAL_MEDIA_APP/issues
 [license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
-[license-url]: https://github.com/furkansimw/SOCIAL_MEDIA_APP/blob/master/LICENSE.txt
+[license-url]: https://github.com/furkansimw/SOCIAL_MEDIA_APP/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/furkan-%C5%9Fim%C5%9Fek-215b33246/
 [product-screenshot]: images/screenshot.png
