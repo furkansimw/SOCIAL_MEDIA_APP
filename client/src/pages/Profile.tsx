@@ -20,7 +20,7 @@ import { MoreIcon3, SettingsIcon } from "../components/Icons";
 import Title from "../components/Title";
 import PostMini from "../components/post/PostMini";
 import NotFound from "../components/profile/NotFound.tsx";
-import { selectIsLoggedin, selectValues } from "../redux/profileReducer.ts";
+import { selectValues } from "../redux/profileReducer.ts";
 import { disableRightClick } from "../components/navigation/Navigation.tsx";
 import Priv from "../components/profile/Priv.tsx";
 
