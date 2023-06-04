@@ -13,7 +13,6 @@ import create from "./db/create";
 const app = express();
 const port = process.env.PORT || 4000;
 const origin = process.env.ORIGIN || "http://localhost:5173";
-console.log(origin);
 export const server = app.listen(port, async () => await create());
 
 app.use(express.json({ limit: "60mb" }));

@@ -1,7 +1,21 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import reactRefresh from "@vitejs/plugin-react-refresh";
+import dotenv from "dotenv";
 
-// https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react()],
+export default defineConfig(({ mode }) => {
+  // .env dosyasını yükleyin
+  const env = dotenv.config().parsed;
+
+  // env değişkenlerini Vite'a aktarın
+  const envKeys = Object.keys(env).reduce((acc, key) => {
+    acc[`import.meta.env.${key}`] = JSON.stringify(env[key]);
+    return acc;
+  }, {});
+
+  return {
+    plugins: [reactRefresh()],
+    define: {
+      ...envKeys,
+    },
+  };
 });
