@@ -61,6 +61,7 @@ const followUser = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   const { userid } = req.body;
   if (guest || !userid) badRequest();
+  if (userid == id) badRequest();
   await followUserQ(id, userid);
   res.json({ status: "ok" });
 });
@@ -77,6 +78,8 @@ const blockUser = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   const { userid } = req.body;
   if (guest || !userid) badRequest();
+  if (userid == id) badRequest();
+  await unFollowUserQ(id, userid);
   await blockUserQ(id, userid);
   res.json({ status: "ok" });
 });
@@ -95,6 +98,7 @@ const getMyProfileDetail = asyncErrorWrapper(async (req, res) => {
   const detail = await getMyProfileDetailQ(id);
   res.json(detail);
 });
+
 const updateProfile = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   if (guest) badRequest();
@@ -103,8 +107,7 @@ const updateProfile = asyncErrorWrapper(async (req, res) => {
     username,
     email,
     fullname,
-    oldpassword,
-    password,
+
     bio,
     ispublic,
   } = req.body;
