@@ -27,12 +27,15 @@ import { dateCalc } from "./postpopup/Bottom";
 import Likes from "./postpopup/Likes";
 import { setBack, setCurrentPostId } from "../../redux/postsReducer";
 import LinkConverter from "./LinkConverter";
+import Context from "../Context";
 
 type props = {
   post: IPost;
 };
 
 const PostItemHome: FC<props> = ({ post }) => {
+  const [m, _m] = useState(false);
+
   const {
     images,
     isliked,
@@ -101,7 +104,7 @@ const PostItemHome: FC<props> = ({ post }) => {
           <p className="date"> • {date}</p>
         </div>
         <div className="right">
-          <button>
+          <button onClick={() => _m(true)}>
             <MoreIcon2 />
           </button>
         </div>
@@ -173,6 +176,7 @@ const PostItemHome: FC<props> = ({ post }) => {
           </p>
         )}
       </div>
+      {m && <Context close={() => _m(false)} post={post} />}
     </Container>
   );
 };

@@ -8,6 +8,10 @@ import CreatePostPopupImages from "./CreatePostPopupImages";
 import { createPost } from "../../api/posts";
 import { useNavigate } from "react-router-dom";
 import LoadingBox from "../LoadingBox";
+import { shallowEqual, useDispatch } from "react-redux";
+import { AppDispatch } from "../../redux/store";
+import { useSelector } from "react-redux";
+import { selectValues } from "../../redux/profileReducer";
 
 type Props = {
   close: () => void;
@@ -26,7 +30,7 @@ const CreatePostPopup: FC<Props> = ({ close }) => {
   const [images, setImages] = useState<IPickImage[]>([]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const dispatch = useDispatch<AppDispatch>();
   const conv = (file: File) =>
     new Promise((resolve, reject) => {
       let reader = new FileReader();
@@ -94,7 +98,7 @@ const CreatePostPopup: FC<Props> = ({ close }) => {
   };
 
   const nav = useNavigate();
-
+  const myusername = useSelector(selectValues, shallowEqual).username;
   useEffect(() => {
     if (images.length == 0) setStep(1);
   }, [images]);
@@ -113,6 +117,7 @@ const CreatePostPopup: FC<Props> = ({ close }) => {
         const postId = await createPost(updatedImages, updatedText);
         close();
         nav(`/p/${postId}`);
+        window.location.reload();
       } catch (error) {
         toast.error((error as any).toString());
       } finally {

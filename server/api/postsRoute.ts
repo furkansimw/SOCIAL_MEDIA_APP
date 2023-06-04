@@ -14,6 +14,7 @@ import {
   postUnlike,
   postSave,
   postUnSave,
+  deletePost,
 } from "../controller/postIdController";
 import commentIdRoute from "./commenstRoute";
 
@@ -27,7 +28,7 @@ const postsIdRoute = Router({ mergeParams: true });
 
 postsRoute.use("/:postid", postsIdRoute);
 
-postsIdRoute.route("/").get(getPost);
+postsIdRoute.route("/").get(getPost).delete(deletePost);
 postsIdRoute.route("/images").get(getPostImages);
 postsIdRoute.route("/likes").get(getPostLikes);
 postsIdRoute.route("/comments").get(getComments);

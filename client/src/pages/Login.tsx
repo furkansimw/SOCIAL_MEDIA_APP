@@ -50,7 +50,7 @@ const Login = () => {
   const change = () => setIslogin(!islogin);
 
   return (
-    <Container>
+    <Container className="login">
       <Title title={islogin ? "Login" : "Signup"} />
       <ToastContainer theme="dark" position="bottom-center" />
       <h1>Social Media App</h1>

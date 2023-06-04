@@ -90,3 +90,8 @@ export const getSubCommentLikes = ({
   req(
     `/posts/${postid}/likes/comments/${commentid}/${subcommentid}/likes?date=${date}&id=${id}`
   ).then((r) => r as ILikes[]);
+
+export const removePost = createAsyncThunk(
+  "/posts/:postid~{DELETE}",
+  (postid: string) => req(`/posts/${postid}`, "DELETE")
+);

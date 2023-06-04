@@ -12,6 +12,7 @@ import LoadingBox from "../components/LoadingBox.tsx";
 import styled from "styled-components";
 import { shallowEqual } from "react-redux";
 import Title from "../components/Title.tsx";
+import Context from "../components/Context.tsx";
 
 const Posts = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -46,7 +47,6 @@ const Posts = () => {
       dispatch(setOffset({ page: "home", offset }));
     };
   }, []);
-
   return (
     <Container ref={listRef} onScroll={onScroll}>
       <Title title="Posts" />

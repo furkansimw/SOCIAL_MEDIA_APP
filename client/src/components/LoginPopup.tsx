@@ -26,7 +26,7 @@ const LoginPopup = () => {
 };
 
 const Bg = styled.div`
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.7);
   width: 100vw;
   height: 100vh;
   position: fixed;
@@ -49,6 +49,9 @@ const Container = styled.div`
   background-color: #000;
   transition: 0.3s ease-in-out all;
   transform: scale(1);
+  .login {
+    border: none !important;
+  }
   &.active {
     @keyframes sca {
       0% {

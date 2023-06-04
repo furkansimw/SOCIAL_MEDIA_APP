@@ -98,9 +98,18 @@ const getMyProfileDetail = asyncErrorWrapper(async (req, res) => {
 const updateProfile = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   if (guest) badRequest();
-  const { pp, username, email, oldpassword, password, bio, ispublic } =
-    req.body;
+  const {
+    pp,
+    username,
+    email,
+    fullname,
+    oldpassword,
+    password,
+    bio,
+    ispublic,
+  } = req.body;
   let values: any = {};
+  if (fullname && fullname.length <= 50) values["fullname"] = fullname;
   try {
     if (pp != undefined && pp != null) {
       const url = await urlConverter(id, pp);
@@ -134,7 +143,7 @@ const updateProfile = asyncErrorWrapper(async (req, res) => {
       "myprofile",
     ].includes(username)
   )
-    values["username"] = username;
+    values["username"] = (username as string).toLowerCase();
   if (new RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$").test(email))
     values["email"] = email;
   await updateProfileQ(id, values);

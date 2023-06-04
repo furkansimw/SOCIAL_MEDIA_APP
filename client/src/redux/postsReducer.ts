@@ -14,6 +14,7 @@ import {
   getImages,
   getPosts,
   likeComment,
+  removePost,
 } from "../api/posts.ts";
 import { RootState } from "./store.ts";
 import { commentsU, dateR, postsU, profileU } from "./functions.ts";
@@ -87,13 +88,6 @@ export const postsSlice = createSlice({
 
         state.profiles = profileU(profiles, page, obj);
       }
-    },
-    setProfile: (state, action: PayloadAction<any>) => {
-      const { username } = action.payload;
-      state.profiles = state.profiles.map((p) => {
-        if (p.username == username) return { ...p, ...action.payload };
-        return p;
-      });
     },
   },
   extraReducers: (builder) => {
@@ -568,16 +562,29 @@ export const postsSlice = createSlice({
           return p;
         });
       });
+    builder.addCase(removePost.fulfilled, (state, action) => {
+      const postid = action.meta.arg;
+      const { profiles, posts } = state;
+      state.currentId = null;
+      state.back = null;
+      const username = state.posts.find((p) => p.id == postid)!.username;
+
+      state.profiles = profiles.map((p) => {
+        if (p.username == username)
+          return {
+            ...p,
+            info: { ...p!.info!, postcount: p!.info!.postcount - 1 },
+          };
+        return p;
+      });
+
+      state.posts = posts.filter((p) => p.id != postid);
+    });
   },
 });
 
-export const {
-  setBack,
-  toggleSubCommetsT,
-  setCurrentPostId,
-  setOffset,
-  setProfile,
-} = postsSlice.actions;
+export const { setBack, toggleSubCommetsT, setCurrentPostId, setOffset } =
+  postsSlice.actions;
 
 export const selectPostsHome = (state: RootState) =>
   state.posts.posts.filter((post) => post.page == "home");

@@ -38,3 +38,6 @@ export const accountDetail = () => req(`/profile/edit`).then((r: any) => r);
 
 export const updateProfile = (obj: any) =>
   req(`/profile/edit`, "POST", obj).then((r) => r as string);
+
+export const changePassword = (op: string, np: string, adlo: boolean) =>
+  req(`/auth/password`, "POST", { op, np, adlo });

@@ -65,6 +65,7 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
+    if (profile?.username == myusername) return;
     if (
       profile?.info?.status == null &&
       profile?.info?.ispublic &&
@@ -90,7 +91,6 @@ const Profile = () => {
     fullname,
     bio,
   } = info!;
-
   const statusClick = () => {
     if (status == 2) {
       setBlock([true, false]);

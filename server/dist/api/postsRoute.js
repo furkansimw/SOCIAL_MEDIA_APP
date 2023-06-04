@@ -13,7 +13,7 @@ postsRoute.route("/explore").get(postsController_1.getExplorePosts);
 postsRoute.route("/create").post(postsController_1.createPost);
 const postsIdRoute = (0, express_1.Router)({ mergeParams: true });
 postsRoute.use("/:postid", postsIdRoute);
-postsIdRoute.route("/").get(postIdController_1.getPost);
+postsIdRoute.route("/").get(postIdController_1.getPost).delete(postIdController_1.deletePost);
 postsIdRoute.route("/images").get(postIdController_1.getPostImages);
 postsIdRoute.route("/likes").get(postIdController_1.getPostLikes);
 postsIdRoute.route("/comments").get(postIdController_1.getComments);

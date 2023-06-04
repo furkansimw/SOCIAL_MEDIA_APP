@@ -1,4 +1,11 @@
-import { useState, useEffect, useRef, MouseEvent as ME } from "react"; // with the global mouseevent to avoid collision.
+import {
+  useState,
+  useEffect,
+  useRef,
+  MouseEvent as ME,
+  FC,
+  forwardRef,
+} from "react"; // with the global mouseevent to avoid collision.
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import {
@@ -8,7 +15,9 @@ import {
   MessagesIcon,
   MoreIcon,
   NotificationsIcon,
+  SavedIcon,
   SearchIcon,
+  SettingsIcon,
 } from "./Icons";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { selectValues } from "../redux/profileReducer";
@@ -17,6 +26,7 @@ import NotificationsPanel from "./NotificationsPanel";
 import { AppDispatch } from "../redux/store";
 import { getMyProfile } from "../api/profile";
 import CreatePostPopup from "./createpostpopup/CreatePostPopup";
+import { logout } from "../api/auth";
 
 export const disableRightClick = (e: ME<HTMLImageElement, MouseEvent>) =>
   e.preventDefault();
@@ -28,7 +38,6 @@ const Navigation = () => {
   const { pathname } = useLocation();
   const [panel, setPanel] = useState<null | "search" | "notifications">(null);
   const [createPostPopup, setCreatePostPopup] = useState(false);
-  const [moreIconActive] = useState(false);
 
   const uiController = (key: string) => {
     if (createPostPopup) return key == "create";
@@ -101,6 +110,30 @@ const Navigation = () => {
   }, []);
 
   const closeCreatePostPopup = () => setCreatePostPopup(false);
+
+  const moreBtnRef = useRef<HTMLButtonElement>(null);
+  const morePanelRef = useRef<HTMLDivElement>(null);
+  const [moreIconActive, setMoreIconActive] = useState(false);
+
+  useEffect(() => {
+    const worker = (e: MouseEvent) => {
+      const p = e.composedPath();
+      if (!moreBtnRef.current || !morePanelRef.current) return;
+      if (p.includes(moreBtnRef.current)) {
+        setMoreIconActive((p) => !p);
+      } else if (p.includes(morePanelRef.current)) {
+        setMoreIconActive(true);
+      } else {
+        setMoreIconActive(false);
+      }
+    };
+
+    window.addEventListener("click", worker);
+
+    return () => {
+      window.removeEventListener("click", worker);
+    };
+  }, []);
 
   return (
     <>
@@ -177,9 +210,10 @@ const Navigation = () => {
             </li>
           </ul>
           <div className="bottom">
-            <button className={moreIconActive ? "active" : ""}>
+            <button ref={moreBtnRef} className={moreIconActive ? "active" : ""}>
               <MoreIcon isactive={moreIconActive} />
               <p>More</p>
+              <MorePanel moreIconActive={moreIconActive} ref={morePanelRef} />
             </button>
           </div>
         </div>
@@ -187,6 +221,27 @@ const Navigation = () => {
     </>
   );
 };
+
+const MorePanel = forwardRef<HTMLDivElement, { moreIconActive: boolean }>(
+  ({ moreIconActive }, ref) => {
+    const myusername = useSelector(selectValues, shallowEqual).username;
+    return (
+      <div ref={ref} className={`morepanel ${moreIconActive ? "a" : ""}`}>
+        <Link to={`/account/edit`}>
+          <SettingsIcon />
+          <p>Settings</p>
+        </Link>
+        <Link to={`/${myusername}/saved`}>
+          <SavedIcon />
+          <p>Saved</p>
+        </Link>
+        <button onClick={logout}>
+          <p>Logout</p>
+        </button>
+      </div>
+    );
+  }
+);
 
 const Container = styled.div`
   height: 100vh;
@@ -379,6 +434,42 @@ const Container = styled.div`
         p {
           display: none;
         }
+      }
+    }
+  }
+  .morepanel {
+    position: absolute;
+    background-color: #262626;
+    bottom: 56px;
+    left: 4px;
+    border-radius: 12px;
+    overflow: hidden;
+    width: 0px;
+    height: 0px;
+    transition: 0.1s ease-in-out height;
+    padding: 0px;
+    &.a {
+      padding: 8px;
+      width: 270px;
+      height: 162px;
+    }
+    button,
+    a {
+      display: flex;
+      padding: 1rem;
+      p {
+        margin: 0px !important;
+        font-weight: 400 !important;
+        font-size: 14px !important;
+      }
+      svg {
+        width: 18px;
+        height: 18px;
+        margin-right: 12px;
+      }
+      &:hover {
+        background-color: #363636;
+        border-radius: 8px;
       }
     }
   }

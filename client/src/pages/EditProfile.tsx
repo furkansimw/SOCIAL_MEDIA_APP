@@ -1,14 +1,20 @@
 import React, { FC, useEffect, useState } from "react";
 import styled from "styled-components";
-import { accountDetail, updateProfile } from "../api/profile";
+import {
+  accountDetail,
+  changePassword,
+  getMyProfile,
+  updateProfile,
+} from "../api/profile";
 import { IE } from "../interfaces/IApi";
 import { Bg } from "../components/PostPopup";
 import { ToastContainer, toast } from "react-toastify";
 import LoadingBox from "../components/LoadingBox";
-import { useDispatch } from "react-redux";
+import { shallowEqual, useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store";
-import { setProfile } from "../redux/postsReducer";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectValues } from "../redux/profileReducer";
 
 const EditProfile = () => {
   useEffect(() => {
@@ -32,9 +38,10 @@ const EditProfile = () => {
     a["bio"] = bio;
     delete a.pp;
     updateProfile(a)
-      .then((e) => {
-        dispatch(setProfile(a));
+      .then(() => {
+        dispatch(getMyProfile());
         nav(`/${a.username}`, { replace: true });
+        window.location.reload();
       })
       .catch(toast.error);
   };
@@ -59,9 +66,10 @@ const EditProfile = () => {
 
     return () => clearTimeout(timer);
   }, [values?.bio]);
-
+  const onChangeF = (e: any) =>
+    setValues({ ...values!, fullname: e.target.value });
   const onChangeU = (e: any) =>
-    setValues({ ...values!, username: e.target.value });
+    setValues({ ...values!, username: e.target.value.toLowerCase() });
   const onChangeBio = (e: any) =>
     setValues({ ...values!, bio: e.target.value });
   const onChangeEmail = (e: any) =>
@@ -113,12 +121,13 @@ const EditProfile = () => {
   const remove = () =>
     updateProfile({ pp: null }).then(() => {
       close();
-      dispatch(setProfile({ ...values!, pp: null }));
       setValues({ ...values!, pp: null });
+      window.location.reload();
     });
-
+  const [pa, _pa] = useState(false);
+  const { username: myusername } = useSelector(selectValues, shallowEqual);
   if (values == null) return <></>;
-  const { username, pp, bio, email, ispublic } = values;
+  const { username, fullname, pp, bio, email, ispublic } = values;
   return (
     <Container>
       <ToastContainer position="bottom-center" theme="dark" />
@@ -134,7 +143,7 @@ const EditProfile = () => {
             )}
           </div>
           <div className="t">
-            <p>{username}</p>
+            <p>{myusername}</p>
             <button
               type="button"
               onClick={() => sP(true)}
@@ -157,6 +166,20 @@ const EditProfile = () => {
         </div>
         <div className="username">
           <div className="l">
+            <p>Fullname</p>
+          </div>
+          <input
+            type="text"
+            name="username"
+            id="fullname"
+            value={fullname || ""}
+            placeholder="fullname"
+            onChange={onChangeF}
+            maxLength={50}
+          />
+        </div>
+        <div className="fullname">
+          <div className="l">
             <p>Username</p>
           </div>
           <input
@@ -167,6 +190,7 @@ const EditProfile = () => {
             value={username}
             placeholder="username"
             onChange={onChangeU}
+            required
           />
         </div>
         <div className="email">
@@ -211,6 +235,11 @@ const EditProfile = () => {
           />
         </div>
         <div className="submitspan">
+          <div className="l">
+            <button onClick={() => _pa(true)} type="button">
+              Password Change
+            </button>
+          </div>
           <input
             disabled={!changed}
             className="submit"
@@ -219,8 +248,77 @@ const EditProfile = () => {
           />
         </div>
       </form>
+      {pa && <Pa close={() => _pa(false)} />}
       {p && <Popup close={close} pick={pick} remove={remove} />}
     </Container>
+  );
+};
+
+const Pa: FC<{ close: () => void }> = ({ close }) => {
+  return (
+    <>
+      <Bg onClick={close} />
+      <div className="pas">
+        <h1>Password Change</h1>
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const a = e.target;
+            const [p, np, npa, adlo] = a as any;
+            const password = p.value;
+            const newPassword = np.value;
+            const newPasswordAgain = npa.value;
+            const anotherDevicesLogout = adlo.checked;
+            if (newPassword != newPasswordAgain) {
+              toast.error("Password not matching");
+              npa.select();
+              return;
+            }
+            try {
+              await changePassword(password, newPassword, anotherDevicesLogout);
+              toast.info("Your password has been changed to successful");
+              close();
+            } catch (error) {
+              console.log(error);
+              p.select();
+              toast.error((error as any).toString());
+            }
+          }}
+        >
+          <input
+            type="password"
+            required
+            minLength={6}
+            maxLength={50}
+            id="oldpassword"
+            placeholder="enter old password"
+          />
+          <input
+            type="password"
+            required
+            id="newpassword"
+            minLength={6}
+            maxLength={50}
+            placeholder="enter new password"
+          />
+          <input
+            type="password"
+            required
+            minLength={6}
+            maxLength={50}
+            id="again"
+            placeholder="again new password"
+          />
+          <div>
+            <p>Another devices logout</p>
+            <input type="checkbox" defaultChecked name="x" id="logoutcb" />
+          </div>
+          <span>
+            <button type="submit">Save</button>
+          </span>
+        </form>
+      </div>
+    </>
   );
 };
 
@@ -271,7 +369,67 @@ const Container = styled.div`
   position: relative;
   justify-content: center;
   align-items: center;
-
+  .pas {
+    width: 400px;
+    background-color: #161616;
+    top: calc(50% - 200px);
+    left: calc(50% - 200px);
+    height: 400px;
+    border-radius: 12px;
+    z-index: 200;
+    position: fixed;
+    padding: 1rem;
+    h1 {
+      text-align: center;
+      font-size: 22px;
+      margin-top: 2rem;
+      font-weight: 500;
+    }
+    form {
+      border: none;
+      input {
+        width: 100%;
+        border: 1px solid #363636;
+        padding: 10px;
+        font-size: 14px;
+        margin-top: 10px;
+        outline: none;
+        border-radius: 4px;
+        background-color: #141414;
+      }
+      div {
+        margin-top: 1rem;
+        display: flex;
+        font-size: 14px;
+        white-space: nowrap;
+        line-height: 18px;
+        color: rgb(230, 230, 230);
+        input {
+          margin: 0px;
+          width: 12px;
+          margin-left: 10px;
+        }
+      }
+      span {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        button {
+          margin-top: 1rem;
+          color: #0095f6;
+          font-size: 14px;
+          font-weight: 600;
+          transition: 0.1s ease-in-out all;
+          padding: 7px 2rem;
+          border-radius: 8px;
+          &:hover {
+            background-color: #0095f6;
+            color: #fafafa;
+          }
+        }
+      }
+    }
+  }
   .settings {
     font-size: 24px;
     position: absolute;
@@ -348,6 +506,17 @@ const Container = styled.div`
     width: 100%;
     max-height: 700px;
     overflow-y: auto;
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+    &::-webkit-scrollbar-thumb {
+      width: 8px;
+      background-color: #262626;
+      &:active {
+        background-color: #363636;
+        border-radius: 8px;
+      }
+    }
     .title {
       font-size: 24px;
       margin-bottom: 28px;
@@ -403,7 +572,8 @@ const Container = styled.div`
         }
       }
     }
-    .username {
+    .username,
+    .fullname {
       margin-bottom: 1rem;
       display: flex;
       input {
@@ -462,12 +632,21 @@ const Container = styled.div`
       }
     }
     .privacy {
+      margin-top: 1rem;
       display: flex;
     }
     .submitspan {
       margin-top: 1rem;
       display: flex;
-      justify-content: end;
+      justify-content: space-between;
+      button {
+        color: #0095f6;
+        font-size: 14px;
+        font-weight: 600;
+        &:hover {
+          opacity: 0.8;
+        }
+      }
       .submit {
         padding: 7px 1rem;
         border-radius: 8px;

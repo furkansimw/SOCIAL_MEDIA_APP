@@ -1,3 +1,4 @@
+import db from "../db/db";
 import conv from "../functions/converter";
 import { asyncErrorWrapper, badRequest } from "../mw/error";
 import {
@@ -95,6 +96,17 @@ const postUnSave = asyncErrorWrapper(async (req, res) => {
   res.json({ status: "ok" });
 });
 
+const deletePost = asyncErrorWrapper(async (req, res) => {
+  const { id, guest } = res.locals;
+  if (guest) badRequest();
+  const { postid } = req.params;
+  await db.query("delete from posts where owner = $1 and id = $2", [
+    id,
+    postid,
+  ]);
+  res.json({ status: "ok" });
+});
+
 export {
   getComments,
   getPost,
@@ -105,4 +117,5 @@ export {
   postComment,
   postSave,
   postUnSave,
+  deletePost,
 };

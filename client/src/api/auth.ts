@@ -9,3 +9,5 @@ export const signup = (
   fullname: string,
   email: string
 ) => req("/auth/signup", "POST", { username, password, fullname, email });
+
+export const logout = () => req(`/auth/logout`, `POST`);

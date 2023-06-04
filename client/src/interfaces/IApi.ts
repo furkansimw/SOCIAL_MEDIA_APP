@@ -62,4 +62,5 @@ export interface IE {
   bio: string | null;
   email: string;
   ispublic: boolean;
+  fullname: string | null;
 }

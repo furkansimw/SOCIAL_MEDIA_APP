@@ -19,9 +19,6 @@ export const profileSlice = createSlice({
   name: "profile",
   initialState,
   reducers: {
-    toggleSetIsloggedin: (state) => {
-      state.isloggedin = !state.isloggedin;
-    },
     toggleSetLoginPopupActive: (state) => {
       state.loginPopupActive = !state.loginPopupActive;
     },

@@ -2,23 +2,29 @@ import { DetailIcon } from "../../Icons";
 import styled from "styled-components";
 import { disableRightClick } from "../../Navigation";
 import { shallowEqual, useSelector } from "react-redux";
-import { selectCurrentPost, selectProfile } from "../../../redux/postsReducer";
+import {
+  selectBack,
+  selectCurrentPost,
+  selectProfile,
+} from "../../../redux/postsReducer";
 import LinkQ from "../LinkQ";
 import { selectValues } from "../../../redux/profileReducer";
 import { RootState } from "../../../redux/store";
+import { useState } from "react";
+import Context from "../../Context";
 
 const Info = () => {
+  const back = useSelector(selectBack, shallowEqual);
   const { username, pp } = useSelector(selectCurrentPost, shallowEqual)!;
   const { username: myusername } = useSelector(selectValues, shallowEqual);
   const profile = useSelector(
     (s: RootState) => selectProfile(s, username),
     shallowEqual
   )!;
-
+  const post = useSelector(selectCurrentPost, shallowEqual);
   const to = `/${username}`;
-
   const isfollowing = profile?.info?.status == 0;
-
+  const [p, _p] = useState(false);
   return (
     <InfoContainer>
       <div className="l">
@@ -32,16 +38,17 @@ const Info = () => {
         <LinkQ className="username" to={to}>
           <p>{username}</p>
         </LinkQ>
-        {username != myusername && !isfollowing && (
+        {username != myusername && !isfollowing && back != "home" && (
           <>
             <span>•</span>
             <button>Follow</button>
           </>
         )}
       </div>
-      <button className="d">
+      <button onClick={() => _p(true)} className="d">
         <DetailIcon />
       </button>
+      {p && <Context post={post} close={() => _p(false)} />}
     </InfoContainer>
   );
 };

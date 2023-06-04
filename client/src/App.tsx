@@ -14,6 +14,7 @@ import PostPopup from "./components/PostPopup";
 import { selectBack } from "./redux/postsReducer";
 import LoginPopup from "./components/LoginPopup";
 import EditProfile from "./pages/EditProfile.tsx";
+import LoginBanner from "./components/LoginBanner.tsx";
 
 const App = () => {
   const { isloggedin, loginPopupActive } = useSelector(selectProfile);
@@ -23,6 +24,7 @@ const App = () => {
       {loginPopupActive && <LoginPopup />}
       {isloggedin && <Navigation />}
       <View>
+        {!isloggedin && <LoginBanner />}
         <Routes>
           <Route path="/" element={isloggedin ? <Posts /> : <Login />} />
           <Route path="/p/:postid" element={<PostPage />} />
@@ -52,6 +54,7 @@ const View = styled.div`
   height: 100%;
   display: flex;
   justify-content: center;
+  flex-direction: column;
   align-items: center;
 `;
 
