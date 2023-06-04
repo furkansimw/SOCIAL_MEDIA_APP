@@ -97,3 +97,21 @@ export interface ILikes {
   fullname: null | string;
   created: string;
 }
+
+enum INotificationType {
+  "following",
+  "followrequest",
+  "postlike",
+  "commentlike",
+  "createdcomment",
+}
+
+export interface INotification {
+  id: string;
+  type: INotificationType;
+  username: string;
+  pp: string | null;
+  created: string;
+  owner: string;
+  targeturl: string; // posturl, username
+}

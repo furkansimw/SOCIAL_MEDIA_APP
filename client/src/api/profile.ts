@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import req from "./req";
-import { IGetProfilePosts, ISC, IE } from "../interfaces/IApi";
+import { IGetProfilePosts, ISC, IE, ILast } from "../interfaces/IApi";
+import { INotification } from "../interfaces/ISlices";
 
 export const getMyProfile = createAsyncThunk("/profile/my", () =>
   req("/profile/my")
@@ -41,3 +42,8 @@ export const updateProfile = (obj: any) =>
 
 export const changePassword = (op: string, np: string, adlo: boolean) =>
   req(`/auth/password`, "POST", { op, np, adlo });
+
+export const notificationsGet = ({ date, id }: ILast) =>
+  req(`/profile/notifications?date=${date}&id=${id}`).then(
+    (r: any) => r as INotification[]
+  );

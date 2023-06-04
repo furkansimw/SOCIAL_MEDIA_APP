@@ -26,7 +26,7 @@ const PostPopupNav = () => {
   const nextF = () => {
     if (index == posts.length - 1) return;
     setIndex(index + 1);
-    window.history.pushState(null, "", `/p/${posts[index + 1].id}`);
+    window.history.replaceState(null, "", `/p/${posts[index + 1].id}`);
     dispatch(setCurrentPostId(window.location.pathname.split("/")[2]));
   };
 
@@ -77,7 +77,7 @@ const PostPopupNav = () => {
     if (index == 0) return;
 
     setIndex(index - 1);
-    window.history.pushState(null, "", `/p/${posts[index - 1].id}`);
+    window.history.replaceState(null, "", `/p/${posts[index - 1].id}`);
     dispatch(setCurrentPostId(window.location.pathname.split("/")[2]));
   };
 

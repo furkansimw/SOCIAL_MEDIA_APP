@@ -4,7 +4,7 @@ import { createAction, createComment } from "../../../api/posts";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { selectValues } from "../../../redux/profileReducer";
 import { AppDispatch } from "../../../redux/store";
-import { forwardRef, useMemo, useState } from "react";
+import { forwardRef, useMemo, useRef, useState } from "react";
 import { Dispatch, SetStateAction } from "react";
 import { selectCurrentPost } from "../../../redux/postsReducer";
 import { CommentIcon, LikeIcon, SaveIcon, ShareIcon } from "../../Icons";
@@ -85,7 +85,6 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
     const [likesPopup, setLikesPopup] = useState(false);
     const quit = () => setLikesPopup(false);
     const viewLikes = () => setLikesPopup(true);
-
     return (
       <BottomContainer>
         <div className="icons">
@@ -96,7 +95,10 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
             >
               <LikeIcon isactive={isliked} />
             </button>
-            <button className="comment">
+            <button
+              onClick={() => (inputRef as any).current.focus()}
+              className="comment"
+            >
               <CommentIcon />
             </button>
             {likesPopup && <Likes type="post" quit={quit} postid={id} />}

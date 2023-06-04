@@ -20,7 +20,9 @@ const searchProfileQ = (id: string, u: string) =>
 
 const getMyProfileQ = (id: string) =>
   db
-    .query(`select id, pp, username from users where id = $1`, [id])
+    .query(`select id, pp, username, reqcount::int from users where id = $1`, [
+      id,
+    ])
     .then((r) => r.rows[0]);
 
 const getProfileQ = (id: string, username: string, guest: boolean) => {
@@ -121,18 +123,16 @@ const unFollowUserQ = (id: string, userid: string) =>
 const blockUserQ = (id: string, userid: string) =>
   db.query(
     `
-    WITH updated_rows AS (
-      UPDATE relationships
-      SET type = 2
-      WHERE owner = $1 AND target = $2
-      RETURNING *
-  )
-  INSERT INTO relationships (owner, target, type)
-  SELECT $1, $2, 2
-  WHERE NOT EXISTS (SELECT * FROM updated_rows);
-  
-
-  `,
+      WITH updated_rows AS (
+        UPDATE relationships
+        SET type = 2
+        WHERE owner = $1 AND target = $2
+        RETURNING *
+      )
+      INSERT INTO relationships (owner, target, type)
+      SELECT $1, $2, 2
+      WHERE NOT EXISTS (SELECT * FROM updated_rows);
+    `,
     [id, userid]
   );
 
@@ -160,6 +160,26 @@ const updateProfileQ = (id: string, values: {}) =>
     [id, ...Object.values(values)]
   );
 
+const getMyNotificationsQ = (id: string, conv?: ILast) => {
+  const values: any[] = [id];
+  if (conv) values.push(conv.date, conv.id);
+  const str = conv ? ` and (n.created, n.id) < ($2, $3) ` : ``;
+  const b = blocked("u.id");
+  return db
+    .query(
+      `
+    select n.*, u.pp, u.username, p.images[1] from notifications n
+    left join users u on u.id = n.owner
+    left join posts p on p.id = n.pi ${b}
+    where n.target = $1 and b is null and n.owner != $1 ${str}
+    order by n.created DESC, n.id DESC
+    limit 12
+  `,
+      values
+    )
+    .then((r) => r.rows);
+};
+
 export {
   searchProfileQ,
   getMyProfileQ,
@@ -168,6 +188,7 @@ export {
   getMySavedQ,
   followUserQ,
   unFollowUserQ,
+  getMyNotificationsQ,
   blockUserQ,
   unBlockUserQ,
   getMyProfileDetailQ,

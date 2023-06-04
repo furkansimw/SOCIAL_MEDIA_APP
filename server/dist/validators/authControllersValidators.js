@@ -12,6 +12,8 @@ const loginVal = (username, password) => username &&
         "mysaved",
         "mysaveds",
         "search",
+        "notifications",
+        "notification",
         "myprofile",
     ].includes(username) &&
     password.length >= 6 &&

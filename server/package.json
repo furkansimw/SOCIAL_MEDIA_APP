@@ -25,6 +25,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "@types/socket.io": "^3.0.2",
     "cloudinary": "^1.37.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -34,6 +35,7 @@
     "jsonwebtoken": "^9.0.0",
     "morgan": "^1.10.0",
     "pg": "^8.11.0",
+    "socket.io": "^4.6.2",
     "uuid": "^9.0.0"
   }
 }

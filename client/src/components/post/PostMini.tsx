@@ -18,7 +18,7 @@ const PostMini: FC<props> = ({ post, back }) => {
   const { cover, id, likecount, commentcount, more } = post;
 
   const tap = () => {
-    window.history.pushState(null, "", `/p/${id}`);
+    window.history.replaceState(null, "", `/p/${id}`);
     dispatch(setCurrentPostId(id));
     dispatch(setBack(back));
   };

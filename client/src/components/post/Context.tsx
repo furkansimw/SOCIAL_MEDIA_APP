@@ -1,13 +1,13 @@
 import { FC } from "react";
 import styled from "styled-components";
-import { Bg } from "./PostPopup";
-import LinkQ from "./post/LinkQ";
-import { IPost } from "../interfaces/ISlices";
+import { Bg } from "../PostPopup";
+import LinkQ from "./LinkQ";
+import { IPost } from "../../interfaces/ISlices";
 import { shallowEqual, useSelector } from "react-redux";
-import { selectValues } from "../redux/profileReducer";
+import { selectValues } from "../../redux/profileReducer";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../redux/store";
-import { removePost } from "../api/posts";
+import { AppDispatch } from "../../redux/store";
+import { removePost } from "../../api/posts";
 
 type Props = {
   post: IPost;
@@ -22,7 +22,7 @@ const Context: FC<Props> = ({ post, close }) => {
   return (
     <>
       <Bg onClick={close} />
-      <Container>
+      <Container className={mypost ? "my" : ""}>
         {mypost && (
           <button onClick={remove} className="r">
             Remove
@@ -56,6 +56,9 @@ const Container = styled.div`
   animation: identifierx 0.1s ease-in-out all;
   width: 400px;
   height: 150px;
+  &.my {
+    height: 200px;
+  }
   background-color: #262626;
   border-radius: 12px;
   border-radius: 12px;

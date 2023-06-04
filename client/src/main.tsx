@@ -4,8 +4,11 @@ import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./redux/store.ts";
+import Test from "./Test.tsx";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+  // <Test />
+  // );
   <Provider store={store}>
     <BrowserRouter>
       <App />

@@ -4,10 +4,10 @@ import styled from "styled-components";
 import {
   selectPostPopupActive,
   toggleSetLoginPopupActive,
-} from "../redux/profileReducer";
+} from "../../redux/profileReducer";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../redux/store";
-import Login from "../pages/Login";
+import { AppDispatch } from "../../redux/store";
+import Login from "../../pages/Login";
 
 const LoginPopup = () => {
   const postPopupActive = useSelector(selectPostPopupActive);

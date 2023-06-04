@@ -1,5 +1,5 @@
-import { Route, Routes } from "react-router-dom";
-import Navigation from "./components/Navigation";
+import { Route, Routes, useLocation } from "react-router-dom";
+import Navigation from "./components/navigation/Navigation.tsx";
 import Posts from "./pages/Posts";
 import Explore from "./pages/Explore";
 import styled from "styled-components";
@@ -12,19 +12,20 @@ import PostPage from "./pages/PostPage";
 import Profile from "./pages/Profile";
 import PostPopup from "./components/PostPopup";
 import { selectBack } from "./redux/postsReducer";
-import LoginPopup from "./components/LoginPopup";
+import LoginPopup from "./components/unauthorization/LoginPopup.tsx";
 import EditProfile from "./pages/EditProfile.tsx";
-import LoginBanner from "./components/LoginBanner.tsx";
+import LoginBanner from "./components/unauthorization/LoginBanner.tsx";
 
 const App = () => {
   const { isloggedin, loginPopupActive } = useSelector(selectProfile);
   const back = useSelector(selectBack, shallowEqual);
+  const p = useLocation().pathname;
   return (
     <Container>
       {loginPopupActive && <LoginPopup />}
       {isloggedin && <Navigation />}
       <View>
-        {!isloggedin && <LoginBanner />}
+        {!isloggedin && p != "/" && <LoginBanner />}
         <Routes>
           <Route path="/" element={isloggedin ? <Posts /> : <Login />} />
           <Route path="/p/:postid" element={<PostPage />} />

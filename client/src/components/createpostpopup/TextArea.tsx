@@ -2,7 +2,7 @@ import { ChangeEvent, Dispatch, FC, SetStateAction } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 import styled from "styled-components";
 import { selectValues } from "../../redux/profileReducer";
-import { disableRightClick } from "../Navigation";
+import { disableRightClick } from "../navigation/Navigation";
 
 type Props = {
   textAreaIsActive: boolean;

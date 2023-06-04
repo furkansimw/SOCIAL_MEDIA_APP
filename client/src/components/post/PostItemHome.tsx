@@ -22,12 +22,12 @@ import {
   SaveIcon,
   ShareIcon,
 } from "../Icons";
-import { disableRightClick } from "../Navigation";
+import { disableRightClick } from "../navigation/Navigation";
 import { dateCalc } from "./postpopup/Bottom";
 import Likes from "./postpopup/Likes";
 import { setBack, setCurrentPostId } from "../../redux/postsReducer";
 import LinkConverter from "./LinkConverter";
-import Context from "../Context";
+import Context from "./Context";
 
 type props = {
   post: IPost;
@@ -73,7 +73,7 @@ const PostItemHome: FC<props> = ({ post }) => {
   const save = () => dispatch(createAction({ a: !issaved, postid, t: "save" }));
   const date = useMemo(() => dateCalc(created).replace("ago", ""), []);
   const viewComment = () => {
-    window.history.pushState(null, "", `/p/${postid}`);
+    window.history.replaceState(null, "", `/p/${postid}`);
     dispatch(setBack("home"));
     dispatch(setCurrentPostId(postid));
   };

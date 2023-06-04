@@ -1,6 +1,6 @@
 import { DetailIcon } from "../../Icons";
 import styled from "styled-components";
-import { disableRightClick } from "../../Navigation";
+import { disableRightClick } from "../../navigation/Navigation";
 import { shallowEqual, useSelector } from "react-redux";
 import {
   selectBack,
@@ -11,7 +11,7 @@ import LinkQ from "../LinkQ";
 import { selectValues } from "../../../redux/profileReducer";
 import { RootState } from "../../../redux/store";
 import { useState } from "react";
-import Context from "../../Context";
+import Context from "../Context";
 
 const Info = () => {
   const back = useSelector(selectBack, shallowEqual);

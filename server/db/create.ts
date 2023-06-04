@@ -15,6 +15,7 @@ const create = async () => {
     ispublic BOOLEAN DEFAULT TRUE,
     followerCount numeric not null default 0,
     followingCount numeric not null default 0,
+    reqcount numeric not null default 0,
     postCount numeric not null default 0,
     created TIMESTAMP DEFAULT NOW()
   );`);
@@ -91,8 +92,28 @@ const create = async () => {
     refreshid UUID DEFAULT uuid_generate_v4(),
     created TIMESTAMP DEFAULT NOW()
   );`);
+  //
+  await db.query(`CREATE TABLE IF NOT EXISTS notifications (
+    id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
+    target UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+    url varchar not null,
+    pi uuid,
+    type numeric not null default 0,
+    owner UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+    created TIMESTAMP DEFAULT NOW()
+  );
+  `);
 
   // -------- TRIGGERS
+
+  // target me
+  /*
+  0 "following",
+  1 "postlike",
+  2 "commentlike",
+  3 "createdcomment",
+  */
+  // NOTIFICATIONS TRIGGERS
 
   // TRIGGER 1 posts -> likecount
   await db.query(`
@@ -237,6 +258,61 @@ const create = async () => {
     FOR EACH ROW
     EXECUTE FUNCTION update_post_count();
   ;`);
+
+  // TRIGGER 7 relationships -> users followingcount
+
+  await db.query(`
+      DROP TRIGGER IF EXISTS relationships_trigger ON relationships;
+        CREATE OR REPLACE FUNCTION add_notification_and_update_counts()
+        RETURNS TRIGGER AS $$
+      BEGIN
+        IF (NEW.type = 0) THEN
+          INSERT INTO notifications (target, url, type, owner)
+          VALUES (NEW.target, NEW.owner, NEW.type, NEW.owner);
+          
+          UPDATE users
+          SET followingcount = followingcount + 1 
+          WHERE id = NEW.owner;
+          
+          UPDATE users
+          SET followercount = followercount + 1
+          WHERE id = NEW.target;
+
+        ELSIF (NEW.type = 1) THEN
+          INSERT INTO notifications (target, url, type, owner)
+          VALUES (NEW.target, NEW.owner, NEW.type, NEW.owner);
+          update users set reqcount = reqcount + 1 where id = new.target;
+
+        ELSIF (NEW.type = 2) THEN
+          IF EXISTS (SELECT 1 FROM relationships WHERE owner = NEW.target AND target = NEW.owner AND type = 0) THEN
+              UPDATE users SET followingcount = followingcount - 1 WHERE owner = NEW.target AND target = NEW.owner;
+              DELETE FROM relationships WHERE owner = NEW.target AND target = NEW.owner; -- Fixed the syntax here
+          END IF;
+
+        ELSIF (OLD.type = 0) THEN 
+          UPDATE users
+          SET followingcount = followingcount - 1 
+          WHERE id = OLD.owner;
+          
+          UPDATE users
+          SET followercount = followercount - 1
+          WHERE id = OLD.target;  
+
+          ELSIF (OLD.type = 1) THEN 
+          update users set reqcount = reqcount - 1 where id = old.target;
+
+        END IF;
+        
+        RETURN NEW;
+
+      END;
+      $$ LANGUAGE plpgsql;
+
+      CREATE TRIGGER relationships_trigger
+      AFTER INSERT OR DELETE ON relationships
+      FOR EACH ROW
+      EXECUTE FUNCTION add_notification_and_update_counts();
+  `);
 };
 
 export default create;

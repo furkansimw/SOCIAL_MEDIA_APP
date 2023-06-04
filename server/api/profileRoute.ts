@@ -12,12 +12,14 @@ import {
   unBlockUser,
   getMyProfileDetail,
   updateProfile,
+  getMyNotifications,
 } from "../controller/profileController";
 
 profileRoute.route("/search").get(searchProfile);
 profileRoute.route("/my").get(getMyProfile);
 profileRoute.route("/edit").get(getMyProfileDetail).post(updateProfile);
 profileRoute.route("/mysaved").get(getMySaved);
+profileRoute.route("/notifications").get(getMyNotifications);
 profileRoute.route("/follow").post(followUser).delete(unFollowUser);
 profileRoute.route("/block").post(blockUser).delete(unBlockUser);
 

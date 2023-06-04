@@ -18,15 +18,15 @@ import {
   SavedIcon,
   SearchIcon,
   SettingsIcon,
-} from "./Icons";
+} from "../Icons";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { selectValues } from "../redux/profileReducer";
+import { selectValues } from "../../redux/profileReducer";
 import SearchPanel from "./SearchPanel";
 import NotificationsPanel from "./NotificationsPanel";
-import { AppDispatch } from "../redux/store";
-import { getMyProfile } from "../api/profile";
-import CreatePostPopup from "./createpostpopup/CreatePostPopup";
-import { logout } from "../api/auth";
+import { AppDispatch } from "../../redux/store";
+import { getMyProfile } from "../../api/profile";
+import CreatePostPopup from "../createpostpopup/CreatePostPopup";
+import { logout } from "../../api/auth";
 
 export const disableRightClick = (e: ME<HTMLImageElement, MouseEvent>) =>
   e.preventDefault();

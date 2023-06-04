@@ -1,8 +1,8 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import { AppDispatch } from "../redux/store";
-import { toggleSetLoginPopupActive } from "../redux/profileReducer";
+import { AppDispatch } from "../../redux/store";
+import { toggleSetLoginPopupActive } from "../../redux/profileReducer";
 
 const LoginBanner = () => {
   const dispatch = useDispatch<AppDispatch>();

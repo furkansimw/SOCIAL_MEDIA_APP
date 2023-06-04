@@ -123,6 +123,7 @@ const CommentItem = ({ comment, reply }: Props) => {
             {(hasmore ? data.length > 0 : t) &&
               data.map((sc) => (
                 <SubCommentItem
+                  key={sc.id}
                   subcomment={sc}
                   commentid={commentid}
                   reply={() => reply(comment.id, sc.username)}

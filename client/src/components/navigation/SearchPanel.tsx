@@ -7,9 +7,9 @@ import {
   useState,
 } from "react";
 import styled from "styled-components";
-import { searchProfile } from "../api/profile";
-import { RemoveIcon2, SearchIcon2 } from "./Icons";
-import LoadingBox from "./LoadingBox";
+import { searchProfile } from "../../api/profile";
+import { RemoveIcon2, SearchIcon2 } from "../Icons";
+import LoadingBox from "../LoadingBox";
 import { Link } from "react-router-dom";
 
 type Props = {

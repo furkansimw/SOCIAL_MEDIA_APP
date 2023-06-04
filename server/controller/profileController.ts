@@ -14,6 +14,7 @@ import {
   unBlockUserQ,
   getMyProfileDetailQ,
   updateProfileQ,
+  getMyNotificationsQ,
 } from "../queries/profileQ";
 
 const searchProfile = asyncErrorWrapper(async (req, res) => {
@@ -79,7 +80,6 @@ const blockUser = asyncErrorWrapper(async (req, res) => {
   const { userid } = req.body;
   if (guest || !userid) badRequest();
   if (userid == id) badRequest();
-  await unFollowUserQ(id, userid);
   await blockUserQ(id, userid);
   res.json({ status: "ok" });
 });
@@ -153,6 +153,13 @@ const updateProfile = asyncErrorWrapper(async (req, res) => {
   res.json(values?.pp || { status: "ok" });
 });
 
+const getMyNotifications = asyncErrorWrapper(async (req, res) => {
+  const { id, guest } = res.locals;
+  if (guest) badRequest();
+  const notifications = await getMyNotificationsQ(id, conv(req.query));
+  res.json(notifications);
+});
+
 export {
   searchProfile,
   getMyProfile,
@@ -165,4 +172,5 @@ export {
   unBlockUser,
   getMyProfileDetail,
   updateProfile,
+  getMyNotifications,
 };

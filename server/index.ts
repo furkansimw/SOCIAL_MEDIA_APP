@@ -7,14 +7,14 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import apiRoute from "./api/routes";
 import { errorHandler, routeNotFound } from "./mw/error";
-import create from "./db/create";
 import helmet from "helmet";
+import create from "./db/create";
 
 const app = express();
 const port = process.env.PORT || 4000;
 const origin = process.env.ORIGIN || "http://localhost:5173";
 
-const server = app.listen(port, async () => await create());
+export const server = app.listen(port, async () => await create());
 
 app.use(express.json({ limit: "60mb" }));
 app.use(cookieParser());

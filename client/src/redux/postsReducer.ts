@@ -507,7 +507,11 @@ export const postsSlice = createSlice({
           if (p.info?.id == userid)
             return {
               ...p,
-              info: { ...p.info, status: a ? (ispublic ? 0 : 1) : null },
+              info: {
+                ...p.info,
+                followercount: p.info.followercount + (a ? 1 : -1),
+                status: a ? (ispublic ? 0 : 1) : null,
+              },
             };
           else return p;
         });
@@ -522,7 +526,11 @@ export const postsSlice = createSlice({
           if (p.info?.id == userid)
             return {
               ...p,
-              info: { ...p.info, status: !a ? (ispublic ? 0 : 1) : null },
+              info: {
+                ...p.info,
+                followercount: p.info.followercount + (a ? -1 : 1),
+                status: !a ? (ispublic ? 0 : 1) : null,
+              },
             };
           else return p;
         });

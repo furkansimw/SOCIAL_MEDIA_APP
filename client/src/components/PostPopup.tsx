@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { AppDispatch } from "../redux/store";
 import { selectBack, setBack, setCurrentPostId } from "../redux/postsReducer";
 import PostPopupComments from "./post/postpopup/PostPopupComments";
-import PostPopupImages from "./PostPopupImages";
+import PostPopupImages from "./post/postpopup/PostPopupImages";
 import PostPopupNav from "./PostPopupNav";
 import { useSelector } from "react-redux";
 
