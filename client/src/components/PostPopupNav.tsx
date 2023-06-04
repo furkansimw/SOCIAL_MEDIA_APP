@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import styled from "styled-components";
 import { ArrowLeft, ArrowRight } from "./Icons";
 import { shallowEqual, useSelector } from "react-redux";

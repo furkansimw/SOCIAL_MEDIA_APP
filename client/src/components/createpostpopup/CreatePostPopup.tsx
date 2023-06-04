@@ -8,10 +8,6 @@ import CreatePostPopupImages from "./CreatePostPopupImages";
 import { createPost } from "../../api/posts";
 import { useNavigate } from "react-router-dom";
 import LoadingBox from "../LoadingBox";
-import { shallowEqual, useDispatch } from "react-redux";
-import { AppDispatch } from "../../redux/store";
-import { useSelector } from "react-redux";
-import { selectValues } from "../../redux/profileReducer";
 
 type Props = {
   close: () => void;
@@ -30,7 +26,6 @@ const CreatePostPopup: FC<Props> = ({ close }) => {
   const [images, setImages] = useState<IPickImage[]>([]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch<AppDispatch>();
   const conv = (file: File) =>
     new Promise((resolve, reject) => {
       let reader = new FileReader();
@@ -47,7 +42,7 @@ const CreatePostPopup: FC<Props> = ({ close }) => {
     img.size <= 5000000 &&
     ["image/jpeg", "image/jpg", "image/png"].includes(img.type);
 
-  const pickFirst10 = (e: File, index: number) => index < 10;
+  const pickFirst10 = (_e: File, index: number) => index < 10;
 
   const pick = async (e: File[] | ChangeEvent<HTMLInputElement>) => {
     const _files = Array.isArray(e)
@@ -98,7 +93,6 @@ const CreatePostPopup: FC<Props> = ({ close }) => {
   };
 
   const nav = useNavigate();
-  const myusername = useSelector(selectValues, shallowEqual).username;
   useEffect(() => {
     if (images.length == 0) setStep(1);
   }, [images]);

@@ -12,7 +12,6 @@ import LoadingBox from "../components/LoadingBox.tsx";
 import styled from "styled-components";
 import { shallowEqual } from "react-redux";
 import Title from "../components/Title.tsx";
-import Context from "../components/post/Context.tsx";
 
 const Posts = () => {
   const dispatch = useDispatch<AppDispatch>();

@@ -48,7 +48,7 @@ const SortImages = forwardRef<HTMLDivElement, Props>(
         <div className="items">
           <DragDropContext onDragEnd={sort}>
             <Droppable droppableId="droppable" direction="horizontal">
-              {(provided, snapshot) => (
+              {(provided) => (
                 <div
                   className={`in ${images.length == 10 ? `f` : ``}`}
                   style={{
@@ -59,7 +59,7 @@ const SortImages = forwardRef<HTMLDivElement, Props>(
                 >
                   {images.map((item, index) => (
                     <Draggable draggableId={item.index} index={index}>
-                      {(provided, snapshot) => (
+                      {(provided) => (
                         <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}

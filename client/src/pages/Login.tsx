@@ -3,7 +3,6 @@ import styled from "styled-components";
 import Title from "../components/Title";
 import { ToastContainer, toast } from "react-toastify";
 import { login, signup } from "../api/auth";
-import { useDispatch } from "react-redux";
 
 const Login = () => {
   const usernamePattern =

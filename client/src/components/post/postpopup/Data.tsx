@@ -120,7 +120,7 @@ const DataContainer = styled.ul`
   }
 `;
 
-const Content = forwardRef<HTMLDivElement>((props, contentRef) => {
+const Content = forwardRef<HTMLDivElement>((_props, contentRef) => {
   const { pp, username, content, created } = useSelector(
     selectCurrentPost,
     shallowEqual

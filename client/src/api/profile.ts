@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import req from "./req";
-import { IGetProfilePosts, ISC, IE, ILast } from "../interfaces/IApi";
+import { IGetProfilePosts, ISC, ILast } from "../interfaces/IApi";
 import { INotification } from "../interfaces/ISlices";
 
 export const getMyProfile = createAsyncThunk("/profile/my", () =>

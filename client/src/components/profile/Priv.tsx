@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 import {
   selectIsLoggedin,

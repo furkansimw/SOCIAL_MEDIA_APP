@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import socket from "./api/socket/socket";
 
 const Test = () => {

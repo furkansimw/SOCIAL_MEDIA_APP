@@ -4,7 +4,7 @@ import { createAction, createComment } from "../../../api/posts";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { selectValues } from "../../../redux/profileReducer";
 import { AppDispatch } from "../../../redux/store";
-import { forwardRef, useMemo, useRef, useState } from "react";
+import { forwardRef, useMemo, useState } from "react";
 import { Dispatch, SetStateAction } from "react";
 import { selectCurrentPost } from "../../../redux/postsReducer";
 import { CommentIcon, LikeIcon, SaveIcon, ShareIcon } from "../../Icons";

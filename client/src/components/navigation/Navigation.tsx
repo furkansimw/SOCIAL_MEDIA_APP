@@ -3,7 +3,6 @@ import {
   useEffect,
   useRef,
   MouseEvent as ME,
-  FC,
   forwardRef,
 } from "react"; // with the global mouseevent to avoid collision.
 import { Link, useLocation } from "react-router-dom";
