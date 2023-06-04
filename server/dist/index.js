@@ -29,7 +29,12 @@ const origin = process.env.ORIGIN || "http://localhost:5173";
 exports.server = app.listen(port, () => __awaiter(void 0, void 0, void 0, function* () { return yield (0, create_1.default)(); }));
 app.use(express_1.default.json({ limit: "60mb" }));
 app.use((0, cookie_parser_1.default)());
-app.use((0, cors_1.default)({ origin, credentials: true }));
+app.use((0, cors_1.default)({
+    origin,
+    credentials: true,
+    methods: ["GET", "POST", "DELETE", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+}));
 app.use((0, morgan_1.default)("dev"));
 app.use((0, helmet_1.default)());
 app.use("/api", routes_1.default);

@@ -17,7 +17,14 @@ export const server = app.listen(port, async () => await create());
 
 app.use(express.json({ limit: "60mb" }));
 app.use(cookieParser());
-app.use(cors({ origin, credentials: true }));
+app.use(
+  cors({
+    origin,
+    credentials: true,
+    methods: ["GET", "POST", "DELETE", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(morgan("dev"));
 app.use(helmet());
 
