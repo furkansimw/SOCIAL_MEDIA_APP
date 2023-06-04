@@ -18,13 +18,17 @@ const LoginBanner = () => {
 
 const Container = styled.div`
   width: 100%;
-  margin: 2rem 0px 1rem;
   justify-content: center;
   display: flex;
-  width: 100%;
+  position: absolute;
+  align-items: center;
+  bottom: 0rem;
+  z-index: 5560;
   .content {
-    max-width: 900px;
-    padding: 0px 2rem;
+    border-radius: 22px 22px 0px 0px;
+    padding: 2rem;
+    background-color: #000;
+    max-width: 940px;
     width: 100%;
     display: flex;
     justify-content: space-between;

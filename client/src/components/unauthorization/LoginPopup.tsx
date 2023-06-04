@@ -29,7 +29,7 @@ const Bg = styled.div`
   width: 100vw;
   height: 100vh;
   position: fixed;
-  z-index: 70;
+  z-index: 299;
   left: 0px;
   top: 0px;
   transition: 0.3s ease-in-out all;

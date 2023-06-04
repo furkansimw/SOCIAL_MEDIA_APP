@@ -102,7 +102,6 @@ enum INotificationType {
   "following",
   "followrequest",
   "postlike",
-  "commentlike",
   "createdcomment",
 }
 
