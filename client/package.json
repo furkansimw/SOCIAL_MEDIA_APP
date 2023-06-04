@@ -6,8 +6,7 @@
   "homepage": ".",
   "scripts": {
     "dev": "vite",
-    "devhost": "vite --host",
-    "build": "npm install && tsc && vite build",
+    "build": "tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
