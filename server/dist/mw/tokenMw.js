@@ -53,13 +53,11 @@ const tokenMw = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
                     (0, authControllersFunctions_1.cookieSetter)(res, id, refreshid);
                     next();
                 }
-                else {
+                else
                     (0, tokenMwFunctions_1.clearCookies)(res);
-                }
             }
-            else {
+            else
                 (0, tokenMwFunctions_1.clearCookies)(res);
-            }
         }
     }
     else {

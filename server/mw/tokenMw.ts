@@ -21,12 +21,8 @@ const tokenMw = async (req: Request, res: Response, next: NextFunction) => {
           res.locals.id = id;
           cookieSetter(res, id, refreshid);
           next();
-        } else {
-          clearCookies(res);
-        }
-      } else {
-        clearCookies(res);
-      }
+        } else clearCookies(res);
+      } else clearCookies(res);
     }
   } else {
     res.locals.guest = true;

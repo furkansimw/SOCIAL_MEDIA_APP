@@ -13,11 +13,11 @@ const app = express();
 const port = process.env.PORT || 4000;
 export const server = app.listen(port, async () => await create());
 
+app.use(express.static("./dist/dist"));
 app.use(express.json({ limit: "60mb" }));
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(helmet());
-
 app.use("/api", apiRoute);
 
 app.get("*", (req, res) => {
