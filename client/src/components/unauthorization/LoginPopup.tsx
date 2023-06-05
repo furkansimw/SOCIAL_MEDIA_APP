@@ -7,8 +7,19 @@ import {
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../redux/store";
 import Login from "../../pages/Login";
+import { useEffect } from "react";
 
 const LoginPopup = () => {
+  useEffect(() => {
+    const worker = (e: KeyboardEvent) => {
+      if (e.key == "Escape") close();
+    };
+    window.addEventListener("keydown", worker);
+    return () => {
+      window.removeEventListener("keydown", worker);
+    };
+  }, []);
+
   const postPopupActive = useSelector(selectPostPopupActive);
   const dispatch = useDispatch<AppDispatch>();
   const close = () => dispatch(toggleSetLoginPopupActive());

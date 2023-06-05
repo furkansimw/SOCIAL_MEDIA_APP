@@ -26,11 +26,29 @@ import { AppDispatch } from "../../redux/store";
 import { getMyProfile } from "../../api/profile";
 import CreatePostPopup from "../createpostpopup/CreatePostPopup";
 import { logout } from "../../api/auth";
+import socket from "../../api/socket/socket";
 
 export const disableRightClick = (e: ME<HTMLImageElement, MouseEvent>) =>
   e.preventDefault();
 
 const Navigation = () => {
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Sunucuya bağlandı!");
+    });
+
+    socket.on("chat message", (msg) => {
+      console.log("Alınan mesaj:", msg);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Sunucu bağlantısı kesildi!");
+    });
+
+    // Örnek mesaj gönderimi
+    socket.emit("chat message", "Merhaba!");
+  }, []);
+
   const { username, pp } = useSelector(selectValues, shallowEqual);
 
   const [mini, setMini] = useState(false);

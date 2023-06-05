@@ -7,15 +7,11 @@ const req = (path: string, method?: "POST" | "GET" | "DELETE", body?: {}) =>
       Accept: "application/json",
       "Content-Type": "application/json",
     };
-    const mode = "cors";
-    const credentials = "include";
     try {
       const res = await fetch(API_URL + path, {
         headers,
         method,
         body: method == "GET" ? null : JSON.stringify(body),
-        credentials,
-        mode,
       });
       const json = await res.json();
       const { status } = res;

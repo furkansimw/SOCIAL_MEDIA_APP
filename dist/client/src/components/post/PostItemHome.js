@@ -1,154 +1,106 @@
-import {
-  FC,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { IPost } from "../../interfaces/ISlices";
-import styled from "styled-components";
-import { Swiper, SwiperSlide } from "swiper/react";
-//@ts-ignore
-import { Pagination, Navigation } from "swiper";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../redux/store";
-import { createAction } from "../../api/posts";
-import { Link } from "react-router-dom";
-import {
-  CommentIcon,
-  LikeIcon,
-  MoreIcon2,
-  SaveIcon,
-  ShareIcon,
-} from "../Icons";
-import { disableRightClick } from "../navigation/Navigation";
-import { dateCalc } from "./postpopup/Bottom";
-import Likes from "./postpopup/Likes";
-import { setBack, setCurrentPostId } from "../../redux/postsReducer";
-import LinkConverter from "./LinkConverter";
-import Context from "./Context";
-
-type props = {
-  post: IPost;
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-
-const PostItemHome: FC<props> = ({ post }) => {
-  const [m, _m] = useState(false);
-
-  const {
-    images,
-    isliked,
-    id: postid,
-    username,
-    pp,
-    content,
-    issaved,
-    likecount,
-    created,
-    commentcount,
-  } = post;
-  const dispatch = useDispatch<AppDispatch>();
-  const [likeA, setLikeA] = useState(false);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setLikeA(false);
-    }, 1000);
-
-    return () => {
-      clearTimeout(timeout);
+Object.defineProperty(exports, "__esModule", { value: true });
+const react_1 = require("react");
+const styled_components_1 = __importDefault(require("styled-components"));
+const react_2 = require("swiper/react");
+//@ts-ignore
+const swiper_1 = require("swiper");
+const react_redux_1 = require("react-redux");
+const posts_1 = require("../../api/posts");
+const react_router_dom_1 = require("react-router-dom");
+const Icons_1 = require("../Icons");
+const Navigation_1 = require("../navigation/Navigation");
+const Bottom_1 = require("./postpopup/Bottom");
+const Likes_1 = __importDefault(require("./postpopup/Likes"));
+const postsReducer_1 = require("../../redux/postsReducer");
+const LinkConverter_1 = __importDefault(require("./LinkConverter"));
+const Context_1 = __importDefault(require("./Context"));
+const PostItemHome = ({ post }) => {
+    const [m, _m] = (0, react_1.useState)(false);
+    const { images, isliked, id: postid, username, pp, content, issaved, likecount, created, commentcount, } = post;
+    const dispatch = (0, react_redux_1.useDispatch)();
+    const [likeA, setLikeA] = (0, react_1.useState)(false);
+    (0, react_1.useEffect)(() => {
+        const timeout = setTimeout(() => {
+            setLikeA(false);
+        }, 1000);
+        return () => {
+            clearTimeout(timeout);
+        };
+    }, [likeA]);
+    const dc = () => {
+        setLikeA(true);
+        if (isliked)
+            return;
+        dispatch((0, posts_1.createAction)({ a: true, t: "like", postid }));
     };
-  }, [likeA]);
-
-  const dc = () => {
-    setLikeA(true);
-    if (isliked) return;
-    dispatch(createAction({ a: true, t: "like", postid }));
-  };
-  const like = () => dispatch(createAction({ a: !isliked, postid, t: "like" }));
-  const [likesPopup, setLikesPopup] = useState(false);
-  const quit = () => setLikesPopup(false);
-  const viewLikes = () => setLikesPopup(true);
-  const save = () => dispatch(createAction({ a: !issaved, postid, t: "save" }));
-  const date = useMemo(() => dateCalc(created).replace("ago", ""), []);
-  const viewComment = () => {
-    window.history.replaceState(null, "", `/p/${postid}`);
-    dispatch(setBack("home"));
-    dispatch(setCurrentPostId(postid));
-  };
-
-  const contentRef = useRef<HTMLPreElement>(null);
-
-  useLayoutEffect(() => {
-    if (contentRef.current) setIsOverflow(contentRef.current.scrollHeight > 36);
-  }, []);
-
-  const [more, setMore] = useState(false);
-  const [isOverflow, setIsOverflow] = useState(false);
-
-  return (
-    <Container>
+    const like = () => dispatch((0, posts_1.createAction)({ a: !isliked, postid, t: "like" }));
+    const [likesPopup, setLikesPopup] = (0, react_1.useState)(false);
+    const quit = () => setLikesPopup(false);
+    const viewLikes = () => setLikesPopup(true);
+    const save = () => dispatch((0, posts_1.createAction)({ a: !issaved, postid, t: "save" }));
+    const date = (0, react_1.useMemo)(() => (0, Bottom_1.dateCalc)(created).replace("ago", ""), []);
+    const viewComment = () => {
+        window.history.replaceState(null, "", `/p/${postid}`);
+        dispatch((0, postsReducer_1.setBack)("home"));
+        dispatch((0, postsReducer_1.setCurrentPostId)(postid));
+    };
+    const contentRef = (0, react_1.useRef)(null);
+    (0, react_1.useLayoutEffect)(() => {
+        if (contentRef.current)
+            setIsOverflow(contentRef.current.scrollHeight > 36);
+    }, []);
+    const [more, setMore] = (0, react_1.useState)(false);
+    const [isOverflow, setIsOverflow] = (0, react_1.useState)(false);
+    return (<Container>
       <div className="info-s">
         <div className="left">
-          <Link className="pp" to={`/${username}`}>
-            <img
-              onContextMenu={disableRightClick}
-              src={pp || "/pp.jpg"}
-              alt="pp"
-            />
-          </Link>
-          <Link className="username" to={`/${username}`}>
+          <react_router_dom_1.Link className="pp" to={`/${username}`}>
+            <img onContextMenu={Navigation_1.disableRightClick} src={pp || "/pp.jpg"} alt="pp"/>
+          </react_router_dom_1.Link>
+          <react_router_dom_1.Link className="username" to={`/${username}`}>
             {username}
-          </Link>
+          </react_router_dom_1.Link>
           <p className="date"> • {date}</p>
         </div>
         <div className="right">
           <button onClick={() => _m(true)}>
-            <MoreIcon2 />
+            <Icons_1.MoreIcon2 />
           </button>
         </div>
       </div>
       <div className="images" onDoubleClick={dc}>
-        <Swiper
-          slidesPerView={1}
-          pagination={{
+        <react_2.Swiper slidesPerView={1} pagination={{
             clickable: true,
-          }}
-          navigation={true}
-          modules={[Pagination, Navigation]}
-          className="mySwiper"
-        >
-          {images?.map((img, index) => {
-            return (
-              <SwiperSlide>
-                <img src={img} alt={index.toString()} />
+        }} navigation={true} modules={[swiper_1.Pagination, swiper_1.Navigation]} className="mySwiper">
+          {images === null || images === void 0 ? void 0 : images.map((img, index) => {
+            return (<react_2.SwiperSlide>
+                <img src={img} alt={index.toString()}/>
                 <div className="layer"></div>
-              </SwiperSlide>
-            );
-          })}
-        </Swiper>
+              </react_2.SwiperSlide>);
+        })}
+        </react_2.Swiper>
         <div className={`like-a ${likeA ? `a` : ``}`}></div>
       </div>
       <div className="bottom">
         <div className="icons">
           <div className="l">
-            <button
-              className={`like ${isliked ? "active" : ``}`}
-              onClick={like}
-            >
-              <LikeIcon isactive={isliked} />
+            <button className={`like ${isliked ? "active" : ``}`} onClick={like}>
+              <Icons_1.LikeIcon isactive={isliked}/>
             </button>
             <button onClick={viewComment} className="comment">
-              <CommentIcon />
+              <Icons_1.CommentIcon />
             </button>
-            {likesPopup && <Likes type="post" quit={quit} postid={postid} />}
+            {likesPopup && <Likes_1.default type="post" quit={quit} postid={postid}/>}
             <button>
-              <ShareIcon />
+              <Icons_1.ShareIcon />
             </button>
           </div>
           <button onClick={save} className={`save ${issaved ? "active" : ``}`}>
-            <SaveIcon isactive={issaved} />
+            <Icons_1.SaveIcon isactive={issaved}/>
           </button>
         </div>
         <div className="detail">
@@ -156,32 +108,23 @@ const PostItemHome: FC<props> = ({ post }) => {
             {likecount.toLocaleString()} likes
           </p>
         </div>
-        <pre
-          ref={contentRef}
-          className={`${!more ? (isOverflow ? `o` : ``) : ``}`}
-        >
-          <Link className="username" to={`/${username}`}>
+        <pre ref={contentRef} className={`${!more ? (isOverflow ? `o` : ``) : ``}`}>
+          <react_router_dom_1.Link className="username" to={`/${username}`}>
             {username}
-          </Link>
-          {content && <LinkConverter text={content} />}
+          </react_router_dom_1.Link>
+          {content && <LinkConverter_1.default text={content}/>}
         </pre>
-        {isOverflow && !more && (
-          <button className="more" onClick={() => setMore(true)}>
+        {isOverflow && !more && (<button className="more" onClick={() => setMore(true)}>
             more
-          </button>
-        )}
-        {commentcount > 0 && (
-          <p className="viewc" onClick={viewComment}>
+          </button>)}
+        {commentcount > 0 && (<p className="viewc" onClick={viewComment}>
             View all {commentcount} comments
-          </p>
-        )}
+          </p>)}
       </div>
-      {m && <Context close={() => _m(false)} post={post} />}
-    </Container>
-  );
+      {m && <Context_1.default close={() => _m(false)} post={post}/>}
+    </Container>);
 };
-
-const Container = styled.li`
+const Container = styled_components_1.default.li `
   width: 100%;
   max-width: 500px;
   margin: 1rem 0px;
@@ -415,5 +358,4 @@ const Container = styled.li`
     cursor: pointer;
   }
 `;
-
-export default PostItemHome;
+exports.default = PostItemHome;

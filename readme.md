@@ -1,4 +1,4 @@
-# [View Demo](LINK)
+# [View Demo](https://social-media-app-s0qt.onrender.com/)
 
 <a id="readme-top"></a>
 
@@ -19,7 +19,7 @@
   <h1 align="center">FULL STACK SOCIAL MEDIA APP</h1>
 
   <h5 align="center">
-    <a href="DEMOLINK">View Demo</a>
+    <a href="https://social-media-app-s0qt.onrender.com/">View Demo</a>
     ·
     <a  href="https://github.com/furkansimw/SOCIAL_MEDIA_APP/issues">Report Bug</a>
     ·
