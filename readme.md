@@ -124,10 +124,18 @@ _Below is an example of how you can instruct your audience on installing and set
    ```sh
    cd client && npm install && npm run dev
    ```
-4. Enter your System Environment Variables for client `client/.env`
+4. Enter your System Environment Variables for client `client/vite.config.ts`
+
    ```js
-   const REACT_APP_API_URL = "YOUR API URL";
+
+    proxy: {
+      "/api": {
+        target: "API_URL",
+      },
+    },
+
    ```
+
 5. Enter your System Environment Variables for server `server/.env`
    ```js
     DB_URL=***
