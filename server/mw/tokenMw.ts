@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
+import jwt, { TokenExpiredError } from "jsonwebtoken";
 import { checkSessions } from "../queries/mwQ";
 import { clearCookies } from "../functions/tokenMwFunctions";
 import { cookieSetter } from "../functions/authControllersFunctions";
