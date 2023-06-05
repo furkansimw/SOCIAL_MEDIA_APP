@@ -32,21 +32,17 @@ export const disableRightClick = (e: ME<HTMLImageElement, MouseEvent>) =>
   e.preventDefault();
 
 const Navigation = () => {
+  const [state, setState] = useState(false);
+  const [notificationsHas, setNotificationsHas] = useState(false);
   useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Sunucuya bağlandı!");
+    socket.on("notifications", (data) => {
+      setNotificationsHas(true);
+      setState(data);
+      setTimeout(() => {
+        setState(data);
+      }, 3000);
     });
-
-    socket.on("chat message", (msg) => {
-      console.log("Alınan mesaj:", msg);
-    });
-
-    socket.on("disconnect", () => {
-      console.log("Sunucu bağlantısı kesildi!");
-    });
-
-    // Örnek mesaj gönderimi
-    socket.emit("chat message", "Merhaba!");
+    console.log({ state, notificationsHas });
   }, []);
 
   const { username, pp } = useSelector(selectValues, shallowEqual);

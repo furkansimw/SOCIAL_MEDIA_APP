@@ -19,18 +19,17 @@ const socket_1 = __importDefault(require("../../api/socket/socket"));
 const disableRightClick = (e) => e.preventDefault();
 exports.disableRightClick = disableRightClick;
 const Navigation = () => {
+    const [state, setState] = (0, react_1.useState)(false);
+    const [notificationsHas, setNotificationsHas] = (0, react_1.useState)(false);
     (0, react_1.useEffect)(() => {
-        socket_1.default.on("connect", () => {
-            console.log("Sunucuya bağlandı!");
+        socket_1.default.on("notifications", (data) => {
+            setNotificationsHas(true);
+            setState(data);
+            setTimeout(() => {
+                setState(data);
+            }, 3000);
         });
-        socket_1.default.on("chat message", (msg) => {
-            console.log("Alınan mesaj:", msg);
-        });
-        socket_1.default.on("disconnect", () => {
-            console.log("Sunucu bağlantısı kesildi!");
-        });
-        // Örnek mesaj gönderimi
-        socket_1.default.emit("chat message", "Merhaba!");
+        console.log({ state, notificationsHas });
     }, []);
     const { username, pp } = (0, react_redux_1.useSelector)(profileReducer_1.selectValues, react_redux_1.shallowEqual);
     const [mini, setMini] = (0, react_1.useState)(false);
