@@ -16,7 +16,7 @@ export default defineConfig(() => {
     server: {
       proxy: {
         "/api": {
-          target: process.env.REACT_APP_API_URL,
+          target: "https://social-media-app-server-rqig.onrender.com/api",
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ""),
         },
