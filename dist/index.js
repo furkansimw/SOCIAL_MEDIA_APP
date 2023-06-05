@@ -43,10 +43,7 @@ socketio_1.io.use((socket, next) => {
     }
 });
 socketio_1.io.on("connection", (socket) => {
-    socket.on("chat message", (data) => {
-        console.log("chat");
-        socket.emit("chat message", data);
-    });
+    //
     socket.on("disconnect", () => {
         console.log("disconnect");
         sessions = sessions.filter((s) => s.socketid != socket.id);
