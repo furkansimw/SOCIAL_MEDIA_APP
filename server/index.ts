@@ -20,5 +20,9 @@ app.use(helmet());
 
 app.use("/api", apiRoute);
 
+app.get("*", (req, res) => {
+  res.sendFile(__dirname + "/dist/index.html");
+});
+
 app.use(errorHandler);
 app.use(routeNotFound);
