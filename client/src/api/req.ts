@@ -1,5 +1,4 @@
-const API_URL =
-  (import.meta.env.REACT_APP_API_URL || "http://localhost:4000") + "/api";
+const API_URL = "/api";
 
 const req = (path: string, method?: "POST" | "GET" | "DELETE", body?: {}) =>
   new Promise(async (resolve, reject) => {

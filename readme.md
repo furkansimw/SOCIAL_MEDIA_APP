@@ -126,7 +126,7 @@ _Below is an example of how you can instruct your audience on installing and set
    ```
 4. Enter your System Environment Variables for client `client/.env`
    ```js
-   const API_URL = "YOUR API URL without /api";
+   const REACT_APP_API_URL = "YOUR API URL";
    ```
 5. Enter your System Environment Variables for server `server/.env`
    ```js
