@@ -121,22 +121,12 @@ _Below is an example of how you can instruct your audience on installing and set
    cd server && npm install && npm run start
    ```
 3. Client for Install NPM Packages and Start
+
    ```sh
    cd client && npm install && npm run dev
    ```
-4. Enter your System Environment Variables for client `client/vite.config.ts`
 
-   ```js
-
-    proxy: {
-      "/api": {
-        target: "API_URL",
-      },
-    },
-
-   ```
-
-5. Enter your System Environment Variables for server `server/.env`
+4. Enter your System Environment Variables for server `server/.env`
    ```js
     DB_URL=***
     JWT_SECRET=***
