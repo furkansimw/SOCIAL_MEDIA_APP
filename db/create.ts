@@ -330,8 +330,9 @@ const create = async () => {
           END IF;
           IF EXISTS (SELECT 1 FROM relationships WHERE owner = NEW.owner AND target = NEW.target AND type = 0) THEN
           UPDATE users SET followingcount = followingcount - 1 WHERE owner = NEW.owner ;
+          DELETE FROM relationships WHERE target = NEW.target AND owner = NEW.owner and type != 2;
           END IF;
-
+        return NEW;
 
         ELSIF (OLD.type = 0) THEN 
           UPDATE users
@@ -349,7 +350,7 @@ const create = async () => {
           DELETE FROM notifications where processid = old.id;
         END IF;
         
-        RETURN NEW;
+        RETURN OLD;
 
       END;
       $$ LANGUAGE plpgsql;

@@ -108,17 +108,15 @@ const unFollowUserQ = (id, userid) => db_1.default.query(`delete from relationsh
     userid,
 ]);
 exports.unFollowUserQ = unFollowUserQ;
-const blockUserQ = (id, userid) => db_1.default.query(`
-      WITH updated_rows AS (
-        UPDATE relationships
-        SET type = 2
-        WHERE owner = $1 AND target = $2
-        RETURNING *
-      )
-      INSERT INTO relationships (owner, target, type)
-      SELECT $1, $2, 2
-      WHERE NOT EXISTS (SELECT * FROM updated_rows);
-    `, [id, userid]);
+const blockUserQ = (id, userid) => db_1.default
+    .query(`
+     INSERT INTO relationships (owner, target ,type) select $1, $2, 2 from relationships r where
+     not exists (select 1 from relationships where owner = $2 and target = $1 and type = 2) and 
+     not exists (select 1 from relationships where owner = $1 and target = $2 and type = 2)
+    `, [id, userid])
+    .then((r) => {
+    console.log(r.rows[0]);
+});
 exports.blockUserQ = blockUserQ;
 const unBlockUserQ = (id, userid) => db_1.default.query(`delete from relationships where owner = $1 and target = $2`, [
     id,
