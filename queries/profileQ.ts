@@ -125,18 +125,14 @@ const unFollowUserQ = (id: string, userid: string) =>
   ]);
 
 const blockUserQ = (id: string, userid: string) =>
-  db
-    .query(
-      `
+  db.query(
+    `
      INSERT INTO relationships (owner, target ,type) select $1, $2, 2 from relationships r where
      not exists (select 1 from relationships where owner = $2 and target = $1 and type = 2) and 
      not exists (select 1 from relationships where owner = $1 and target = $2 and type = 2)
     `,
-      [id, userid]
-    )
-    .then((r) => {
-      console.log(r.rows[0]);
-    });
+    [id, userid]
+  );
 
 const unBlockUserQ = (id: string, userid: string) =>
   db.query(`delete from relationships where owner = $1 and target = $2`, [
@@ -171,9 +167,9 @@ const getMyNotificationsQ = (id: string, conv?: ILast) => {
   return db
     .query(
       `    
-    select n.*, u.pp, u.username, p.images[1] from notifications n
+    select n.*, n.type::int, u.pp, u.username, p.images[1] from notifications n
     left join users u on u.id = n.owner
-    left join posts p on p.id = n.pi ${b}
+    left join posts p on p.id = n.processid ${b}
     where n.target = $1 and b is null and n.owner != $1 ${str}
     order by n.created DESC, n.id DESC
     limit 12;
@@ -184,15 +180,42 @@ const getMyNotificationsQ = (id: string, conv?: ILast) => {
       db
         .query(
           `update users set
-           nreqcount = 0,
            npostlikescount = 0,
-           ncreatedcommentcount= 0
+           ncreatedcommentcount = 0
            where id = $1;`,
           [id]
         )
         .then((_) => r.rows)
     );
 };
+
+const getRequestsQ = (id: string, last?: ILast, l?: boolean) => {
+  const values: any[] = [id];
+  if (last) values.push(last.date, last.id);
+  if (l) values.push(l);
+  const str = last ? `and (r.created, r.id) < ($2, $3)` : ``;
+  return db
+    .query(
+      `
+    select r.*, u.username, u.pp from relationships r
+    left join users u on u.id = r.owner
+    where r.target = $1 ${str} and r.type = 1
+    order by r.created desc, r.id desc  
+    limit ${l ? 1 : 12}
+  `,
+      values
+    )
+    .then((r) => r.rows);
+};
+const allowRequestQ = (id: string, ri: string) =>
+  db
+    .query(
+      `update relationships set type = 0 where id = $2 and target = $1 returning owner`,
+      [id, ri]
+    )
+    .then((r) => r.rows[0]?.owner);
+const denyRequestQ = (id: string, ri: string) =>
+  db.query(`delete from relationships where id = $2 and target = $1`, [id, ri]);
 
 export {
   searchProfileQ,
@@ -207,4 +230,7 @@ export {
   unBlockUserQ,
   getMyProfileDetailQ,
   updateProfileQ,
+  getRequestsQ,
+  allowRequestQ,
+  denyRequestQ,
 };

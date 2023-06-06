@@ -229,7 +229,6 @@ const Pa = ({ close }) => {
                 close();
             }
             catch (error) {
-                console.log(error);
                 p.select();
                 react_toastify_1.toast.error(error.toString());
             }

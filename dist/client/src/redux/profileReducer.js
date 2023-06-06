@@ -1,6 +1,7 @@
 "use strict";
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.selectPostPopupActive = exports.selectIsLoggedin = exports.selectValues = exports.selectProfile = exports.toggleSetLoginPopupActive = exports.profileSlice = void 0;
+exports.selectPostPopupActive = exports.selectIsLoggedin = exports.selectValues = exports.selectProfile = exports.setUpdateValues = exports.toggleSetLoginPopupActive = exports.profileSlice = void 0;
 const toolkit_1 = require("@reduxjs/toolkit");
 const profile_1 = require("../api/profile");
 const init = () => document.cookie.includes("isloggedin=true");
@@ -25,6 +26,9 @@ exports.profileSlice = (0, toolkit_1.createSlice)({
         toggleSetLoginPopupActive: (state) => {
             state.loginPopupActive = !state.loginPopupActive;
         },
+        setUpdateValues: (state, action) => {
+            state.values = Object.assign(Object.assign({}, state.values), action.payload);
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(profile_1.getMyProfile.fulfilled, (state, action) => {
@@ -32,7 +36,7 @@ exports.profileSlice = (0, toolkit_1.createSlice)({
         });
     },
 });
-exports.toggleSetLoginPopupActive = exports.profileSlice.actions.toggleSetLoginPopupActive;
+_a = exports.profileSlice.actions, exports.toggleSetLoginPopupActive = _a.toggleSetLoginPopupActive, exports.setUpdateValues = _a.setUpdateValues;
 const selectProfile = (state) => state.profile;
 exports.selectProfile = selectProfile;
 const selectValues = (state) => state.profile.values;

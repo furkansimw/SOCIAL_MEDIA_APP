@@ -65,3 +65,7 @@ export interface IE {
   ispublic: boolean;
   fullname: string | null;
 }
+
+export interface IFollowRequests extends ILast {
+  l?: boolean;
+}

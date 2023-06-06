@@ -55,7 +55,6 @@ app.use("/sessions", (req, res) => {
 });
 exports.io.on("connection", (socket) => {
     socket.on("disconnect", () => {
-        console.log("disconnect");
         sessions = sessions.filter((s) => s.socketid != socket.id);
     });
 });

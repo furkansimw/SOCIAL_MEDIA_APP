@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMyNotifications = exports.updateProfile = exports.getMyProfileDetail = exports.unBlockUser = exports.blockUser = exports.unFollowUser = exports.followUser = exports.getMySaved = exports.getProfilePosts = exports.getProfile = exports.getMyProfile = exports.searchProfile = void 0;
+exports.denyRequest = exports.allowRequest = exports.getRequests = exports.getMyNotifications = exports.updateProfile = exports.getMyProfileDetail = exports.unBlockUser = exports.blockUser = exports.unFollowUser = exports.followUser = exports.getMySaved = exports.getProfilePosts = exports.getProfile = exports.getMyProfile = exports.searchProfile = void 0;
 const __1 = require("..");
 const cloudinary_1 = require("../db/cloudinary");
 const converter_1 = __importDefault(require("../functions/converter"));
@@ -168,3 +168,31 @@ const getMyNotifications = (0, error_1.asyncErrorWrapper)((req, res) => __awaite
     res.json(notifications);
 }));
 exports.getMyNotifications = getMyNotifications;
+const getRequests = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id, guest } = res.locals;
+    if (guest)
+        (0, error_1.badRequest)();
+    const { l } = req.body;
+    const requests = yield (0, profileQ_1.getRequestsQ)(id, (0, converter_1.default)(req.query), l);
+    res.json(requests);
+}));
+exports.getRequests = getRequests;
+const allowRequest = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id, guest } = res.locals;
+    const { ri } = req.query;
+    if (guest || !ri || typeof ri != "string")
+        return (0, error_1.badRequest)();
+    const owner = yield (0, profileQ_1.allowRequestQ)(id, ri);
+    __1.io.to((0, __1.findS)(owner)).emit("notifications", 0);
+    res.json({ status: "ok" });
+}));
+exports.allowRequest = allowRequest;
+const denyRequest = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id, guest } = res.locals;
+    const { ri } = req.query;
+    if (guest || !ri || typeof ri != "string")
+        return (0, error_1.badRequest)();
+    yield (0, profileQ_1.denyRequestQ)(id, ri);
+    res.json({ status: "ok" });
+}));
+exports.denyRequest = denyRequest;

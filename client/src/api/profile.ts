@@ -1,6 +1,11 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import req from "./req";
-import { IGetProfilePosts, ISC, ILast } from "../interfaces/IApi";
+import {
+  IGetProfilePosts,
+  ISC,
+  ILast,
+  IFollowRequests,
+} from "../interfaces/IApi";
 import { INotification } from "../interfaces/ISlices";
 
 export const getMyProfile = createAsyncThunk("/profile/my", () =>
@@ -47,3 +52,6 @@ export const notificationsGet = ({ date, id }: ILast) =>
   req(`/profile/notifications?date=${date}&id=${id}`).then(
     (r: any) => r as INotification[]
   );
+
+export const followRequests = ({ date, id, l }: IFollowRequests) =>
+  req(`/profile/requests?date=${date}&id=${id}&l=${l}`).then((r: any) => r);

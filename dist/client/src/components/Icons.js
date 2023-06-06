@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SavedIcon = exports.ArrowLeft = exports.ArrowRight = exports.SettingsIcon = exports.RemoveIcon2 = exports.SearchIcon2 = exports.MoreIcon3 = exports.CloseIcon = exports.MoreIcon2 = exports.LikeIconComment = exports.SaveIcon = exports.ShareIcon = exports.CommentIcon = exports.LikeIcon = exports.DetailIcon = exports.AddIcon = exports.RemoveIcon = exports.MoreIconImages = exports.LeftArrowIcon = exports.MoreIcon = exports.CreatePostPopupIcon = exports.NotificationsIcon = exports.MessagesIcon = exports.ExploreIcon = exports.SearchIcon = exports.HomeIcon = void 0;
+exports.SmallRightIconFRFor = exports.SavedIcon = exports.ArrowLeft = exports.ArrowRight = exports.SettingsIcon = exports.RemoveIcon2 = exports.SearchIcon2 = exports.MoreIcon3 = exports.CloseIcon = exports.MoreIcon2 = exports.LikeIconComment = exports.SaveIcon = exports.ShareIcon = exports.CommentIcon = exports.LikeIcon = exports.DetailIcon = exports.AddIcon = exports.RemoveIcon = exports.MoreIconImages = exports.LeftArrowIcon = exports.MoreIcon = exports.CreatePostPopupIcon = exports.NotificationsIcon = exports.MessagesIcon = exports.ExploreIcon = exports.SearchIcon = exports.HomeIcon = void 0;
 const HomeIcon = ({ isactive }) => isactive ? (<svg aria-label="Home" color="rgb(245, 245, 245)" fill="rgb(245, 245, 245)" height="24" role="img" viewBox="0 0 24 24" width="24">
       <path d="M22 23h-6.001a1 1 0 0 1-1-1v-5.455a2.997 2.997 0 1 0-5.993 0V22a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V11.543a1.002 1.002 0 0 1 .31-.724l10-9.543a1.001 1.001 0 0 1 1.38 0l10 9.543a1.002 1.002 0 0 1 .31.724V22a1 1 0 0 1-1 1Z"></path>
     </svg>) : (<svg aria-label="Home" color="rgb(245, 245, 245)" fill="rgb(245, 245, 245)" height="24" role="img" viewBox="0 0 24 24" width="24">
@@ -166,3 +166,8 @@ const SavedIcon = () => (<svg aria-label="Saved" color="rgb(245, 245, 245)" fill
     <polygon fill="none" points="20 21 12 13.44 4 21 4 3 20 3 20 21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polygon>
   </svg>);
 exports.SavedIcon = SavedIcon;
+const SmallRightIconFRFor = () => (<svg aria-label="" color="rgb(168, 168, 168)" fill="rgb(168, 168, 168)" height="16" role="img" viewBox="0 0 24 24" width="16">
+    <title></title>
+    <path d="M21 17.502a.997.997 0 0 1-.707-.293L12 8.913l-8.293 8.296a1 1 0 1 1-1.414-1.414l9-9.004a1.03 1.03 0 0 1 1.414 0l9 9.004A1 1 0 0 1 21 17.502Z"></path>
+  </svg>);
+exports.SmallRightIconFRFor = SmallRightIconFRFor;

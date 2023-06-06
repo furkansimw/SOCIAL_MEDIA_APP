@@ -176,7 +176,7 @@ const CreatePostPopup: FC<Props> = ({ close }) => {
 
 const Bg = styled.div`
   position: fixed;
-  z-index: 70;
+  z-index: 170;
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.6);
@@ -197,7 +197,7 @@ const Container = styled.div`
   transform: scale(0.9) translate(initial);
   animation: 0.1s scalex ease-in-out forwards;
   position: fixed;
-  z-index: 80;
+  z-index: 280;
   max-width: 700px;
   background-color: #262626;
   left: calc(50vw - 350px);

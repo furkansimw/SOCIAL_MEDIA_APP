@@ -10,6 +10,11 @@ profileRoute.route("/mysaved").get(profileController_1.getMySaved);
 profileRoute.route("/notifications").get(profileController_1.getMyNotifications);
 profileRoute.route("/follow").post(profileController_1.followUser).delete(profileController_1.unFollowUser);
 profileRoute.route("/block").post(profileController_1.blockUser).delete(profileController_1.unBlockUser);
+profileRoute
+    .route("/requests")
+    .get(profileController_1.getRequests)
+    .post(profileController_1.allowRequest)
+    .delete(profileController_1.denyRequest);
 const profileWithUsernameRoute = (0, express_1.Router)({ mergeParams: true });
 profileRoute.use("/:username", profileWithUsernameRoute);
 profileWithUsernameRoute.route("/").get(profileController_1.getProfile);

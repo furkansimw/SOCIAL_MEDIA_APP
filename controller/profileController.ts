@@ -16,6 +16,9 @@ import {
   getMyProfileDetailQ,
   updateProfileQ,
   getMyNotificationsQ,
+  getRequestsQ,
+  allowRequestQ,
+  denyRequestQ,
 } from "../queries/profileQ";
 
 const searchProfile = asyncErrorWrapper(async (req, res) => {
@@ -163,6 +166,34 @@ const getMyNotifications = asyncErrorWrapper(async (req, res) => {
   res.json(notifications);
 });
 
+const getRequests = asyncErrorWrapper(async (req, res) => {
+  const { id, guest } = res.locals;
+  if (guest) badRequest();
+  const { l } = req.body;
+
+  const requests = await getRequestsQ(id, conv(req.query), l);
+  res.json(requests);
+});
+
+const allowRequest = asyncErrorWrapper(async (req, res) => {
+  const { id, guest } = res.locals;
+  const { ri } = req.query;
+  if (guest || !ri || typeof ri != "string") return badRequest();
+
+  const owner = await allowRequestQ(id, ri);
+  io.to(findS(owner)).emit("notifications", 0);
+  res.json({ status: "ok" });
+});
+
+const denyRequest = asyncErrorWrapper(async (req, res) => {
+  const { id, guest } = res.locals;
+  const { ri } = req.query;
+  if (guest || !ri || typeof ri != "string") return badRequest();
+
+  await denyRequestQ(id, ri);
+  res.json({ status: "ok" });
+});
+
 export {
   searchProfile,
   getMyProfile,
@@ -176,4 +207,7 @@ export {
   getMyProfileDetail,
   updateProfile,
   getMyNotifications,
+  getRequests,
+  allowRequest,
+  denyRequest,
 };

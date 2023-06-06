@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateProfileQ = exports.getMyProfileDetailQ = exports.unBlockUserQ = exports.blockUserQ = exports.getMyNotificationsQ = exports.unFollowUserQ = exports.followUserQ = exports.getMySavedQ = exports.getProfilePostsQ = exports.getProfileQ = exports.getMyProfileQ = exports.searchProfileQ = void 0;
+exports.denyRequestQ = exports.allowRequestQ = exports.getRequestsQ = exports.updateProfileQ = exports.getMyProfileDetailQ = exports.unBlockUserQ = exports.blockUserQ = exports.getMyNotificationsQ = exports.unFollowUserQ = exports.followUserQ = exports.getMySavedQ = exports.getProfilePostsQ = exports.getProfileQ = exports.getMyProfileQ = exports.searchProfileQ = void 0;
 const db_1 = __importDefault(require("../db/db"));
 const blocked_1 = __importDefault(require("../functions/blocked"));
 const then_1 = __importDefault(require("../functions/then"));
@@ -108,15 +108,11 @@ const unFollowUserQ = (id, userid) => db_1.default.query(`delete from relationsh
     userid,
 ]);
 exports.unFollowUserQ = unFollowUserQ;
-const blockUserQ = (id, userid) => db_1.default
-    .query(`
+const blockUserQ = (id, userid) => db_1.default.query(`
      INSERT INTO relationships (owner, target ,type) select $1, $2, 2 from relationships r where
      not exists (select 1 from relationships where owner = $2 and target = $1 and type = 2) and 
      not exists (select 1 from relationships where owner = $1 and target = $2 and type = 2)
-    `, [id, userid])
-    .then((r) => {
-    console.log(r.rows[0]);
-});
+    `, [id, userid]);
 exports.blockUserQ = blockUserQ;
 const unBlockUserQ = (id, userid) => db_1.default.query(`delete from relationships where owner = $1 and target = $2`, [
     id,
@@ -142,19 +138,42 @@ const getMyNotificationsQ = (id, conv) => {
     // 2 query !!
     return db_1.default
         .query(`    
-    select n.*, u.pp, u.username, p.images[1] from notifications n
+    select n.*, n.type::int, u.pp, u.username, p.images[1] from notifications n
     left join users u on u.id = n.owner
-    left join posts p on p.id = n.pi ${b}
+    left join posts p on p.id = n.processid ${b}
     where n.target = $1 and b is null and n.owner != $1 ${str}
     order by n.created DESC, n.id DESC
     limit 12;
   `, values)
         .then((r) => db_1.default
         .query(`update users set
-           nreqcount = 0,
            npostlikescount = 0,
-           ncreatedcommentcount= 0
+           ncreatedcommentcount = 0
            where id = $1;`, [id])
         .then((_) => r.rows));
 };
 exports.getMyNotificationsQ = getMyNotificationsQ;
+const getRequestsQ = (id, last, l) => {
+    const values = [id];
+    if (last)
+        values.push(last.date, last.id);
+    if (l)
+        values.push(l);
+    const str = last ? `and (r.created, r.id) < ($2, $3)` : ``;
+    return db_1.default
+        .query(`
+    select r.*, u.username, u.pp from relationships r
+    left join users u on u.id = r.owner
+    where r.target = $1 ${str} and r.type = 1
+    order by r.created desc, r.id desc  
+    limit ${l ? 1 : 12}
+  `, values)
+        .then((r) => r.rows);
+};
+exports.getRequestsQ = getRequestsQ;
+const allowRequestQ = (id, ri) => db_1.default
+    .query(`update relationships set type = 0 where id = $2 and target = $1 returning owner`, [id, ri])
+    .then((r) => { var _a; return (_a = r.rows[0]) === null || _a === void 0 ? void 0 : _a.owner; });
+exports.allowRequestQ = allowRequestQ;
+const denyRequestQ = (id, ri) => db_1.default.query(`delete from relationships where id = $2 and target = $1`, [id, ri]);
+exports.denyRequestQ = denyRequestQ;

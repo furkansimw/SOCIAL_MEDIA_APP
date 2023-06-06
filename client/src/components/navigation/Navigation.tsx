@@ -19,7 +19,7 @@ import {
   SettingsIcon,
 } from "../Icons";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { selectValues } from "../../redux/profileReducer";
+import { selectValues, setUpdateValues } from "../../redux/profileReducer";
 import SearchPanel from "./SearchPanel";
 import NotificationsPanel from "./NotificationsPanel";
 import { AppDispatch } from "../../redux/store";
@@ -27,46 +27,12 @@ import { getMyProfile } from "../../api/profile";
 import CreatePostPopup from "../createpostpopup/CreatePostPopup";
 import { logout } from "../../api/auth";
 import socket from "../../api/socket/socket";
+import { panelViewController } from "./Functions";
 
 export const disableRightClick = (e: ME<HTMLImageElement, MouseEvent>) =>
   e.preventDefault();
 
 const Navigation = () => {
-  const [newNotificationType, setNewNotificationType] = useState<
-    0 | 1 | 2 | 3 | null
-  >(null);
-
-  const [notificationsHas, setNotificationsHas] = useState(false);
-
-  useEffect(() => {
-    socket.on("notifications", (type) => {
-      setNotificationsHas(true);
-      setNewNotificationType(type);
-      setTimeout(() => {
-        setNewNotificationType(null);
-      }, 3000);
-    });
-  }, []);
-
-  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
-  const {
-    username,
-    pp,
-    id,
-    ncreatedcommentcount,
-    npostlikescount,
-    nreqcount,
-    reqcount,
-    unreadmessagescount,
-  } = useSelector(selectValues, shallowEqual);
-
-  useEffect(() => {
-    setNotificationsHas(
-      ncreatedcommentcount > 0 || npostlikescount > 0 || nreqcount > 0
-    );
-    setUnreadMessagesCount(unreadmessagescount);
-  }, [ncreatedcommentcount, unreadmessagescount, npostlikescount, nreqcount]);
-
   const [mini, setMini] = useState(false);
   const { pathname } = useLocation();
   const [panel, setPanel] = useState<null | "search" | "notifications">(null);
@@ -92,45 +58,31 @@ const Navigation = () => {
     notificationPanelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const worker = (e: MouseEvent) => {
-      const l = e.composedPath();
-      if (
-        !(
-          searchPanelBtnRef.current &&
-          notificationPanelBtnRef.current &&
-          leftSideRef.current &&
-          searchPanelRef.current &&
-          notificationPanelRef.current
-        )
-      ) {
-        return;
-      }
-      if (!panel) return;
-      if (l.includes(leftSideRef.current)) return;
-      if (panel == "notifications") {
-        if (
-          !(
-            l.includes(notificationPanelBtnRef.current) ||
-            l.includes(notificationPanelRef.current)
-          )
-        ) {
-          setPanel(null);
-        }
-      } else {
-        if (
-          !(
-            l.includes(searchPanelBtnRef.current) ||
-            l.includes(searchPanelRef.current)
-          )
-        ) {
-          setPanel(null);
-        }
-      }
-    };
-
-    window.addEventListener("click", worker);
+    window.addEventListener("click", (e) =>
+      panelViewController(
+        e,
+        searchPanelBtnRef,
+        notificationPanelBtnRef,
+        leftSideRef,
+        searchPanelRef,
+        notificationPanelRef,
+        panel,
+        setPanel
+      )
+    );
     return () => {
-      window.removeEventListener("click", worker);
+      window.removeEventListener("click", (e) =>
+        panelViewController(
+          e,
+          searchPanelBtnRef,
+          notificationPanelBtnRef,
+          leftSideRef,
+          searchPanelRef,
+          notificationPanelRef,
+          panel,
+          setPanel
+        )
+      );
     };
   }, [panel]);
 
@@ -168,6 +120,72 @@ const Navigation = () => {
     };
   }, []);
 
+  const [newNotification, setNewNotification] = useState(false);
+
+  const [notificationsHas, setNotificationsHas] = useState(false);
+
+  const {
+    username,
+    pp,
+    id,
+    ncreatedcommentcount,
+    npostlikescount,
+    nreqcount,
+    reqcount,
+    unreadmessagescount,
+  } = useSelector(selectValues, shallowEqual);
+
+  useEffect(() => {
+    socket.on("notifications", (type) => {
+      setNewNotification(true);
+      setNotificationsHas(true);
+      if ([0, 1].includes(type))
+        dispatch(setUpdateValues({ nreqcount: nreqcount + 1 }));
+      else if (type == 2)
+        dispatch(setUpdateValues({ npostlikescount: npostlikescount + 1 }));
+      else
+        dispatch(
+          setUpdateValues({ ncreatedcommentcount: ncreatedcommentcount + 1 })
+        );
+    });
+  }, [nreqcount, ncreatedcommentcount, npostlikescount]);
+
+  const timeoutIdRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    if (timeoutIdRef.current) clearTimeout(timeoutIdRef.current);
+
+    timeoutIdRef.current = setTimeout(() => setNewNotification(false), 4000);
+
+    return () => {
+      if (timeoutIdRef.current) clearTimeout(timeoutIdRef.current);
+    };
+  }, [newNotification]);
+
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+
+  useEffect(() => {
+    setNotificationsHas(
+      ncreatedcommentcount > 0 || npostlikescount > 0 || nreqcount > 0
+    );
+    setUnreadMessagesCount(unreadmessagescount);
+    setNewNotification(
+      ncreatedcommentcount > 0 || npostlikescount > 0 || nreqcount > 0
+    );
+  }, [ncreatedcommentcount, unreadmessagescount, npostlikescount, nreqcount]);
+
+  useEffect(() => {
+    if (panel == "notifications") {
+      dispatch(
+        setUpdateValues({
+          ncreatedcommentcount: 0,
+          nreqcount: 0,
+          npostlikescount: 0,
+        })
+      );
+    }
+  }, [panel]);
+
   return (
     <>
       <SearchPanel
@@ -199,7 +217,7 @@ const Navigation = () => {
               ref={searchPanelBtnRef}
               className={uiController("search") ? "active" : ""}
             >
-              <div onClick={() => setPanel("search")}>
+              <div onClick={() => setPanel(panel ? null : "search")}>
                 <SearchIcon isactive={uiController("search")} />
                 <p>Search</p>
               </div>
@@ -225,25 +243,30 @@ const Navigation = () => {
               ref={notificationPanelBtnRef}
               className={uiController("notifications") ? "active" : ""}
             >
-              <div
-                onClick={() => {
-                  setPanel("notifications");
-                  setNotificationsHas(false);
-                }}
-              >
+              <div onClick={() => setPanel(panel ? null : "notifications")}>
                 <NotificationsIcon isactive={uiController("notifications")} />
                 <p>Notifications</p>
                 {notificationsHas && <div className="circle"></div>}
-                {newNotificationType != undefined && (
+                {newNotification && (
                   <div className={`newnotif`}>
-                    <div
-                      className={`icon ${
-                        ["people", "people", "post", "comment"][
-                          newNotificationType
-                        ]
-                      }`}
-                    ></div>
-                    <p>1</p>
+                    {nreqcount > 0 && (
+                      <span>
+                        <div className="icon people"></div>
+                        <p>{nreqcount}</p>
+                      </span>
+                    )}
+                    {npostlikescount > 0 && (
+                      <span>
+                        <div className="icon post"></div>
+                        <p>{npostlikescount}</p>
+                      </span>
+                    )}
+                    {ncreatedcommentcount > 0 && (
+                      <span>
+                        <div className="icon comment"></div>
+                        <p>{ncreatedcommentcount}</p>
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
@@ -421,11 +444,14 @@ const Container = styled.div`
           padding: 8px;
           border-radius: 8px;
           display: flex;
-          width: 50px;
           position: fixed;
           left: 60px;
           z-index: 111;
-
+          span {
+            width: 100%;
+            display: flex;
+            align-items: center;
+          }
           .icon {
             &.people {
               background-position: -124px -195px !important;
@@ -435,6 +461,8 @@ const Container = styled.div`
             }
             &.comment {
               background-position: -514px -110px !important;
+              min-width: 18px !important;
+              min-height: 18px !important;
             }
             padding: 0px;
             background-repeat: no-repeat;
@@ -444,9 +472,12 @@ const Container = styled.div`
             width: 16px !important;
             min-height: 16px !important;
             margin-right: 8px;
+            transition: none !important;
+            animation: none !important;
           }
           p {
             margin: 0px;
+            margin-right: 10px;
             font-weight: 400;
             line-height: 16px;
             font-size: 1rem;
@@ -457,8 +488,8 @@ const Container = styled.div`
         .circle {
           padding: 0px;
           position: absolute;
-          bottom: 12px;
-          left: 24px;
+          top: 12px;
+          left: 28px;
           width: 12px;
           height: 12px;
           background-color: #ed4956 !important;
@@ -585,6 +616,7 @@ const Container = styled.div`
       display: flex;
       padding: 1rem;
       p {
+        display: block !important;
         margin: 0px !important;
         font-weight: 400 !important;
         font-size: 14px !important;

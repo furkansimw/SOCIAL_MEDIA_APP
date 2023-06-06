@@ -286,7 +286,8 @@ exports.postsSlice = (0, toolkit_1.createSlice)({
             state.profiles = profiles.map((p) => {
                 var _a;
                 if (((_a = p.info) === null || _a === void 0 ? void 0 : _a.id) == userid)
-                    return Object.assign(Object.assign({}, p), { info: Object.assign(Object.assign({}, p.info), { status: a ? (ispublic ? 0 : 1) : null, followercount: p.info.followercount + (a ? (ispublic ? 1 : 0) : -1) }) });
+                    return Object.assign(Object.assign({}, p), { info: Object.assign(Object.assign({}, p.info), { status: a ? (ispublic ? 0 : 1) : null, followercount: p.info.followercount +
+                                (a ? (ispublic ? 1 : 0) : ispublic ? -1 : 0) }) });
                 else
                     return p;
             });

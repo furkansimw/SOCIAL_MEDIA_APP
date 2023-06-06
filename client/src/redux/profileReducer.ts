@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { IProfileInitialState } from "../interfaces/ISlices";
 import { RootState } from "./store";
 import { getMyProfile } from "../api/profile";
@@ -27,6 +27,9 @@ export const profileSlice = createSlice({
     toggleSetLoginPopupActive: (state) => {
       state.loginPopupActive = !state.loginPopupActive;
     },
+    setUpdateValues: (state, action) => {
+      state.values = { ...state.values, ...action.payload };
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getMyProfile.fulfilled, (state, action) => {
@@ -35,7 +38,8 @@ export const profileSlice = createSlice({
   },
 });
 
-export const { toggleSetLoginPopupActive } = profileSlice.actions;
+export const { toggleSetLoginPopupActive, setUpdateValues } =
+  profileSlice.actions;
 
 export const selectProfile = (state: RootState) => state.profile;
 export const selectValues = (state: RootState) => state.profile.values;

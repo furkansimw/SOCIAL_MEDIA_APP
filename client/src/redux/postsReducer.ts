@@ -510,7 +510,8 @@ export const postsSlice = createSlice({
               ...p.info,
               status: a ? (ispublic ? 0 : 1) : null,
               followercount:
-                p.info.followercount + (a ? (ispublic ? 1 : 0) : -1),
+                p.info.followercount +
+                (a ? (ispublic ? 1 : 0) : ispublic ? -1 : 0),
             },
           };
         else return p;

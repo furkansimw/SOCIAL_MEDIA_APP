@@ -279,7 +279,6 @@ const Pa: FC<{ close: () => void }> = ({ close }) => {
               toast.info("Your password has been changed to successful");
               close();
             } catch (error) {
-              console.log(error);
               p.select();
               toast.error((error as any).toString());
             }
