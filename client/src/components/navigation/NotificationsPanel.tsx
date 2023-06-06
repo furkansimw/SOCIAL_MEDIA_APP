@@ -31,6 +31,7 @@ const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
 
     const onScroll = (e: React.UIEvent<HTMLUListElement, UIEvent>) => {
       e.preventDefault();
+
       const { scrollTop, scrollHeight, clientHeight } = e.target as Element;
       if (!hasmore || loading) return;
       if (scrollTop + 100 + clientHeight >= scrollHeight) {

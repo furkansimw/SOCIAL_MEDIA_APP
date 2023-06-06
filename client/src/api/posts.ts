@@ -50,8 +50,8 @@ export const createComment = createAsyncThunk(
 
 export const createAction = createAsyncThunk(
   `/posts/:postid/like~{POST}`,
-  ({ a, postid, t }: ICreateAction) =>
-    req(`/posts/${postid}/${t}`, a ? "POST" : "DELETE")
+  ({ a, postid, t, postowner }: ICreateAction) =>
+    req(`/posts/${postid}/${t}`, a ? "POST" : "DELETE", { postowner })
 );
 
 export const likeComment = createAsyncThunk(

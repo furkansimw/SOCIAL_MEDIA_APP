@@ -19,19 +19,23 @@ const socket_1 = __importDefault(require("../../api/socket/socket"));
 const disableRightClick = (e) => e.preventDefault();
 exports.disableRightClick = disableRightClick;
 const Navigation = () => {
-    const [state, setState] = (0, react_1.useState)(false);
+    const [newNotificationType, setNewNotificationType] = (0, react_1.useState)(null);
     const [notificationsHas, setNotificationsHas] = (0, react_1.useState)(false);
     (0, react_1.useEffect)(() => {
-        socket_1.default.on("notifications", (data) => {
+        socket_1.default.on("notifications", (type) => {
             setNotificationsHas(true);
-            setState(data);
+            setNewNotificationType(type);
             setTimeout(() => {
-                setState(data);
+                setNewNotificationType(null);
             }, 3000);
         });
-        console.log({ state, notificationsHas });
     }, []);
-    const { username, pp } = (0, react_redux_1.useSelector)(profileReducer_1.selectValues, react_redux_1.shallowEqual);
+    const [unreadMessagesCount, setUnreadMessagesCount] = (0, react_1.useState)(0);
+    const { username, pp, id, ncreatedcommentcount, npostlikescount, nreqcount, reqcount, unreadmessagescount, } = (0, react_redux_1.useSelector)(profileReducer_1.selectValues, react_redux_1.shallowEqual);
+    (0, react_1.useEffect)(() => {
+        setNotificationsHas(ncreatedcommentcount > 0 || npostlikescount > 0 || nreqcount > 0);
+        setUnreadMessagesCount(unreadmessagescount);
+    }, [ncreatedcommentcount, unreadmessagescount, npostlikescount, nreqcount]);
     const [mini, setMini] = (0, react_1.useState)(false);
     const { pathname } = (0, react_router_dom_1.useLocation)();
     const [panel, setPanel] = (0, react_1.useState)(null);
@@ -147,12 +151,23 @@ const Navigation = () => {
               <react_router_dom_1.Link onClick={closePanel} to={"/direct/inbox"}>
                 <Icons_1.MessagesIcon isactive={uiController("/direct/inbox")}/>
                 <p>Messages</p>
+                {unreadMessagesCount > 0 && (<div className="circle">
+                    <p>{unreadMessagesCount}</p>
+                  </div>)}
               </react_router_dom_1.Link>
             </li>
             <li ref={notificationPanelBtnRef} className={uiController("notifications") ? "active" : ""}>
-              <div onClick={() => setPanel("notifications")}>
+              <div onClick={() => {
+            setPanel("notifications");
+            setNotificationsHas(false);
+        }}>
                 <Icons_1.NotificationsIcon isactive={uiController("notifications")}/>
                 <p>Notifications</p>
+                {notificationsHas && <div className="circle"></div>}
+                {newNotificationType != undefined && (<div className={`newnotif`}>
+                    <div className={`icon ${["people", "people", "post", "comment"][newNotificationType]}`}></div>
+                    <p>1</p>
+                  </div>)}
               </div>
             </li>
             <li className={uiController("create") ? "active" : ""}>
@@ -209,7 +224,6 @@ const Container = styled_components_1.default.div `
     padding: 8px 12px 20px;
     display: flex;
     min-width: 48px;
-    overflow: hidden;
     justify-content: space-between;
     flex-direction: column;
     transition: 0.3s ease-in-out width;
@@ -251,11 +265,13 @@ const Container = styled_components_1.default.div `
     ul {
       height: 100%;
       width: 100%;
+
       overflow-y: auto;
       &::-webkit-scrollbar {
         display: none;
       }
       li {
+        position: relative;
         margin: 8px 0px;
         &.active {
           p {
@@ -299,6 +315,77 @@ const Container = styled_components_1.default.div `
             }
           }
         }
+        .newnotif {
+          @keyframes animx {
+            0% {
+              transform: scale(0.8);
+            }
+            50% {
+              transform: scale(1.25);
+            }
+            100% {
+              transform: scale(1);
+            }
+          }
+          animation: animx 0.3s ease-in-out;
+          background-color: #ed4956 !important;
+          padding: 8px;
+          border-radius: 8px;
+          display: flex;
+          width: 50px;
+          position: fixed;
+          left: 60px;
+          z-index: 111;
+
+          .icon {
+            &.people {
+              background-position: -124px -195px !important;
+            }
+            &.post {
+              background-position: -440px -404px !important;
+            }
+            &.comment {
+              background-position: -514px -110px !important;
+            }
+            padding: 0px;
+            background-repeat: no-repeat;
+            background-image: url("/ZWR9C7_JdnP.png");
+            height: 16px !important;
+            min-width: 16px !important;
+            width: 16px !important;
+            min-height: 16px !important;
+            margin-right: 8px;
+          }
+          p {
+            margin: 0px;
+            font-weight: 400;
+            line-height: 16px;
+            font-size: 1rem;
+            color: #fafafa;
+            display: block !important;
+          }
+        }
+        .circle {
+          padding: 0px;
+          position: absolute;
+          bottom: 12px;
+          left: 24px;
+          width: 12px;
+          height: 12px;
+          background-color: #ed4956 !important;
+          display: block !important;
+          border-radius: 100%;
+          p {
+            position: absolute;
+            right: 4px;
+            z-index: 10;
+            bottom: 0px;
+            margin: 0px;
+            font-size: 10px;
+            color: #fff;
+            display: block !important;
+          }
+        }
       }
     }
     .bottom {
@@ -337,7 +424,6 @@ const Container = styled_components_1.default.div `
   }
   &.mini {
     .content {
-      overflow: hidden;
       width: 73px;
       .up {
         h1 {

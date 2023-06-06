@@ -1,7 +1,16 @@
 export interface IProfileInitialState {
   isloggedin: boolean;
   loginPopupActive: boolean;
-  values: { username: string; pp: string | null; id: string };
+  values: {
+    username: string;
+    pp: string | null;
+    id: string;
+    reqcount: number;
+    unreadmessagescount: number;
+    nreqcount: number;
+    npostlikescount: number;
+    ncreatedcommentcount: number;
+  };
 }
 
 export interface IPostsSliceInitialState {

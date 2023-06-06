@@ -19,9 +19,7 @@ const searchProfileQ = (id, u) => db_1.default
     .then((r) => r.rows);
 exports.searchProfileQ = searchProfileQ;
 const getMyProfileQ = (id) => db_1.default
-    .query(`select id, pp, username, reqcount::int from users where id = $1`, [
-    id,
-])
+    .query(`select id, pp, username, reqcount::int, unreadmessagescount::int, nreqcount::int, npostlikescount::int, ncreatedcommentcount::int from users where id = $1`, [id])
     .then((r) => r.rows[0]);
 exports.getMyProfileQ = getMyProfileQ;
 const getProfileQ = (id, username, guest) => {
@@ -93,14 +91,17 @@ const getMySavedQ = (id, last) => {
         .then(then_1.default);
 };
 exports.getMySavedQ = getMySavedQ;
-const followUserQ = (id, userid) => db_1.default.query(`
+const followUserQ = (id, userid) => db_1.default
+    .query(`
       INSERT INTO relationships (owner, target, type)
       SELECT $1, $2,
             CASE WHEN u.ispublic = true THEN 0 ELSE 1 END
       FROM users u
       ${(0, blocked_1.default)("u.id")}
       where u.id = $2 and b is null and not exists (select 1 from relationships r where r.owner = $1 and r.target = $2)
-    `, [id, userid]);
+      returning type
+    `, [id, userid])
+    .then((r) => { var _a; return (_a = r.rows[0]) === null || _a === void 0 ? void 0 : _a.type; });
 exports.followUserQ = followUserQ;
 const unFollowUserQ = (id, userid) => db_1.default.query(`delete from relationships where owner = $1 and target = $2`, [
     id,
@@ -125,7 +126,7 @@ const unBlockUserQ = (id, userid) => db_1.default.query(`delete from relationshi
 ]);
 exports.unBlockUserQ = unBlockUserQ;
 const getMyProfileDetailQ = (id) => db_1.default
-    .query(`select id, username,ispublic, email, pp, bio, fullname from users
+    .query(`select id, username,ispublic, email, pp, bio, unreadmessagescount::int, nreqcount::int, nreqcount::int,npostlikescount::int , fullname from users
        where id = $1
   `, [id])
     .then((r) => r.rows[0]);
@@ -140,15 +141,22 @@ const getMyNotificationsQ = (id, conv) => {
         values.push(conv.date, conv.id);
     const str = conv ? ` and (n.created, n.id) < ($2, $3) ` : ``;
     const b = (0, blocked_1.default)("u.id");
+    // 2 query !!
     return db_1.default
-        .query(`
+        .query(`    
     select n.*, u.pp, u.username, p.images[1] from notifications n
     left join users u on u.id = n.owner
     left join posts p on p.id = n.pi ${b}
     where n.target = $1 and b is null and n.owner != $1 ${str}
     order by n.created DESC, n.id DESC
-    limit 12
+    limit 12;
   `, values)
-        .then((r) => r.rows);
+        .then((r) => db_1.default
+        .query(`update users set
+           nreqcount = 0,
+           npostlikescount = 0,
+           ncreatedcommentcount= 0
+           where id = $1;`, [id])
+        .then((_) => r.rows));
 };
 exports.getMyNotificationsQ = getMyNotificationsQ;

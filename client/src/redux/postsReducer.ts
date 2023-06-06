@@ -24,6 +24,7 @@ import {
   getProfile,
   getProfilePosts,
 } from "../api/profile.ts";
+import socket from "../api/socket/socket.ts";
 
 const initialState: IPostsSliceInitialState = {
   posts: [],
@@ -494,47 +495,27 @@ export const postsSlice = createSlice({
         const obj = (p: IProfile): IProfile => ({ ...p, postsState });
         state.profiles = profileU(profiles, username, obj);
       });
-    builder
-      .addCase(followUser.pending, (state, action) => {
-        const { profiles, posts } = state;
-        const { userid, a } = action.meta.arg;
-        const ispublic = profiles.find((p) => p.info?.id == userid)?.info
-          ?.ispublic!;
-        if (!ispublic && !a)
-          state.posts = posts.filter((p) => p.owner != userid);
+    builder.addCase(followUser.pending, (state, action) => {
+      const { profiles, posts } = state;
+      const { userid, a } = action.meta.arg;
+      const ispublic = profiles.find((p) => p.info?.id == userid)?.info
+        ?.ispublic!;
+      if (!ispublic && !a) state.posts = posts.filter((p) => p.owner != userid);
 
-        state.profiles = profiles.map((p) => {
-          if (p.info?.id == userid)
-            return {
-              ...p,
-              info: {
-                ...p.info,
-                followercount: p.info.followercount + (a ? 1 : -1),
-                status: a ? (ispublic ? 0 : 1) : null,
-              },
-            };
-          else return p;
-        });
-      })
-      .addCase(followUser.rejected, (state, action) => {
-        const { profiles } = state;
-        const { userid, a } = action.meta.arg;
-        const ispublic = profiles.find((p) => p.info?.id == userid)?.info
-          ?.ispublic!;
-
-        state.profiles = profiles.map((p) => {
-          if (p.info?.id == userid)
-            return {
-              ...p,
-              info: {
-                ...p.info,
-                followercount: p.info.followercount + (a ? -1 : 1),
-                status: !a ? (ispublic ? 0 : 1) : null,
-              },
-            };
-          else return p;
-        });
+      state.profiles = profiles.map((p) => {
+        if (p.info?.id == userid)
+          return {
+            ...p,
+            info: {
+              ...p.info,
+              status: a ? (ispublic ? 0 : 1) : null,
+              followercount:
+                p.info.followercount + (a ? (ispublic ? 1 : 0) : -1),
+            },
+          };
+        else return p;
       });
+    });
 
     builder
       .addCase(blockUser.pending, (state, action) => {

@@ -15,7 +15,7 @@ const PostPopupImages = () => {
             dispach((0, posts_1.getImages)(id));
     }, [cp]);
     const [likeA, setLikeA] = (0, react_2.useState)(false);
-    const { images, cover, more, id, isliked } = cp;
+    const { images, cover, more, id, isliked, owner: postowner } = cp;
     (0, react_2.useEffect)(() => {
         const timeout = setTimeout(() => {
             setLikeA(false);
@@ -28,7 +28,7 @@ const PostPopupImages = () => {
         setLikeA(true);
         if (isliked)
             return;
-        dispach((0, posts_1.createAction)({ a: true, t: "like", postid: id }));
+        dispach((0, posts_1.createAction)({ a: true, t: "like", postid: id, postowner }));
     };
     if (!images)
         return (<div className="cvr" onDoubleClick={dc}>

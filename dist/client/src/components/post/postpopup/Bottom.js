@@ -52,10 +52,10 @@ const Bottom = (0, react_1.forwardRef)(({ comment, setComment, isRepliying }, in
     const dispatch = (0, react_redux_1.useDispatch)();
     const myvalues = (0, react_redux_1.useSelector)(profileReducer_1.selectValues, react_redux_1.shallowEqual);
     const postid = window.location.pathname.split("/")[2];
-    const { comments: { sending }, isliked, id, likecount, issaved, created, } = (0, react_redux_1.useSelector)(postsReducer_1.selectCurrentPost, react_redux_1.shallowEqual);
+    const { comments: { sending }, isliked, id, likecount, issaved, created, owner: postowner, } = (0, react_redux_1.useSelector)(postsReducer_1.selectCurrentPost, react_redux_1.shallowEqual);
     const date = (0, react_1.useMemo)(() => (0, exports.dateCalc)(created), []);
-    const like = () => dispatch((0, posts_1.createAction)({ postid, a: !isliked, t: "like" }));
-    const save = () => dispatch((0, posts_1.createAction)({ postid, a: !issaved, t: "save" }));
+    const like = () => dispatch((0, posts_1.createAction)({ postid, a: !isliked, t: "like", postowner }));
+    const save = () => dispatch((0, posts_1.createAction)({ postid, a: !issaved, t: "save", postowner }));
     const [likesPopup, setLikesPopup] = (0, react_1.useState)(false);
     const quit = () => setLikesPopup(false);
     const viewLikes = () => setLikesPopup(true);

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.server = void 0;
+exports.findS = exports.io = exports.server = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const express_1 = __importDefault(require("express"));
@@ -27,10 +27,12 @@ const port = process.env.PORT || 4000;
 exports.server = app.listen(port, () => __awaiter(void 0, void 0, void 0, function* () { return yield (0, create_1.default)(); }));
 const cookieP_1 = __importDefault(require("./functions/cookieP"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const socketio_1 = require("./socket/socketio");
+const socket_io_1 = require("socket.io");
+exports.io = new socket_io_1.Server(exports.server);
 let sessions = [];
-const findU = (si) => { var _a; return (_a = sessions.find((s) => s.socketid == si)) === null || _a === void 0 ? void 0 : _a.userid; };
-socketio_1.io.use((socket, next) => {
+const findS = (ui) => { var _a; return ((_a = sessions.find((s) => s.userid == ui)) === null || _a === void 0 ? void 0 : _a.socketid) || ""; };
+exports.findS = findS;
+exports.io.use((socket, next) => {
     const cookies = (0, cookieP_1.default)(socket.handshake.headers.cookie || "");
     const token = cookies.token;
     try {
@@ -42,22 +44,21 @@ socketio_1.io.use((socket, next) => {
         next(new Error("Error"));
     }
 });
-socketio_1.io.on("connection", (socket) => {
-    //
-    socket.on("disconnect", () => {
-        console.log("disconnect");
-        sessions = sessions.filter((s) => s.socketid != socket.id);
-    });
-});
 app.use(express_1.default.static(__dirname.replace("\\dist", "") + "\\client\\dist"));
 app.use(express_1.default.json({ limit: "60mb" }));
 app.use((0, cookie_parser_1.default)());
 app.use((0, morgan_1.default)("dev"));
 app.use((0, helmet_1.default)());
-app.get("/sessions", (req, res) => {
+app.use("/api", routes_1.default);
+app.use("/sessions", (req, res) => {
     res.json(sessions);
 });
-app.use("/api", routes_1.default);
+exports.io.on("connection", (socket) => {
+    socket.on("disconnect", () => {
+        console.log("disconnect");
+        sessions = sessions.filter((s) => s.socketid != socket.id);
+    });
+});
 app.get("*", (req, res) => {
     res.sendFile(__dirname.replace("\\dist", "") + "\\client\\dist");
 });

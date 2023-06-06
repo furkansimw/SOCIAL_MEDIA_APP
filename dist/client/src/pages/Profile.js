@@ -45,15 +45,6 @@ const Profile = () => {
             dispatch((0, postsReducer_1.setOffset)({ page: username, offset: (_b = (_a = listRef.current) === null || _a === void 0 ? void 0 : _a.scrollTop) !== null && _b !== void 0 ? _b : 0 }));
         };
     }, []);
-    (0, react_1.useEffect)(() => {
-        var _a, _b;
-        if ((profile === null || profile === void 0 ? void 0 : profile.username) == myusername)
-            return;
-        if (((_a = profile === null || profile === void 0 ? void 0 : profile.info) === null || _a === void 0 ? void 0 : _a.status) == null &&
-            ((_b = profile === null || profile === void 0 ? void 0 : profile.info) === null || _b === void 0 ? void 0 : _b.ispublic) &&
-            posts.length == 0)
-            dispatch((0, profile_1.getProfilePosts)({ username }));
-    }, [profile === null || profile === void 0 ? void 0 : profile.info]);
     if (!profile)
         return <></>;
     const { postsState, loading } = profile;

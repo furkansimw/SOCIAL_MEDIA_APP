@@ -20,9 +20,10 @@ const searchProfileQ = (id: string, u: string) =>
 
 const getMyProfileQ = (id: string) =>
   db
-    .query(`select id, pp, username, reqcount::int from users where id = $1`, [
-      id,
-    ])
+    .query(
+      `select id, pp, username, reqcount::int, unreadmessagescount::int, nreqcount::int, npostlikescount::int, ncreatedcommentcount::int from users where id = $1`,
+      [id]
+    )
     .then((r) => r.rows[0]);
 
 const getProfileQ = (id: string, username: string, guest: boolean) => {
@@ -102,17 +103,20 @@ const getMySavedQ = (id: string, last?: ILast) => {
 };
 
 const followUserQ = (id: string, userid: string) =>
-  db.query(
-    `
+  db
+    .query(
+      `
       INSERT INTO relationships (owner, target, type)
       SELECT $1, $2,
             CASE WHEN u.ispublic = true THEN 0 ELSE 1 END
       FROM users u
       ${blocked("u.id")}
       where u.id = $2 and b is null and not exists (select 1 from relationships r where r.owner = $1 and r.target = $2)
+      returning type
     `,
-    [id, userid]
-  );
+      [id, userid]
+    )
+    .then((r) => r.rows[0]?.type);
 
 const unFollowUserQ = (id: string, userid: string) =>
   db.query(`delete from relationships where owner = $1 and target = $2`, [
@@ -145,7 +149,7 @@ const unBlockUserQ = (id: string, userid: string) =>
 const getMyProfileDetailQ = (id: string) =>
   db
     .query(
-      `select id, username,ispublic, email, pp, bio, fullname from users
+      `select id, username,ispublic, email, pp, bio, unreadmessagescount::int, nreqcount::int, nreqcount::int,npostlikescount::int , fullname from users
        where id = $1
   `,
       [id]
@@ -165,19 +169,31 @@ const getMyNotificationsQ = (id: string, conv?: ILast) => {
   if (conv) values.push(conv.date, conv.id);
   const str = conv ? ` and (n.created, n.id) < ($2, $3) ` : ``;
   const b = blocked("u.id");
+  // 2 query !!
   return db
     .query(
-      `
+      `    
     select n.*, u.pp, u.username, p.images[1] from notifications n
     left join users u on u.id = n.owner
     left join posts p on p.id = n.pi ${b}
     where n.target = $1 and b is null and n.owner != $1 ${str}
     order by n.created DESC, n.id DESC
-    limit 12
+    limit 12;
   `,
       values
     )
-    .then((r) => r.rows);
+    .then((r) =>
+      db
+        .query(
+          `update users set
+           nreqcount = 0,
+           npostlikescount = 0,
+           ncreatedcommentcount= 0
+           where id = $1;`,
+          [id]
+        )
+        .then((_) => r.rows)
+    );
 };
 
 export {

@@ -1,3 +1,4 @@
+import { findS, io } from "..";
 import { destroy } from "../db/cloudinary";
 import conv from "../functions/converter";
 import urlConverter from "../functions/urlConverter";
@@ -63,7 +64,9 @@ const followUser = asyncErrorWrapper(async (req, res) => {
   const { userid } = req.body;
   if (guest || !userid) badRequest();
   if (userid == id) badRequest();
-  await followUserQ(id, userid);
+  const type = await followUserQ(id, userid);
+  if (type != undefined) io.to(findS(userid)).emit("notifications", type);
+
   res.json({ status: "ok" });
 });
 

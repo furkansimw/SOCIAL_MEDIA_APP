@@ -11,6 +11,11 @@ const initialState = {
         username: "",
         pp: null,
         id: "",
+        ncreatedcommentcount: 0,
+        npostlikescount: 0,
+        nreqcount: 0,
+        reqcount: 0,
+        unreadmessagescount: 0,
     },
 };
 exports.profileSlice = (0, toolkit_1.createSlice)({

@@ -97,19 +97,23 @@ const getPostLikesQ = (id: string, postid: string, last?: ILast) => {
     .then((r) => r.rows);
 };
 
-const postLikeQ = (id: string, postid: string) =>
-  db.query(
-    `
+const postLikeQ = (id: string, postid: string, postowner: string) =>
+  db
+    .query(
+      `
       insert into postlikes (owner, post)
-      SELECT $1, $2
-      FROM posts p
+      SELECT $1, $2 FROM posts p
       left join users u on p.owner = u.id
       left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
       ${blocked("p.owner")}
-      where p.id = $2 and (ispublic or f is not null or u.id = $1) and b is null and not exists (select 1 from postlikes pl where pl.owner = $1 and pl.post = $2)
+      where p.id = $2 and (ispublic or f is not null or u.id = $1) and p.owner = $3 and b is null and not exists (select 1 from postlikes pl where pl.owner = $1 and pl.post = $2)
+      returning id
       `,
-    [id, postid]
-  );
+      [id, postid, postowner]
+    )
+    .then((r) => {
+      if (r.rows[0]?.id) return postowner;
+    });
 
 const postUnlikeQ = (id: string, postid: string) =>
   db.query(

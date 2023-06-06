@@ -95,15 +95,21 @@ const getPostLikesQ = (id, postid, last) => {
         .then((r) => r.rows);
 };
 exports.getPostLikesQ = getPostLikesQ;
-const postLikeQ = (id, postid) => db_1.default.query(`
+const postLikeQ = (id, postid, postowner) => db_1.default
+    .query(`
       insert into postlikes (owner, post)
-      SELECT $1, $2
-      FROM posts p
+      SELECT $1, $2 FROM posts p
       left join users u on p.owner = u.id
       left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
       ${(0, blocked_1.default)("p.owner")}
-      where p.id = $2 and (ispublic or f is not null or u.id = $1) and b is null and not exists (select 1 from postlikes pl where pl.owner = $1 and pl.post = $2)
-      `, [id, postid]);
+      where p.id = $2 and (ispublic or f is not null or u.id = $1) and p.owner = $3 and b is null and not exists (select 1 from postlikes pl where pl.owner = $1 and pl.post = $2)
+      returning id
+      `, [id, postid, postowner])
+    .then((r) => {
+    var _a;
+    if ((_a = r.rows[0]) === null || _a === void 0 ? void 0 : _a.id)
+        return postowner;
+});
 exports.postLikeQ = postLikeQ;
 const postUnlikeQ = (id, postid) => db_1.default.query(`
       DELETE FROM postlikes pl

@@ -72,15 +72,16 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
       likecount,
       issaved,
       created,
+      owner: postowner,
     } = useSelector(selectCurrentPost, shallowEqual)!;
 
     const date = useMemo(() => dateCalc(created), []);
 
     const like = () =>
-      dispatch(createAction({ postid, a: !isliked, t: "like" }));
+      dispatch(createAction({ postid, a: !isliked, t: "like", postowner }));
 
     const save = () =>
-      dispatch(createAction({ postid, a: !issaved, t: "save" }));
+      dispatch(createAction({ postid, a: !issaved, t: "save", postowner }));
 
     const [likesPopup, setLikesPopup] = useState(false);
     const quit = () => setLikesPopup(false);

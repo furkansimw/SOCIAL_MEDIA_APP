@@ -13,11 +13,12 @@ const port = process.env.PORT || 4000;
 export const server = app.listen(port, async () => await create());
 import cookieP from "./functions/cookieP";
 import jwt from "jsonwebtoken";
-import { io } from "./socket/socketio";
-
+import { Server } from "socket.io";
+export const io = new Server(server);
 let sessions: { userid: string; socketid: string }[] = [];
 
-const findU = (si: string) => sessions.find((s) => s.socketid == si)?.userid;
+export const findS = (ui: string) =>
+  sessions.find((s) => s.userid == ui)?.socketid || "";
 
 io.use((socket, next) => {
   const cookies = cookieP(socket.handshake.headers.cookie || "");
@@ -34,25 +35,23 @@ io.use((socket, next) => {
   }
 });
 
-io.on("connection", (socket) => {
-  //
-
-  socket.on("disconnect", () => {
-    console.log("disconnect");
-    sessions = sessions.filter((s) => s.socketid != socket.id);
-  });
-});
-
 app.use(express.static(__dirname.replace("\\dist", "") + "\\client\\dist"));
 app.use(express.json({ limit: "60mb" }));
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(helmet());
 
-app.get("/sessions", (req, res) => {
+app.use("/api", apiRoute);
+app.use("/sessions", (req, res) => {
   res.json(sessions);
 });
-app.use("/api", apiRoute);
+
+io.on("connection", (socket) => {
+  socket.on("disconnect", () => {
+    console.log("disconnect");
+    sessions = sessions.filter((s) => s.socketid != socket.id);
+  });
+});
 
 app.get("*", (req, res) => {
   res.sendFile(__dirname.replace("\\dist", "") + "\\client\\dist");

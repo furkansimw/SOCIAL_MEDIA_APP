@@ -47,6 +47,7 @@ const PostItemHome: FC<props> = ({ post }) => {
     likecount,
     created,
     commentcount,
+    owner: postowner,
   } = post;
   const dispatch = useDispatch<AppDispatch>();
   const [likeA, setLikeA] = useState(false);
@@ -64,13 +65,15 @@ const PostItemHome: FC<props> = ({ post }) => {
   const dc = () => {
     setLikeA(true);
     if (isliked) return;
-    dispatch(createAction({ a: true, t: "like", postid }));
+    dispatch(createAction({ a: true, t: "like", postid, postowner }));
   };
-  const like = () => dispatch(createAction({ a: !isliked, postid, t: "like" }));
+  const like = () =>
+    dispatch(createAction({ a: !isliked, postid, t: "like", postowner }));
   const [likesPopup, setLikesPopup] = useState(false);
   const quit = () => setLikesPopup(false);
   const viewLikes = () => setLikesPopup(true);
-  const save = () => dispatch(createAction({ a: !issaved, postid, t: "save" }));
+  const save = () =>
+    dispatch(createAction({ a: !issaved, postid, t: "save", postowner }));
   const date = useMemo(() => dateCalc(created).replace("ago", ""), []);
   const viewComment = () => {
     window.history.replaceState(null, "", `/p/${postid}`);

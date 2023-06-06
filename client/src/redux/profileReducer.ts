@@ -12,6 +12,11 @@ const initialState: IProfileInitialState = {
     username: "",
     pp: null,
     id: "",
+    ncreatedcommentcount: 0,
+    npostlikescount: 0,
+    nreqcount: 0,
+    reqcount: 0,
+    unreadmessagescount: 0,
   },
 };
 
@@ -25,11 +30,7 @@ export const profileSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(getMyProfile.fulfilled, (state, action) => {
-      state.values = action.payload as {
-        username: string;
-        pp: string | null;
-        id: string;
-      };
+      state.values = action.payload as any;
     });
   },
 });

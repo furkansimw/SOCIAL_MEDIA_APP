@@ -1,3 +1,4 @@
+import { findS, io } from "..";
 import db from "../db/db";
 import conv from "../functions/converter";
 import { asyncErrorWrapper, badRequest } from "../mw/error";
@@ -55,8 +56,10 @@ const getPostLikes = asyncErrorWrapper(async (req, res) => {
 const postLike = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   const { postid } = req.params;
+  const { postowner } = req.body;
   if (guest) badRequest();
-  await postLikeQ(id, postid);
+  const powner = await postLikeQ(id, postid, postowner);
+  if (powner) io.to(findS(powner)).emit("notifications", 2);
   res.json({ status: "ok" });
 });
 

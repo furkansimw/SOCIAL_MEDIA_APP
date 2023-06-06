@@ -20,7 +20,7 @@ const LinkConverter_1 = __importDefault(require("./LinkConverter"));
 const Context_1 = __importDefault(require("./Context"));
 const PostItemHome = ({ post }) => {
     const [m, _m] = (0, react_1.useState)(false);
-    const { images, isliked, id: postid, username, pp, content, issaved, likecount, created, commentcount, } = post;
+    const { images, isliked, id: postid, username, pp, content, issaved, likecount, created, commentcount, owner: postowner, } = post;
     const dispatch = (0, react_redux_1.useDispatch)();
     const [likeA, setLikeA] = (0, react_1.useState)(false);
     (0, react_1.useEffect)(() => {
@@ -35,13 +35,13 @@ const PostItemHome = ({ post }) => {
         setLikeA(true);
         if (isliked)
             return;
-        dispatch((0, posts_1.createAction)({ a: true, t: "like", postid }));
+        dispatch((0, posts_1.createAction)({ a: true, t: "like", postid, postowner }));
     };
-    const like = () => dispatch((0, posts_1.createAction)({ a: !isliked, postid, t: "like" }));
+    const like = () => dispatch((0, posts_1.createAction)({ a: !isliked, postid, t: "like", postowner }));
     const [likesPopup, setLikesPopup] = (0, react_1.useState)(false);
     const quit = () => setLikesPopup(false);
     const viewLikes = () => setLikesPopup(true);
-    const save = () => dispatch((0, posts_1.createAction)({ a: !issaved, postid, t: "save" }));
+    const save = () => dispatch((0, posts_1.createAction)({ a: !issaved, postid, t: "save", postowner }));
     const date = (0, react_1.useMemo)(() => (0, Bottom_1.dateCalc)(created).replace("ago", ""), []);
     const viewComment = () => {
         window.history.replaceState(null, "", `/p/${postid}`);

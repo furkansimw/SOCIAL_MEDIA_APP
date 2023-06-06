@@ -18,7 +18,7 @@ const PostPopupImages = () => {
 
   const [likeA, setLikeA] = useState(false);
 
-  const { images, cover, more, id, isliked } = cp;
+  const { images, cover, more, id, isliked, owner: postowner } = cp;
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -33,7 +33,7 @@ const PostPopupImages = () => {
   const dc = () => {
     setLikeA(true);
     if (isliked) return;
-    dispach(createAction({ a: true, t: "like", postid: id }));
+    dispach(createAction({ a: true, t: "like", postid: id, postowner }));
   };
 
   if (!images)

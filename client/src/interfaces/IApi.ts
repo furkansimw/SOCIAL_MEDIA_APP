@@ -23,6 +23,7 @@ export interface ICreateComment {
 
 export interface ICreateAction {
   postid: string;
+  postowner: string;
   a: boolean;
   t: "like" | "save";
 }

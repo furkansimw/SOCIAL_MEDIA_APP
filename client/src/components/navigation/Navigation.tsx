@@ -32,20 +32,40 @@ export const disableRightClick = (e: ME<HTMLImageElement, MouseEvent>) =>
   e.preventDefault();
 
 const Navigation = () => {
-  const [state, setState] = useState(false);
+  const [newNotificationType, setNewNotificationType] = useState<
+    0 | 1 | 2 | 3 | null
+  >(null);
+
   const [notificationsHas, setNotificationsHas] = useState(false);
+
   useEffect(() => {
-    socket.on("notifications", (data) => {
+    socket.on("notifications", (type) => {
       setNotificationsHas(true);
-      setState(data);
+      setNewNotificationType(type);
       setTimeout(() => {
-        setState(data);
+        setNewNotificationType(null);
       }, 3000);
     });
-    console.log({ state, notificationsHas });
   }, []);
 
-  const { username, pp } = useSelector(selectValues, shallowEqual);
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+  const {
+    username,
+    pp,
+    id,
+    ncreatedcommentcount,
+    npostlikescount,
+    nreqcount,
+    reqcount,
+    unreadmessagescount,
+  } = useSelector(selectValues, shallowEqual);
+
+  useEffect(() => {
+    setNotificationsHas(
+      ncreatedcommentcount > 0 || npostlikescount > 0 || nreqcount > 0
+    );
+    setUnreadMessagesCount(unreadmessagescount);
+  }, [ncreatedcommentcount, unreadmessagescount, npostlikescount, nreqcount]);
 
   const [mini, setMini] = useState(false);
   const { pathname } = useLocation();
@@ -194,15 +214,38 @@ const Navigation = () => {
               <Link onClick={closePanel} to={"/direct/inbox"}>
                 <MessagesIcon isactive={uiController("/direct/inbox")} />
                 <p>Messages</p>
+                {unreadMessagesCount > 0 && (
+                  <div className="circle">
+                    <p>{unreadMessagesCount}</p>
+                  </div>
+                )}
               </Link>
             </li>
             <li
               ref={notificationPanelBtnRef}
               className={uiController("notifications") ? "active" : ""}
             >
-              <div onClick={() => setPanel("notifications")}>
+              <div
+                onClick={() => {
+                  setPanel("notifications");
+                  setNotificationsHas(false);
+                }}
+              >
                 <NotificationsIcon isactive={uiController("notifications")} />
                 <p>Notifications</p>
+                {notificationsHas && <div className="circle"></div>}
+                {newNotificationType != undefined && (
+                  <div className={`newnotif`}>
+                    <div
+                      className={`icon ${
+                        ["people", "people", "post", "comment"][
+                          newNotificationType
+                        ]
+                      }`}
+                    ></div>
+                    <p>1</p>
+                  </div>
+                )}
               </div>
             </li>
             <li className={uiController("create") ? "active" : ""}>
@@ -270,7 +313,6 @@ const Container = styled.div`
     padding: 8px 12px 20px;
     display: flex;
     min-width: 48px;
-    overflow: hidden;
     justify-content: space-between;
     flex-direction: column;
     transition: 0.3s ease-in-out width;
@@ -312,11 +354,13 @@ const Container = styled.div`
     ul {
       height: 100%;
       width: 100%;
+
       overflow-y: auto;
       &::-webkit-scrollbar {
         display: none;
       }
       li {
+        position: relative;
         margin: 8px 0px;
         &.active {
           p {
@@ -360,6 +404,77 @@ const Container = styled.div`
             }
           }
         }
+        .newnotif {
+          @keyframes animx {
+            0% {
+              transform: scale(0.8);
+            }
+            50% {
+              transform: scale(1.25);
+            }
+            100% {
+              transform: scale(1);
+            }
+          }
+          animation: animx 0.3s ease-in-out;
+          background-color: #ed4956 !important;
+          padding: 8px;
+          border-radius: 8px;
+          display: flex;
+          width: 50px;
+          position: fixed;
+          left: 60px;
+          z-index: 111;
+
+          .icon {
+            &.people {
+              background-position: -124px -195px !important;
+            }
+            &.post {
+              background-position: -440px -404px !important;
+            }
+            &.comment {
+              background-position: -514px -110px !important;
+            }
+            padding: 0px;
+            background-repeat: no-repeat;
+            background-image: url("/ZWR9C7_JdnP.png");
+            height: 16px !important;
+            min-width: 16px !important;
+            width: 16px !important;
+            min-height: 16px !important;
+            margin-right: 8px;
+          }
+          p {
+            margin: 0px;
+            font-weight: 400;
+            line-height: 16px;
+            font-size: 1rem;
+            color: #fafafa;
+            display: block !important;
+          }
+        }
+        .circle {
+          padding: 0px;
+          position: absolute;
+          bottom: 12px;
+          left: 24px;
+          width: 12px;
+          height: 12px;
+          background-color: #ed4956 !important;
+          display: block !important;
+          border-radius: 100%;
+          p {
+            position: absolute;
+            right: 4px;
+            z-index: 10;
+            bottom: 0px;
+            margin: 0px;
+            font-size: 10px;
+            color: #fff;
+            display: block !important;
+          }
+        }
       }
     }
     .bottom {
@@ -398,7 +513,6 @@ const Container = styled.div`
   }
   &.mini {
     .content {
-      overflow: hidden;
       width: 73px;
       .up {
         h1 {

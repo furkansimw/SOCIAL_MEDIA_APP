@@ -2,15 +2,10 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   server: {
+    hmr: false,
     proxy: {
-      "/api": {
-        target: "http://localhost:4000/api",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
-      },
-      "/socket.io": {
-        target: "http://localhost:4000/socket.io",
-      },
+      "/api": "http://localhost:4000",
+      "/socket.io": "http://localhost:4000",
     },
   },
 });

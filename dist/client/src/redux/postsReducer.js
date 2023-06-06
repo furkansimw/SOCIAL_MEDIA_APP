@@ -276,8 +276,7 @@ exports.postsSlice = (0, toolkit_1.createSlice)({
             const obj = (p) => (Object.assign(Object.assign({}, p), { postsState }));
             state.profiles = (0, functions_ts_1.profileU)(profiles, username, obj);
         });
-        builder
-            .addCase(profile_ts_1.followUser.pending, (state, action) => {
+        builder.addCase(profile_ts_1.followUser.pending, (state, action) => {
             var _a, _b;
             const { profiles, posts } = state;
             const { userid, a } = action.meta.arg;
@@ -287,20 +286,7 @@ exports.postsSlice = (0, toolkit_1.createSlice)({
             state.profiles = profiles.map((p) => {
                 var _a;
                 if (((_a = p.info) === null || _a === void 0 ? void 0 : _a.id) == userid)
-                    return Object.assign(Object.assign({}, p), { info: Object.assign(Object.assign({}, p.info), { followercount: p.info.followercount + (a ? 1 : -1), status: a ? (ispublic ? 0 : 1) : null }) });
-                else
-                    return p;
-            });
-        })
-            .addCase(profile_ts_1.followUser.rejected, (state, action) => {
-            var _a, _b;
-            const { profiles } = state;
-            const { userid, a } = action.meta.arg;
-            const ispublic = (_b = (_a = profiles.find((p) => { var _a; return ((_a = p.info) === null || _a === void 0 ? void 0 : _a.id) == userid; })) === null || _a === void 0 ? void 0 : _a.info) === null || _b === void 0 ? void 0 : _b.ispublic;
-            state.profiles = profiles.map((p) => {
-                var _a;
-                if (((_a = p.info) === null || _a === void 0 ? void 0 : _a.id) == userid)
-                    return Object.assign(Object.assign({}, p), { info: Object.assign(Object.assign({}, p.info), { followercount: p.info.followercount + (a ? -1 : 1), status: !a ? (ispublic ? 0 : 1) : null }) });
+                    return Object.assign(Object.assign({}, p), { info: Object.assign(Object.assign({}, p.info), { status: a ? (ispublic ? 0 : 1) : null, followercount: p.info.followercount + (a ? (ispublic ? 1 : 0) : -1) }) });
                 else
                     return p;
             });

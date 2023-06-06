@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getMyNotifications = exports.updateProfile = exports.getMyProfileDetail = exports.unBlockUser = exports.blockUser = exports.unFollowUser = exports.followUser = exports.getMySaved = exports.getProfilePosts = exports.getProfile = exports.getMyProfile = exports.searchProfile = void 0;
+const __1 = require("..");
 const cloudinary_1 = require("../db/cloudinary");
 const converter_1 = __importDefault(require("../functions/converter"));
 const urlConverter_1 = __importDefault(require("../functions/urlConverter"));
@@ -69,7 +70,9 @@ const followUser = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0
         (0, error_1.badRequest)();
     if (userid == id)
         (0, error_1.badRequest)();
-    yield (0, profileQ_1.followUserQ)(id, userid);
+    const type = yield (0, profileQ_1.followUserQ)(id, userid);
+    if (type != undefined)
+        __1.io.to((0, __1.findS)(userid)).emit("notifications", type);
     res.json({ status: "ok" });
 }));
 exports.followUser = followUser;

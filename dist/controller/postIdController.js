@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deletePost = exports.postUnSave = exports.postSave = exports.postComment = exports.postUnlike = exports.postLike = exports.getPostLikes = exports.getPostImages = exports.getPost = exports.getComments = void 0;
+const __1 = require("..");
 const db_1 = __importDefault(require("../db/db"));
 const converter_1 = __importDefault(require("../functions/converter"));
 const error_1 = require("../mw/error");
@@ -55,9 +56,12 @@ exports.getPostLikes = getPostLikes;
 const postLike = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id, guest } = res.locals;
     const { postid } = req.params;
+    const { postowner } = req.body;
     if (guest)
         (0, error_1.badRequest)();
-    yield (0, postIdQ_1.postLikeQ)(id, postid);
+    const powner = yield (0, postIdQ_1.postLikeQ)(id, postid, postowner);
+    if (powner)
+        __1.io.to((0, __1.findS)(powner)).emit("notifications", 2);
     res.json({ status: "ok" });
 }));
 exports.postLike = postLike;

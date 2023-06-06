@@ -3,7 +3,7 @@ import db from "./db";
 const create = async () => {
   await db.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
   await db.query('CREATE EXTENSION IF NOT EXISTS "pgcrypto";');
-
+  //
   await db.query(`CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     username VARCHAR(36) NOT NULL UNIQUE CHECK (username ~ '^(?!.*[_.]{2})[a-zd._]{5,35}[^_.]$'),
@@ -16,9 +16,16 @@ const create = async () => {
     followerCount numeric not null default 0,
     followingCount numeric not null default 0,
     reqcount numeric not null default 0,
-    postCount numeric not null default 0,
+    postcount numeric not null default 0,
+    
+    nreqcount numeric not null default 0,
+    npostlikescount numeric not null default 0,
+    ncreatedcommentcount numeric not null default 0,
+    
+    unreadmessagescount numeric not null default 0,
+
     created TIMESTAMP DEFAULT NOW()
-  );`);
+    );`);
 
   await db.query(`CREATE TABLE IF NOT EXISTS posts (
     id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
@@ -96,8 +103,8 @@ const create = async () => {
   await db.query(`CREATE TABLE IF NOT EXISTS notifications (
     id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     target UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,
-    url varchar not null,
-    pi uuid,
+    url uuid not null,
+    processid uuid not null,
     type numeric not null default 0,
     owner UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,
     created TIMESTAMP DEFAULT NOW()
@@ -116,28 +123,61 @@ const create = async () => {
   // NOTIFICATIONS TRIGGERS
 
   // TRIGGER 1 posts -> likecount
+
   await db.query(`
-    DROP TRIGGER IF EXISTS update_like_count ON postlikes;
-    CREATE OR REPLACE  FUNCTION update_post_like_count()
-    RETURNS TRIGGER AS $$
-    BEGIN
-      IF (TG_OP = 'INSERT') THEN
-        UPDATE posts
-        SET likecount = likecount + 1
-        WHERE id = NEW.post;
-      ELSIF (TG_OP = 'DELETE') THEN
-        UPDATE posts
-        SET likecount = likecount - 1
-        WHERE id = OLD.post;
-      END IF; 
-      RETURN NULL;
-    END;
+      DROP TRIGGER IF EXISTS update_relationships ON users;
+      CREATE OR REPLACE  FUNCTION update_relationships()
+      RETURNS TRIGGER AS $$
+      BEGIN
+      IF NEW.ispublic = true THEN
+          UPDATE relationships
+          SET type = 0
+          WHERE id = NEW.id AND type = 1;
+      END IF;
+      return null;
+      END;
+    $$ LANGUAGE plpgsql;
+    CREATE TRIGGER update_relationships
+    AFTER UPDATE ON users
+    FOR EACH ROW
+    EXECUTE FUNCTION update_relationships();
+  `);
+
+  await db.query(`
+      DROP TRIGGER IF EXISTS update_like_count ON postlikes;
+      CREATE OR REPLACE FUNCTION update_post_like_count()
+      RETURNS TRIGGER AS $$
+      DECLARE
+        owner_id uuid;
+      BEGIN
+        owner_id := (SELECT owner FROM posts WHERE id = NEW.post);
+        
+        IF (TG_OP = 'INSERT') THEN
+          UPDATE posts
+          SET likecount = likecount + 1
+          WHERE id = NEW.post;
+          
+          INSERT INTO notifications (target, url, type, owner,processid)
+          VALUES (owner_id, owner_id, 2, NEW.owner, NEW.id);
+
+        ELSIF (TG_OP = 'DELETE') THEN
+          UPDATE posts
+          SET likecount = likecount - 1
+          WHERE id = OLD.post;
+
+        DELETE FROM notifications where processid = OLD.id;
+
+        END IF;
+        
+        RETURN NULL;
+      END;
       $$ LANGUAGE plpgsql;
+
       CREATE TRIGGER update_like_count
       AFTER INSERT OR DELETE ON postlikes
       FOR EACH ROW
       EXECUTE FUNCTION update_post_like_count();
-    ;`);
+      `);
 
   // TRIGGER 2 posts -> commentcount
   await db.query(`
@@ -267,8 +307,8 @@ const create = async () => {
         RETURNS TRIGGER AS $$
       BEGIN
         IF (NEW.type = 0) THEN
-          INSERT INTO notifications (target, url, type, owner)
-          VALUES (NEW.target, NEW.owner, NEW.type, NEW.owner);
+          INSERT INTO notifications (target, url, type, owner,processid)
+          VALUES (NEW.target, NEW.owner, NEW.type, NEW.owner, NEW.ID);
           
           UPDATE users
           SET followingcount = followingcount + 1 
@@ -279,15 +319,19 @@ const create = async () => {
           WHERE id = NEW.target;
 
         ELSIF (NEW.type = 1) THEN
-          INSERT INTO notifications (target, url, type, owner)
-          VALUES (NEW.target, NEW.owner, NEW.type, NEW.owner);
+          INSERT INTO notifications (target, url, type, owner, processid)
+          VALUES (NEW.target, NEW.owner, NEW.type, NEW.owner, NEW.id);
           update users set reqcount = reqcount + 1 where id = new.target;
 
         ELSIF (NEW.type = 2) THEN
           IF EXISTS (SELECT 1 FROM relationships WHERE owner = NEW.target AND target = NEW.owner AND type = 0) THEN
-              UPDATE users SET followingcount = followingcount - 1 WHERE owner = NEW.target AND target = NEW.owner;
-              DELETE FROM relationships WHERE owner = NEW.target AND target = NEW.owner; -- Fixed the syntax here
+              UPDATE users SET followingcount = followingcount - 1 WHERE owner = NEW.target;
+              DELETE FROM relationships WHERE owner = NEW.target AND target = NEW.owner;
           END IF;
+          IF EXISTS (SELECT 1 FROM relationships WHERE owner = NEW.owner AND target = NEW.target AND type = 0) THEN
+          UPDATE users SET followingcount = followingcount - 1 WHERE owner = NEW.owner ;
+          END IF;
+
 
         ELSIF (OLD.type = 0) THEN 
           UPDATE users
@@ -298,9 +342,11 @@ const create = async () => {
           SET followercount = followercount - 1
           WHERE id = OLD.target;  
 
-          ELSIF (OLD.type = 1) THEN 
-          update users set reqcount = reqcount - 1 where id = old.target;
+          DELETE FROM notifications where processid = old.id;
 
+        ELSIF (OLD.type = 1) THEN 
+          update users set reqcount = reqcount - 1 where id = old.target;
+          DELETE FROM notifications where processid = old.id;
         END IF;
         
         RETURN NEW;
@@ -309,10 +355,43 @@ const create = async () => {
       $$ LANGUAGE plpgsql;
 
       CREATE TRIGGER relationships_trigger
-      AFTER INSERT OR DELETE ON relationships
+      AFTER INSERT OR DELETE OR UPDATE ON relationships
       FOR EACH ROW
       EXECUTE FUNCTION add_notification_and_update_counts();
   `);
+
+  await db.query(`
+  DROP TRIGGER IF EXISTS update_notification_count ON notifications;
+  CREATE OR REPLACE  FUNCTION update_notification_count()
+  RETURNS TRIGGER AS $$
+      BEGIN
+      IF (TG_OP = 'INSERT') THEN
+        IF (new.type = 0 OR new.type = 1) THEN
+          UPDATE users SET nreqcount = nreqcount + 1;
+        ELSIF (new.type = 2) THEN
+          UPDATE users SET npostlikescount = npostlikescount + 1;
+        ELSIF (new.type = 3) THEN
+          UPDATE users SET ncreatedcommentcount = ncreatedcommentcount + 1;
+        END IF;
+      ELSIF (TG_OP = 'DELETE') THEN
+        IF (old.type = 0 OR old.type = 1) THEN
+          UPDATE users SET nreqcount = nreqcount - 1;
+        ELSIF (old.type = 2) THEN
+          UPDATE users SET npostlikescount = npostlikescount - 1;
+        ELSIF (old.type = 3) THEN
+          UPDATE users SET ncreatedcommentcount = ncreatedcommentcount - 1;
+        END IF;
+      END IF;
+      
+      RETURN NULL;
+    END;
+
+    $$ LANGUAGE plpgsql; 
+    CREATE TRIGGER update_notification_count
+    AFTER INSERT OR DELETE ON notifications
+    FOR EACH ROW
+    EXECUTE FUNCTION update_notification_count();
+  ;`);
 };
 
 export default create;
