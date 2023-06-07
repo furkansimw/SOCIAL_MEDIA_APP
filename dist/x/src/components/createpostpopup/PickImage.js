@@ -1,0 +1,99 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const react_1 = require("react");
+const styled_components_1 = __importDefault(require("styled-components"));
+const PickImage = ({ pick }) => {
+    const [isDragging, setIsDragging] = (0, react_1.useState)(false);
+    const handleDragOver = (event) => {
+        event.preventDefault();
+        setIsDragging(true);
+    };
+    const handleDragLeave = () => setIsDragging(false);
+    const handleDrop = (event) => __awaiter(void 0, void 0, void 0, function* () {
+        event.preventDefault();
+        setIsDragging(false);
+        const files = Array.from(event.dataTransfer.files);
+        if (files.length == 0)
+            return;
+        pick(files);
+    });
+    return (<Container className={isDragging ? "d" : ""}>
+      <PickImageIcon />
+      <p>Drag photos here</p>
+      <button>
+        Select from computer
+        <input onChange={pick} type="file" multiple accept="image/jpeg, image/png, image/jpg" name="images" id="images"/>
+      </button>
+      <input className="t" onChange={pick} type="file" onClick={(e) => e.preventDefault()} multiple accept="image/jpeg, image/png, image/jpg" name="images" id="images" onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}/>
+    </Container>);
+};
+const Container = styled_components_1.default.div `
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  &.d {
+    background-color: #181818;
+    svg {
+      color: #0095f6;
+    }
+  }
+  p {
+    margin: 1rem;
+    font-size: 24px;
+    line-height: 20px;
+    position: relative;
+    z-index: 50;
+  }
+  button {
+    position: relative;
+    padding: 7px 1rem;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #fafafa;
+    font-weight: 600;
+    border: none;
+    outline: none;
+    margin-top: 1rem;
+    background-color: #0095f6;
+    &:hover {
+      background-color: #1877f2;
+    }
+    z-index: 50;
+  }
+  input {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    user-select: none;
+
+    &.t {
+      cursor: default;
+    }
+  }
+`;
+const PickImageIcon = () => (<svg aria-label="Icon to represent media such as images" color="rgb(245, 245, 245)" fill="rgb(245, 245, 245)" height="77" role="img" viewBox="0 0 97.6 77.3" width="96">
+    <title>Icon to represent media such as images</title>
+    <path d="M16.3 24h.3c2.8-.2 4.9-2.6 4.8-5.4-.2-2.8-2.6-4.9-5.4-4.8s-4.9 2.6-4.8 5.4c.1 2.7 2.4 4.8 5.1 4.8zm-2.4-7.2c.5-.6 1.3-1 2.1-1h.2c1.7 0 3.1 1.4 3.1 3.1 0 1.7-1.4 3.1-3.1 3.1-1.7 0-3.1-1.4-3.1-3.1 0-.8.3-1.5.8-2.1z" fill="currentColor"></path>
+    <path d="M84.7 18.4 58 16.9l-.2-3c-.3-5.7-5.2-10.1-11-9.8L12.9 6c-5.7.3-10.1 5.3-9.8 11L5 51v.8c.7 5.2 5.1 9.1 10.3 9.1h.6l21.7-1.2v.6c-.3 5.7 4 10.7 9.8 11l34 2h.6c5.5 0 10.1-4.3 10.4-9.8l2-34c.4-5.8-4-10.7-9.7-11.1zM7.2 10.8C8.7 9.1 10.8 8.1 13 8l34-1.9c4.6-.3 8.6 3.3 8.9 7.9l.2 2.8-5.3-.3c-5.7-.3-10.7 4-11 9.8l-.6 9.5-9.5 10.7c-.2.3-.6.4-1 .5-.4 0-.7-.1-1-.4l-7.8-7c-1.4-1.3-3.5-1.1-4.8.3L7 49 5.2 17c-.2-2.3.6-4.5 2-6.2zm8.7 48c-4.3.2-8.1-2.8-8.8-7.1l9.4-10.5c.2-.3.6-.4 1-.5.4 0 .7.1 1 .4l7.8 7c.7.6 1.6.9 2.5.9.9 0 1.7-.5 2.3-1.1l7.8-8.8-1.1 18.6-21.9 1.1zm76.5-29.5-2 34c-.3 4.6-4.3 8.2-8.9 7.9l-34-2c-4.6-.3-8.2-4.3-7.9-8.9l2-34c.3-4.4 3.9-7.9 8.4-7.9h.5l34 2c4.7.3 8.2 4.3 7.9 8.9z" fill="currentColor"></path>
+    <path d="M78.2 41.6 61.3 30.5c-2.1-1.4-4.9-.8-6.2 1.3-.4.7-.7 1.4-.7 2.2l-1.2 20.1c-.1 2.5 1.7 4.6 4.2 4.8h.3c.7 0 1.4-.2 2-.5l18-9c2.2-1.1 3.1-3.8 2-6-.4-.7-.9-1.3-1.5-1.8zm-1.4 6-18 9c-.4.2-.8.3-1.3.3-.4 0-.9-.2-1.2-.4-.7-.5-1.2-1.3-1.1-2.2l1.2-20.1c.1-.9.6-1.7 1.4-2.1.8-.4 1.7-.3 2.5.1L77 43.3c1.2.8 1.5 2.3.7 3.4-.2.4-.5.7-.9.9z" fill="currentColor"></path>
+  </svg>);
+exports.default = PickImage;

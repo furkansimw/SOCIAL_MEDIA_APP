@@ -91,6 +91,7 @@ const Navigation = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
+    // @ts-ignore
     dispatch(getMyProfile());
   }, []);
 

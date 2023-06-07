@@ -59,7 +59,7 @@ const postLike = asyncErrorWrapper(async (req, res) => {
   const { postowner } = req.body;
   if (guest) badRequest();
   const powner = await postLikeQ(id, postid, postowner);
-  if (powner) io.to(findS(powner)).emit("notifications", 2);
+  if (powner && powner != id) io.to(findS(powner)).emit("notifications", 2);
   res.json({ status: "ok" });
 });
 

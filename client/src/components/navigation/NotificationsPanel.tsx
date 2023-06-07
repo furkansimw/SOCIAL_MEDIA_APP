@@ -2,10 +2,11 @@ import { forwardRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import LoadingBox from "../LoadingBox";
 import NotificationItem from "../NotificationItem";
-import { INotification } from "../../interfaces/ISlices";
+import { IFollowRequest, INotification } from "../../interfaces/ISlices";
 import { notificationsGet } from "../../api/profile";
 import { followRequests } from "../../api/profile";
-import { SmallRightIconFRFor } from "../Icons";
+// import { SmallRightIconFRFor } from "../Icons";
+import FollowRequests from "./FollowRequests";
 
 type Props = {
   isActive: boolean;
@@ -63,7 +64,7 @@ const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
                 </div>
                 <span>
                   <div className="dot"></div>
-                  <SmallRightIconFRFor />
+                  {/* <SmallRightIconFRFor /> */}
                 </span>
               </div>
             )}
@@ -75,6 +76,7 @@ const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
             {loading && <LoadingBox />}
           </ul>
         </div>
+        <FollowRequests isActive={fr} />
       </Container>
     );
   }

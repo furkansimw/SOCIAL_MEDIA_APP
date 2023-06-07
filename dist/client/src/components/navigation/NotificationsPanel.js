@@ -9,7 +9,8 @@ const LoadingBox_1 = __importDefault(require("../LoadingBox"));
 const NotificationItem_1 = __importDefault(require("../NotificationItem"));
 const profile_1 = require("../../api/profile");
 const profile_2 = require("../../api/profile");
-const Icons_1 = require("../Icons");
+// import { SmallRightIconFRFor } from "../Icons";
+const FollowRequests_1 = __importDefault(require("./FollowRequests"));
 const NotificationsPanel = (0, react_1.forwardRef)(({ isActive, closepanel }, ref) => {
     const [lastrequest, setLastRequest] = (0, react_1.useState)(null);
     (0, react_1.useEffect)(() => {
@@ -51,7 +52,7 @@ const NotificationsPanel = (0, react_1.forwardRef)(({ isActive, closepanel }, re
                 </div>
                 <span>
                   <div className="dot"></div>
-                  <Icons_1.SmallRightIconFRFor />
+                  {/* <SmallRightIconFRFor /> */}
                 </span>
               </div>)}
             {notifications.map((n) => {
@@ -60,6 +61,7 @@ const NotificationsPanel = (0, react_1.forwardRef)(({ isActive, closepanel }, re
             {loading && <LoadingBox_1.default />}
           </ul>
         </div>
+        <FollowRequests_1.default isActive={fr}/>
       </Container>);
 });
 const Container = styled_components_1.default.div `

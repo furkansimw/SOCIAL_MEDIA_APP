@@ -60,7 +60,7 @@ const postLike = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, 
     if (guest)
         (0, error_1.badRequest)();
     const powner = yield (0, postIdQ_1.postLikeQ)(id, postid, postowner);
-    if (powner)
+    if (powner && powner != id)
         __1.io.to((0, __1.findS)(powner)).emit("notifications", 2);
     res.json({ status: "ok" });
 }));

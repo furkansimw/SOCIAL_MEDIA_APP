@@ -150,8 +150,7 @@ const getMyNotificationsQ = (id, conv) => {
         .query(`update users set
            npostlikescount = 0,
            ncreatedcommentcount = 0,
-           nfollowcount = 0,
-           nreqcount = 0
+           nfollowcount = 0
            where id = $1;`, [id])
         .then((_) => r.rows));
 };

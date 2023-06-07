@@ -183,8 +183,7 @@ const getMyNotificationsQ = (id: string, conv?: ILast) => {
           `update users set
            npostlikescount = 0,
            ncreatedcommentcount = 0,
-           nfollowcount = 0,
-           nreqcount = 0
+           nfollowcount = 0
            where id = $1;`,
           [id]
         )

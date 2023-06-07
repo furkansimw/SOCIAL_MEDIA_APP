@@ -124,3 +124,9 @@ export interface INotification {
   status: null | 0 | 1;
   targeturl: string; // posturl, username
 }
+
+export interface IFollowRequest {
+  id: string;
+  username: string;
+  pp: string | null;
+}
