@@ -25,6 +25,7 @@ export interface IPostsSliceInitialState {
 
 export interface IPost {
   cover?: string;
+  exists?: boolean;
   isfollowing: boolean;
   images?: string[];
   owner: string;
@@ -105,28 +106,27 @@ export interface ILikes {
   pp: null | string;
   fullname: null | string;
   created: string;
-}
-
-enum INotificationType {
-  "following",
-  "followrequest",
-  "postlike",
-  "createdcomment",
+  ispublic: boolean;
 }
 
 export interface INotification {
   id: string;
-  type: INotificationType;
+  type: 0 | 1 | 2 | 3; // following, followrequest, postlike, createdcomment
   username: string;
   pp: string | null;
   created: string;
   owner: string;
+  ispublic: boolean;
   status: null | 0 | 1;
-  targeturl: string; // posturl, username
+  url: string; // posturl, username
 }
 
 export interface IFollowRequest {
   id: string;
   username: string;
+  fullname: string | null;
   pp: string | null;
+  isallowed?: boolean;
+  status: null | 0 | 1;
+  created: string;
 }

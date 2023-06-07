@@ -10,6 +10,7 @@ import {
 import {
   createAction,
   createComment,
+  deleteComment,
   getComments,
   getImages,
   getPosts,
@@ -24,7 +25,6 @@ import {
   getProfile,
   getProfilePosts,
 } from "../api/profile.ts";
-import socket from "../api/socket/socket.ts";
 
 const initialState: IPostsSliceInitialState = {
   posts: [],
@@ -511,7 +511,17 @@ export const postsSlice = createSlice({
               status: a ? (ispublic ? 0 : 1) : null,
               followercount:
                 p.info.followercount +
-                (a ? (ispublic ? 1 : 0) : ispublic ? -1 : 0),
+                (a
+                  ? ispublic
+                    ? 1
+                    : 0
+                  : ispublic
+                  ? -1
+                  : p.info.status == 1
+                  ? 0
+                  : ispublic
+                  ? -1
+                  : 0),
             },
           };
         else return p;
@@ -570,6 +580,39 @@ export const postsSlice = createSlice({
 
       state.posts = posts.filter((p) => p.id != postid);
     });
+    builder.addCase(deleteComment.pending, (state, action) => {
+      const { commentid, postid, subcommentid } = action.meta.arg;
+      const { posts } = state;
+
+      const comments = (data: IComment[]) => {
+        if (subcommentid) {
+          const a = data.map((xd) => {
+            if (xd.id == commentid) {
+              const data: ISubComment[] = xd.subcomments.data.filter(
+                (_) => _.id != subcommentid
+              );
+              const c: IComment = {
+                ...xd,
+                subcommentcount: xd.subcommentcount - 1,
+                subcomments: { ...xd.subcomments, data },
+              };
+              return c;
+            }
+            return xd;
+          });
+          return a;
+        } else return data.filter((c) => c.id != commentid);
+      };
+
+      state.posts = posts.map((post) => {
+        if (post.id == postid)
+          return {
+            ...post,
+            comments: { ...post.comments, data: comments(post.comments.data) },
+          };
+        return post;
+      });
+    });
   },
 });
 
@@ -594,7 +637,7 @@ export const selectProfile = (state: RootState, username: string) =>
 export const selectBack = (state: RootState) => state.posts.back;
 
 export const selectCurrentPost = (state: RootState) =>
-  state.posts.posts.find((post) => post.id == state.posts.currentId)!;
+  state.posts.posts.find((post) => post.id == state.posts.currentId);
 
 export const selectpostsForBack = (state: RootState) =>
   state.posts.posts.filter((post) => post.page == state.posts.back);

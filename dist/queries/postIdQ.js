@@ -83,7 +83,7 @@ const getPostLikesQ = (id, postid, last) => {
     const b = (0, blocked_1.default)("pou.id, plou.id");
     return db_1.default
         .query(`
-      select pl.*, plou.username, plou.pp, plou.fullname, f.type status from postlikes pl
+      select plou.username, plou.pp, plou.fullname, plou.ispublic, plou.id, f.type status from postlikes pl
       left join users plou on plou.id = pl.owner
       left join posts p on p.id = pl.post
       left join users pou on pou.id = p.owner ${b}

@@ -65,10 +65,16 @@ const Container = styled.ul`
   align-items: center;
   flex-direction: column;
   padding: 1rem;
+  @media screen and (max-width: 600px) {
+    li {
+      min-height: 400px;
+    }
+  }
   li {
     max-width: 500px;
     width: 100%;
     min-width: 0px;
+    min-height: 700px;
     &:first-child {
       border-top: none;
     }

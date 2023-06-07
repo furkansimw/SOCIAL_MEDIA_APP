@@ -287,7 +287,17 @@ exports.postsSlice = (0, toolkit_1.createSlice)({
                 var _a;
                 if (((_a = p.info) === null || _a === void 0 ? void 0 : _a.id) == userid)
                     return Object.assign(Object.assign({}, p), { info: Object.assign(Object.assign({}, p.info), { status: a ? (ispublic ? 0 : 1) : null, followercount: p.info.followercount +
-                                (a ? (ispublic ? 1 : 0) : ispublic ? -1 : 0) }) });
+                                (a
+                                    ? ispublic
+                                        ? 1
+                                        : 0
+                                    : ispublic
+                                        ? -1
+                                        : p.info.status == 1
+                                            ? 0
+                                            : ispublic
+                                                ? -1
+                                                : 0) }) });
                 else
                     return p;
             });
@@ -332,6 +342,30 @@ exports.postsSlice = (0, toolkit_1.createSlice)({
                 return p;
             });
             state.posts = posts.filter((p) => p.id != postid);
+        });
+        builder.addCase(posts_ts_1.deleteComment.pending, (state, action) => {
+            const { commentid, postid, subcommentid } = action.meta.arg;
+            const { posts } = state;
+            const comments = (data) => {
+                if (subcommentid) {
+                    const a = data.map((xd) => {
+                        if (xd.id == commentid) {
+                            const data = xd.subcomments.data.filter((_) => _.id != subcommentid);
+                            const c = Object.assign(Object.assign({}, xd), { subcommentcount: xd.subcommentcount - 1, subcomments: Object.assign(Object.assign({}, xd.subcomments), { data }) });
+                            return c;
+                        }
+                        return xd;
+                    });
+                    return a;
+                }
+                else
+                    return data.filter((c) => c.id != commentid);
+            };
+            state.posts = posts.map((post) => {
+                if (post.id == postid)
+                    return Object.assign(Object.assign({}, post), { comments: Object.assign(Object.assign({}, post.comments), { data: comments(post.comments.data) }) });
+                return post;
+            });
         });
     },
 });

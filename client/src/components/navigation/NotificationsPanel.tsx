@@ -3,10 +3,11 @@ import styled from "styled-components";
 import LoadingBox from "../LoadingBox";
 import NotificationItem from "../NotificationItem";
 import { IFollowRequest, INotification } from "../../interfaces/ISlices";
-import { notificationsGet } from "../../api/profile";
+import { followUserS, notificationsGet } from "../../api/profile";
 import { followRequests } from "../../api/profile";
-// import { SmallRightIconFRFor } from "../Icons";
+import { SmallRightIconFRFor } from "../Icons";
 import FollowRequests from "./FollowRequests";
+import UnfollowPopup from "../../pages/UnfollowPopup";
 
 type Props = {
   isActive: boolean;
@@ -18,6 +19,7 @@ const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
     const [lastrequest, setLastRequest] = useState<any>(null);
 
     useEffect(() => {
+      setNotifications([]);
       setFr(false);
       if (isActive) {
         setLoading(true);
@@ -42,11 +44,51 @@ const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
       const { scrollTop, scrollHeight, clientHeight } = e.target as Element;
       if (!hasmore || loading) return;
       if (scrollTop + 100 + clientHeight >= scrollHeight) {
+        const date = notifications[notifications.length - 1].created,
+          id = notifications[notifications.length - 1].id;
+        notificationsGet({ date, id });
       }
     };
     const [fr, setFr] = useState(false);
 
     const setNotificationViewOpen = () => setFr(true);
+    const [p, _p] = useState<{
+      active: boolean;
+      process: () => void;
+      data: {
+        username: string;
+        pp: string | null;
+      };
+    }>({ active: false, data: { pp: null, username: "" }, process: () => {} });
+    const onc = (
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+      n: INotification
+    ) => {
+      const { id, status, ispublic, username, pp, owner } = n;
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (status == null) {
+        followUserS(owner, true);
+        const newNotifications = notifications.map((_) => {
+          if (_.id == id)
+            return { ..._, status: ispublic ? 0 : 1 } as INotification;
+          return _;
+        });
+        setNotifications(newNotifications);
+      } else {
+        followUserS(owner, false);
+        const process = () => {
+          const newNotifications = notifications.map((_) => {
+            if (_.id == id) return { ..._, status: null } as INotification;
+            return _;
+          });
+          setNotifications(newNotifications);
+        };
+        if (ispublic) process();
+        else _p({ active: true, data: { username, pp }, process });
+      }
+    };
 
     return (
       <Container className={isActive ? "active" : ""} ref={ref}>
@@ -55,6 +97,22 @@ const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
             <h1>Notifications</h1>
           </div>
           <ul onScroll={onScroll}>
+            {p.active && (
+              <UnfollowPopup
+                close={() =>
+                  _p({
+                    active: false,
+                    data: { pp: "", username: "" },
+                    process: p.process,
+                  })
+                }
+                data={{
+                  username: "",
+                  pp: null,
+                }}
+                process={p.process}
+              />
+            )}
             {lastrequest && (
               <div className="lastrequest" onClick={setNotificationViewOpen}>
                 <img src={lastrequest?.pp || "/pp.jpg"} alt="lrpp" />
@@ -64,19 +122,24 @@ const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
                 </div>
                 <span>
                   <div className="dot"></div>
-                  {/* <SmallRightIconFRFor /> */}
+                  <SmallRightIconFRFor />
                 </span>
               </div>
             )}
             {notifications.map((n) => {
               return (
-                <NotificationItem key={n.id} n={n} closepanel={closepanel} />
+                <NotificationItem
+                  key={n.id}
+                  n={n}
+                  closepanel={closepanel}
+                  onc={(e) => onc(e, n)}
+                />
               );
             })}
             {loading && <LoadingBox />}
           </ul>
         </div>
-        <FollowRequests isActive={fr} />
+        <FollowRequests close={closepanel} isActive={fr} />
       </Container>
     );
   }
@@ -96,11 +159,14 @@ const Container = styled.div`
   border-radius: 0px 1rem 1rem 0px;
   z-index: 10;
   overflow: hidden;
+  display: flex;
+
   &.active {
     left: 0px;
   }
   .ctx {
     height: 100%;
+    overflow: hidden;
     overflow: hidden;
     width: 100%;
     transition: 0.3s ease-in-out all;
@@ -118,6 +184,7 @@ const Container = styled.div`
     ul {
       height: calc(100% - 80px);
       overflow-y: auto;
+      overflow-x: hidden;
       &::-webkit-scrollbar {
         width: 8px;
         background-color: #101010;

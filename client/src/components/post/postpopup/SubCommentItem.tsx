@@ -6,9 +6,10 @@ import LinkConverter from "../LinkConverter";
 import LinkQ from "../LinkQ";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../redux/store";
-import { likeComment } from "../../../api/posts";
+import { deleteComment, likeComment } from "../../../api/posts";
 import { dateCalc } from "./Bottom";
 import Likes from "./Likes";
+import Report from "./Report";
 
 const SubCommentItem = ({
   subcomment,
@@ -52,7 +53,7 @@ const SubCommentItem = ({
 
   const viewLikes = () => setLikesPopup(true);
   const quit = () => setLikesPopup(false);
-
+  const [r, _r] = useState(false);
   return (
     <Container onDoubleClick={like} className={lastActive ? "lastactive" : ""}>
       <div className="left">
@@ -92,9 +93,19 @@ const SubCommentItem = ({
           <button className="reply" onClick={reply}>
             Reply
           </button>
-          <button className="morex">
+          <button onClick={() => _r(true)} className="morex">
             <MoreIcon2 />
           </button>
+
+          {r && (
+            <Report
+              process={() =>
+                dispatch(deleteComment({ commentid, postid, subcommentid }))
+              }
+              close={() => _r(false)}
+              data={subcomment}
+            />
+          )}
         </div>
       </div>
     </Container>

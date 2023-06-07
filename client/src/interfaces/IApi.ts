@@ -67,5 +67,11 @@ export interface IE {
 }
 
 export interface IFollowRequests extends ILast {
-  l?: boolean;
+  l: boolean;
+}
+
+export interface IDeleteComment {
+  postid: string;
+  commentid: string;
+  subcommentid?: string;
 }

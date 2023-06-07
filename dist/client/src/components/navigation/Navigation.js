@@ -20,6 +20,16 @@ const Functions_1 = require("./Functions");
 const disableRightClick = (e) => e.preventDefault();
 exports.disableRightClick = disableRightClick;
 const Navigation = () => {
+    (0, react_1.useEffect)(() => {
+        const worker = (e) => {
+            if (e.key == "Escape")
+                setPanel(null);
+        };
+        window.addEventListener("keydown", worker);
+        return () => {
+            window.removeEventListener("keydown", worker);
+        };
+    }, []);
     const [mini, setMini] = (0, react_1.useState)(false);
     const { pathname } = (0, react_router_dom_1.useLocation)();
     const [panel, setPanel] = (0, react_1.useState)(null);

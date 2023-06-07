@@ -23,9 +23,9 @@ import NotFound from "../components/profile/NotFound.tsx";
 import { selectValues } from "../redux/profileReducer.ts";
 import { disableRightClick } from "../components/navigation/Navigation.tsx";
 import Priv from "../components/profile/Priv.tsx";
+import UnfollowPopup from "./UnfollowPopup.tsx";
 
 const Profile = () => {
-  const [s, _s] = useState(false);
   const p = useLocation().pathname.split("/");
   const username = p[1];
   const [block, setBlock] = useState([false, false]);
@@ -64,6 +64,17 @@ const Profile = () => {
       );
     };
   }, []);
+  const [unfollowpopupx, setUnfollowpopupx] = useState<{
+    active: boolean;
+    pp: string | null;
+    username: string;
+  }>({
+    active: false,
+    pp: null,
+    username: "",
+  });
+  const closeUnfollowpostpopup = () =>
+    setUnfollowpopupx({ active: false, username: "", pp: null });
 
   if (!profile) return <></>;
 
@@ -79,11 +90,16 @@ const Profile = () => {
     postcount,
     status,
     id: userid,
+    ispublic,
     fullname,
     bio,
+    pp,
   } = info!;
+
   const statusClick = () => {
-    if (status == 2) setBlock([true, false]);
+    if (status == 1 && !ispublic)
+      setUnfollowpopupx({ active: true, pp, username });
+    else if (status == 2) setBlock([true, false]);
     else {
       if (status == null) dispatch(followUser({ a: true, userid }));
       else dispatch(followUser({ a: false, userid }));
@@ -117,10 +133,18 @@ const Profile = () => {
       dispatch(getProfilePosts({ username, date, id }));
     }
   };
+  const process = () => dispatch(followUser({ a: false, userid }));
 
   return (
     <Container onScroll={onScroll} ref={listRef}>
       <Title title={username} />
+      {unfollowpopupx.active && (
+        <UnfollowPopup
+          data={{ pp, username }}
+          close={closeUnfollowpostpopup}
+          process={process}
+        />
+      )}
       <div className="info">
         <div className="pp">
           <img onContextMenu={disableRightClick} src={info?.pp || "/pp.jpg"} />
@@ -181,7 +205,7 @@ const Profile = () => {
       )}
       <ul>
         {posts.map((post) => (
-          <PostMini post={post} back={username} />
+          <PostMini key={post.id} post={post} back={username} />
         ))}
       </ul>
       {postsState?.loading && <LoadingBox />}
@@ -196,11 +220,8 @@ const Block = ({
   userid,
 }: {
   state: boolean;
-
   close: () => void;
-
   username: string;
-
   userid: string;
 }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -264,17 +285,11 @@ const More = ({
 
 const Bg = styled.div`
   background-color: rgba(0, 0, 0, 0.5);
-
   width: 100vw;
-
   height: 100vh;
-
   position: fixed;
-
   z-index: 100;
-
   left: 0px;
-
   top: 0px;
 `;
 
@@ -337,52 +352,32 @@ const Container = styled.ul`
     }
     .pp {
       min-width: 150px;
-
       width: 100%;
-
       height: 150px;
-
       flex: 1;
-
       display: flex;
-
       justify-content: center;
-
       img {
         width: 150px;
-
         height: 150px;
-
         object-fit: cover;
-
         border-radius: 100%;
       }
     }
     .text {
       height: 100%;
-
       flex: 2;
-
       overflow: hidden;
-
       .up {
         margin-bottom: 20px;
-
         display: flex;
-
         align-items: center;
-
         .username {
           font-size: 20px;
-
           margin-right: 2rem;
-
           max-width: 390px;
-
           overflow: hidden;
-
           text-overflow: ellipsis;
-
           white-space: nowrap;
         }
         button,
@@ -407,22 +402,19 @@ const Container = styled.ul`
               background-color: #0095f6 !important;
               color: #fafafa;
             }
+            &.Blocked {
+              color: #ed4956;
+            }
           }
         }
       }
       .details {
         display: flex;
-
         justify-content: space-between;
-
         max-width: 260px;
-
         width: 100%;
-
         line-height: 18px;
-
         margin-bottom: 1rem;
-
         p {
           cursor: pointer;
         }
@@ -432,36 +424,22 @@ const Container = styled.ul`
       }
       .fullname {
         max-width: 450px;
-
         overflow: hidden;
-
         font-size: 14px;
-
         font-weight: 600;
-
         line-height: 18px;
-
         text-overflow: ellipsis;
-
         margin-bottom: 6px;
       }
       .bio {
         max-width: 450px;
-
         width: 100%;
-
         line-height: 18px;
-
         max-height: 80px;
-
         overflow-y: auto;
-
         font-size: 14px;
-
         white-space: pre-wrap;
-
         word-wrap: break-word;
-
         &:hover::-webkit-scrollbar {
           display: block;
         }
@@ -472,11 +450,8 @@ const Container = styled.ul`
         }
         &::-webkit-scrollbar-thumb {
           width: 8px;
-
           border-radius: 8px;
-
           background-color: #363636;
-
           &:active {
             background-color: #505050;
           }
@@ -490,7 +465,7 @@ const Container = styled.ul`
     width: 400px;
     position: fixed;
     z-index: 120;
-    top: calc(50% - 150px);
+    top: calc(50% - 50px);
     left: calc(50% - 200px);
     @keyframes an {
       0% {
@@ -503,29 +478,19 @@ const Container = styled.ul`
     animation: an 0.1s ease-in-out;
     button {
       display: block;
-
       height: 50px;
-
       display: flex;
-
       justify-content: center;
-
       align-items: center;
-
       font-size: 14px;
-
       color: #fafafa;
-
       width: 100%;
-
       border-top: 1px solid #363636;
-
       &:first-child {
         border-top: none;
       }
       &.b {
         font-weight: 600;
-
         color: #ed4956;
       }
     }

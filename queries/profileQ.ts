@@ -158,64 +158,65 @@ const updateProfileQ = (id: string, values: {}) =>
     [id, ...Object.values(values)]
   );
 
-const getMyNotificationsQ = (id: string, conv?: ILast) => {
+const getMyNotificationsQ = async (id: string, conv?: ILast) => {
   const values: any[] = [id];
   if (conv) values.push(conv.date, conv.id);
   const str = conv ? ` and (n.created, n.id) < ($2, $3) ` : ``;
   const b = blocked("u.id");
-  // 2 query !!
+
+  await db.query(
+    `update users set
+     npostlikescount = 0,
+     ncreatedcommentcount = 0,
+     nfollowcount = 0
+     where id = $1;`,
+    [id]
+  );
+
   return db
     .query(
       `    
-    select n.*, n.type::int, u.pp, u.username, p.images[1], r.type status from notifications n
+    select n.*, n.type::int, u.pp, u.username,u.ispublic, p.images[1], r.type status from notifications n
     left join users u on u.id = n.owner
     left join posts p on p.id = n.processid ${b}
-    left join relationships r on r.owner = n.owner
+    left join relationships r on r.owner = $1 and r.target = n.owner
     where n.target = $1 and b is null and n.owner != $1 ${str}
     order by n.created DESC, n.id DESC
     limit 12;
   `,
       values
     )
-    .then((r) =>
-      db
-        .query(
-          `update users set
-           npostlikescount = 0,
-           ncreatedcommentcount = 0,
-           nfollowcount = 0
-           where id = $1;`,
-          [id]
-        )
-        .then((_) => r.rows)
-    );
+    .then((r) => r.rows);
 };
 
-const getRequestsQ = (id: string, last?: ILast, l?: boolean) => {
+const getRequestsQ = async (id: string, last?: ILast, l?: any) => {
   const values: any[] = [id];
   if (last) values.push(last.date, last.id);
-  if (l) values.push(l);
   const str = last ? `and (r.created, r.id) < ($2, $3)` : ``;
+
+  if (l == "false")
+    await db.query(`update users set nreqcount = 0 where id = $1`, [id]);
   return db
     .query(
       `
-    select r.*, u.username, u.pp from relationships r
+    select r.*, u.username, u.pp, u.fullname, u.ispublic, rom.type status from relationships r
     left join users u on u.id = r.owner
+    left join relationships rom on rom.owner = $1 and rom.target = r.owner
     where r.target = $1 ${str} and r.type = 1
     order by r.created desc, r.id desc  
     limit ${l ? 1 : 12}
   `,
       values
     )
-    .then((r) => r.rows);
+    .then(async (r) => r.rows);
 };
 const allowRequestQ = (id: string, ri: string) =>
   db
-    .query(
-      `update relationships set type = 0 where id = $2 and target = $1 returning owner`,
-      [id, ri]
-    )
-    .then((r) => r.rows[0]?.owner);
+    .query(`update relationships set type = 0 where id = $2 and target = $1 `, [
+      id,
+      ri,
+    ])
+    .then((r) => r.rows[0]?.target);
 const denyRequestQ = (id: string, ri: string) =>
   db.query(`delete from relationships where id = $2 and target = $1`, [id, ri]);
 

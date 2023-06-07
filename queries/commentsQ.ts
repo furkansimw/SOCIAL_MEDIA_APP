@@ -139,7 +139,7 @@ const createSubCommentQ = (id: string, commentid: string, content: string) =>
 `,
       [id, commentid, content]
     )
-    .then((r) => r.rows[0].id);
+    .then((r) => r.rows[0]?.id);
 
 export {
   deleteCommentQ,

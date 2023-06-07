@@ -12,6 +12,9 @@ import { useSelector } from "react-redux";
 import { selectValues } from "../../../redux/profileReducer";
 import { shallowEqual } from "react-redux";
 import LinkQ from "../LinkQ";
+import { followUserS } from "../../../api/profile";
+import UnfollowPopup from "../../../pages/UnfollowPopup";
+import { disableRightClick } from "../../navigation/Navigation";
 
 type Props = {
   quit: () => void;
@@ -80,9 +83,49 @@ const Likes: FC<Props> = ({ quit, postid, commentid, subcommentid, type }) => {
   };
   const con = (s: null | number) => {
     if (s == null) return `Follow`;
+    if (s == 0) return `Following`;
+    if (s == 1) return `Requested`;
+    return ``;
   };
 
   const { username: myusername } = useSelector(selectValues, shallowEqual);
+
+  const [p, _p] = useState<{
+    active: boolean;
+    process: () => void;
+    data: {
+      username: string;
+      pp: string | null;
+    };
+  }>({
+    active: false,
+    process: () => {},
+    data: { pp: null, username: "" },
+  });
+
+  const tap = (p: ILikes) => {
+    const { status, ispublic, username, id, pp } = p;
+    if (status == null) {
+      // follow
+      followUserS(id, true);
+      const newLikes = likes.map((l) => {
+        if (l.username == username) return { ...l, status: ispublic ? 0 : 1 };
+        return l;
+      });
+      setLikes(newLikes);
+    } else {
+      followUserS(id, false);
+      const process = () => {
+        const newLikes = likes.map((l) => {
+          if (l.username == username) return { ...l, status: ispublic ? 0 : 1 };
+          return l;
+        });
+        setLikes(newLikes);
+      };
+      if (ispublic) process();
+      else _p({ active: true, data: { username, pp }, process });
+    }
+  };
 
   return (
     <>
@@ -94,12 +137,23 @@ const Likes: FC<Props> = ({ quit, postid, commentid, subcommentid, type }) => {
             <CloseIcon />
           </button>
         </div>
+        {p.active && (
+          <UnfollowPopup
+            data={p.data}
+            close={() => _p({ ...p, active: false })}
+            process={p.process}
+          />
+        )}
         <ul onScroll={onScroll} className="contentx">
           {loading && <LoadingBox />}
           {likes.map((obj) => (
             <li>
               <LinkQ className="pp" to={`/${obj.username}`}>
-                <img src={obj.pp || "/pp.jpg"} alt="pp" />
+                <img
+                  onContextMenu={disableRightClick}
+                  src={obj.pp || "/pp.jpg"}
+                  alt="pp"
+                />
               </LinkQ>
               <div className="text">
                 <LinkQ to={`/${obj.username}`}>
@@ -107,7 +161,11 @@ const Likes: FC<Props> = ({ quit, postid, commentid, subcommentid, type }) => {
                 </LinkQ>
                 {obj.fullname && <p className="fullname">{obj.fullname}</p>}
               </div>
-              {obj.username != myusername && <button>{con(obj.status)}</button>}
+              {obj.username != myusername && (
+                <button className={con(obj.status)} onClick={() => tap(obj)}>
+                  {con(obj.status)}
+                </button>
+              )}
             </li>
           ))}
         </ul>
@@ -147,7 +205,6 @@ const Container = styled.div`
   left: calc(50% - 200px);
   top: calc(50% - 200px);
   border-radius: 1rem;
-  overflow: hidden;
   .headerxxx {
     height: 42px;
     display: flex;
@@ -216,12 +273,16 @@ const Container = styled.div`
         margin-left: 12px;
         padding: 7px 1rem;
         border-radius: 8px;
-        background-color: #0095f6;
+        background-color: #fafafa;
+        color: #000;
         font-size: 14px;
         font-weight: 600;
-        color: #fafafa;
         &:hover {
           opacity: 0.8;
+        }
+        &.Follow {
+          background-color: #0095f6;
+          color: #fafafa;
         }
       }
     }

@@ -15,6 +15,7 @@ const react_redux_1 = require("react-redux");
 const Bottom_1 = require("./Bottom");
 const styled_components_1 = __importDefault(require("styled-components"));
 const Likes_1 = __importDefault(require("./Likes"));
+const Report_1 = __importDefault(require("./Report"));
 const CommentItem = ({ comment, reply }) => {
     const dispatch = (0, react_redux_1.useDispatch)();
     const { id: commentid, username, pp, likecount, subcommentcount, content, isliked, created, subcomments: { data, hasmore, t, loading }, } = comment;
@@ -39,6 +40,7 @@ const CommentItem = ({ comment, reply }) => {
     const [likesPopup, setLikesPopup] = (0, react_1.useState)(false);
     const viewLikes = () => setLikesPopup(true);
     const quit = () => setLikesPopup(false);
+    const [r, _r] = (0, react_1.useState)(false);
     return (<Container className={lastActive ? "lastactive" : ""}>
       <div className="left" onDoubleClick={like}>
         <div className="pp">
@@ -68,9 +70,10 @@ const CommentItem = ({ comment, reply }) => {
           <button className="reply" onClick={replyHandle}>
             Reply
           </button>
-          <button className="more">
+          <button className="more" onClick={() => _r(true)}>
             <Icons_1.MoreIcon2 />
           </button>
+          {r && (<Report_1.default process={() => dispatch((0, posts_1.deleteComment)({ commentid, postid }))} close={() => _r(false)} data={comment}/>)}
         </div>
         {subcommentcount > 0 && (<ul className="view-replies">
             <div className="up">

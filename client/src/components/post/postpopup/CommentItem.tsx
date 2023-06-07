@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { getComments, likeComment } from "../../../api/posts";
+import { deleteComment, getComments, likeComment } from "../../../api/posts";
 import { toggleSubCommetsT } from "../../../redux/postsReducer";
 import { LikeIconComment, MoreIcon2 } from "../../Icons";
 import LoadingBox from "../../LoadingBox";
@@ -12,6 +12,7 @@ import { AppDispatch } from "../../../redux/store";
 import { dateCalc } from "./Bottom";
 import styled from "styled-components";
 import Likes from "./Likes";
+import Report from "./Report";
 
 type Props = {
   comment: IComment;
@@ -60,6 +61,7 @@ const CommentItem = ({ comment, reply }: Props) => {
   const [likesPopup, setLikesPopup] = useState(false);
   const viewLikes = () => setLikesPopup(true);
   const quit = () => setLikesPopup(false);
+  const [r, _r] = useState(false);
 
   return (
     <Container className={lastActive ? "lastactive" : ""}>
@@ -100,9 +102,16 @@ const CommentItem = ({ comment, reply }: Props) => {
           <button className="reply" onClick={replyHandle}>
             Reply
           </button>
-          <button className="more">
+          <button className="more" onClick={() => _r(true)}>
             <MoreIcon2 />
           </button>
+          {r && (
+            <Report
+              process={() => dispatch(deleteComment({ commentid, postid }))}
+              close={() => _r(false)}
+              data={comment}
+            />
+          )}
         </div>
         {subcommentcount > 0 && (
           <ul className="view-replies">

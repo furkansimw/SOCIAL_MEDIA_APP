@@ -55,3 +55,9 @@ export const notificationsGet = ({ date, id }: ILast) =>
 
 export const followRequests = ({ date, id, l }: IFollowRequests) =>
   req(`/profile/requests?date=${date}&id=${id}&l=${l}`).then((r: any) => r);
+
+export const followUserS = (userid: string, a: boolean) =>
+  req(`/profile/follow/`, a ? "POST" : "DELETE", { userid });
+
+export const requestAction = (ri: string, a: boolean) =>
+  req(`/profile/requests?ri=${ri}`, a ? "POST" : "DELETE");

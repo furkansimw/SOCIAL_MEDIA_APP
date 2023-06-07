@@ -18,8 +18,8 @@ const NotFound_tsx_1 = __importDefault(require("../components/profile/NotFound.t
 const profileReducer_ts_1 = require("../redux/profileReducer.ts");
 const Navigation_tsx_1 = require("../components/navigation/Navigation.tsx");
 const Priv_tsx_1 = __importDefault(require("../components/profile/Priv.tsx"));
+const UnfollowPopup_tsx_1 = __importDefault(require("./UnfollowPopup.tsx"));
 const Profile = () => {
-    const [s, _s] = (0, react_1.useState)(false);
     const p = (0, react_router_dom_1.useLocation)().pathname.split("/");
     const username = p[1];
     const [block, setBlock] = (0, react_1.useState)([false, false]);
@@ -46,6 +46,12 @@ const Profile = () => {
             dispatch((0, postsReducer_1.setOffset)({ page: username, offset: (_b = (_a = listRef.current) === null || _a === void 0 ? void 0 : _a.scrollTop) !== null && _b !== void 0 ? _b : 0 }));
         };
     }, []);
+    const [unfollowpopupx, setUnfollowpopupx] = (0, react_1.useState)({
+        active: false,
+        pp: null,
+        username: "",
+    });
+    const closeUnfollowpostpopup = () => setUnfollowpopupx({ active: false, username: "", pp: null });
     if (!profile)
         return <></>;
     const { postsState, loading } = profile;
@@ -54,9 +60,11 @@ const Profile = () => {
     if (loading || !postsState || !profile.info)
         return <></>;
     const { info } = profile;
-    const { followercount, followingcount, postcount, status, id: userid, fullname, bio, } = info;
+    const { followercount, followingcount, postcount, status, id: userid, ispublic, fullname, bio, pp, } = info;
     const statusClick = () => {
-        if (status == 2)
+        if (status == 1 && !ispublic)
+            setUnfollowpopupx({ active: true, pp, username });
+        else if (status == 2)
             setBlock([true, false]);
         else {
             if (status == null)
@@ -93,8 +101,10 @@ const Profile = () => {
             dispatch((0, profile_1.getProfilePosts)({ username, date, id }));
         }
     };
+    const process = () => dispatch((0, profile_1.followUser)({ a: false, userid }));
     return (<Container onScroll={onScroll} ref={listRef}>
       <Title_1.default title={username}/>
+      {unfollowpopupx.active && (<UnfollowPopup_tsx_1.default data={{ pp, username }} close={closeUnfollowpostpopup} process={process}/>)}
       <div className="info">
         <div className="pp">
           <img onContextMenu={Navigation_tsx_1.disableRightClick} src={(info === null || info === void 0 ? void 0 : info.pp) || "/pp.jpg"}/>
@@ -135,7 +145,7 @@ const Profile = () => {
       {block[0] && (<Block close={() => setBlock([false, false])} username={username} state={block[1]} userid={userid}/>)}
       {more && (<More close={() => setMore(false)} procces={() => setBlock([true, true])}/>)}
       <ul>
-        {posts.map((post) => (<PostMini_1.default post={post} back={username}/>))}
+        {posts.map((post) => (<PostMini_1.default key={post.id} post={post} back={username}/>))}
       </ul>
       {(postsState === null || postsState === void 0 ? void 0 : postsState.loading) && <LoadingBox_1.default />}
     </Container>);
@@ -184,17 +194,11 @@ const More = ({ close, procces, }) => {
 };
 const Bg = styled_components_1.default.div `
   background-color: rgba(0, 0, 0, 0.5);
-
   width: 100vw;
-
   height: 100vh;
-
   position: fixed;
-
   z-index: 100;
-
   left: 0px;
-
   top: 0px;
 `;
 const Container = styled_components_1.default.ul `
@@ -256,52 +260,32 @@ const Container = styled_components_1.default.ul `
     }
     .pp {
       min-width: 150px;
-
       width: 100%;
-
       height: 150px;
-
       flex: 1;
-
       display: flex;
-
       justify-content: center;
-
       img {
         width: 150px;
-
         height: 150px;
-
         object-fit: cover;
-
         border-radius: 100%;
       }
     }
     .text {
       height: 100%;
-
       flex: 2;
-
       overflow: hidden;
-
       .up {
         margin-bottom: 20px;
-
         display: flex;
-
         align-items: center;
-
         .username {
           font-size: 20px;
-
           margin-right: 2rem;
-
           max-width: 390px;
-
           overflow: hidden;
-
           text-overflow: ellipsis;
-
           white-space: nowrap;
         }
         button,
@@ -326,22 +310,19 @@ const Container = styled_components_1.default.ul `
               background-color: #0095f6 !important;
               color: #fafafa;
             }
+            &.Blocked {
+              color: #ed4956;
+            }
           }
         }
       }
       .details {
         display: flex;
-
         justify-content: space-between;
-
         max-width: 260px;
-
         width: 100%;
-
         line-height: 18px;
-
         margin-bottom: 1rem;
-
         p {
           cursor: pointer;
         }
@@ -351,36 +332,22 @@ const Container = styled_components_1.default.ul `
       }
       .fullname {
         max-width: 450px;
-
         overflow: hidden;
-
         font-size: 14px;
-
         font-weight: 600;
-
         line-height: 18px;
-
         text-overflow: ellipsis;
-
         margin-bottom: 6px;
       }
       .bio {
         max-width: 450px;
-
         width: 100%;
-
         line-height: 18px;
-
         max-height: 80px;
-
         overflow-y: auto;
-
         font-size: 14px;
-
         white-space: pre-wrap;
-
         word-wrap: break-word;
-
         &:hover::-webkit-scrollbar {
           display: block;
         }
@@ -391,11 +358,8 @@ const Container = styled_components_1.default.ul `
         }
         &::-webkit-scrollbar-thumb {
           width: 8px;
-
           border-radius: 8px;
-
           background-color: #363636;
-
           &:active {
             background-color: #505050;
           }
@@ -409,7 +373,7 @@ const Container = styled_components_1.default.ul `
     width: 400px;
     position: fixed;
     z-index: 120;
-    top: calc(50% - 150px);
+    top: calc(50% - 50px);
     left: calc(50% - 200px);
     @keyframes an {
       0% {
@@ -422,29 +386,19 @@ const Container = styled_components_1.default.ul `
     animation: an 0.1s ease-in-out;
     button {
       display: block;
-
       height: 50px;
-
       display: flex;
-
       justify-content: center;
-
       align-items: center;
-
       font-size: 14px;
-
       color: #fafafa;
-
       width: 100%;
-
       border-top: 1px solid #363636;
-
       &:first-child {
         border-top: none;
       }
       &.b {
         font-weight: 600;
-
         color: #ed4956;
       }
     }

@@ -9,11 +9,13 @@ const LoadingBox_1 = __importDefault(require("../LoadingBox"));
 const NotificationItem_1 = __importDefault(require("../NotificationItem"));
 const profile_1 = require("../../api/profile");
 const profile_2 = require("../../api/profile");
-// import { SmallRightIconFRFor } from "../Icons";
+const Icons_1 = require("../Icons");
 const FollowRequests_1 = __importDefault(require("./FollowRequests"));
+const UnfollowPopup_1 = __importDefault(require("../../pages/UnfollowPopup"));
 const NotificationsPanel = (0, react_1.forwardRef)(({ isActive, closepanel }, ref) => {
     const [lastrequest, setLastRequest] = (0, react_1.useState)(null);
     (0, react_1.useEffect)(() => {
+        setNotifications([]);
         setFr(false);
         if (isActive) {
             setLoading(true);
@@ -34,16 +36,56 @@ const NotificationsPanel = (0, react_1.forwardRef)(({ isActive, closepanel }, re
         if (!hasmore || loading)
             return;
         if (scrollTop + 100 + clientHeight >= scrollHeight) {
+            const date = notifications[notifications.length - 1].created, id = notifications[notifications.length - 1].id;
+            (0, profile_1.notificationsGet)({ date, id });
         }
     };
     const [fr, setFr] = (0, react_1.useState)(false);
     const setNotificationViewOpen = () => setFr(true);
+    const [p, _p] = (0, react_1.useState)({ active: false, data: { pp: null, username: "" }, process: () => { } });
+    const onc = (e, n) => {
+        const { id, status, ispublic, username, pp, owner } = n;
+        e.preventDefault();
+        e.stopPropagation();
+        if (status == null) {
+            (0, profile_1.followUserS)(owner, true);
+            const newNotifications = notifications.map((_) => {
+                if (_.id == id)
+                    return Object.assign(Object.assign({}, _), { status: ispublic ? 0 : 1 });
+                return _;
+            });
+            setNotifications(newNotifications);
+        }
+        else {
+            (0, profile_1.followUserS)(owner, false);
+            const process = () => {
+                const newNotifications = notifications.map((_) => {
+                    if (_.id == id)
+                        return Object.assign(Object.assign({}, _), { status: null });
+                    return _;
+                });
+                setNotifications(newNotifications);
+            };
+            if (ispublic)
+                process();
+            else
+                _p({ active: true, data: { username, pp }, process });
+        }
+    };
     return (<Container className={isActive ? "active" : ""} ref={ref}>
         <div className={`ctx ${fr ? "fr" : ""}`}>
           <div className="upside">
             <h1>Notifications</h1>
           </div>
           <ul onScroll={onScroll}>
+            {p.active && (<UnfollowPopup_1.default close={() => _p({
+                active: false,
+                data: { pp: "", username: "" },
+                process: p.process,
+            })} data={{
+                username: "",
+                pp: null,
+            }} process={p.process}/>)}
             {lastrequest && (<div className="lastrequest" onClick={setNotificationViewOpen}>
                 <img src={(lastrequest === null || lastrequest === void 0 ? void 0 : lastrequest.pp) || "/pp.jpg"} alt="lrpp"/>
                 <div className="text">
@@ -52,16 +94,16 @@ const NotificationsPanel = (0, react_1.forwardRef)(({ isActive, closepanel }, re
                 </div>
                 <span>
                   <div className="dot"></div>
-                  {/* <SmallRightIconFRFor /> */}
+                  <Icons_1.SmallRightIconFRFor />
                 </span>
               </div>)}
             {notifications.map((n) => {
-            return (<NotificationItem_1.default key={n.id} n={n} closepanel={closepanel}/>);
+            return (<NotificationItem_1.default key={n.id} n={n} closepanel={closepanel} onc={(e) => onc(e, n)}/>);
         })}
             {loading && <LoadingBox_1.default />}
           </ul>
         </div>
-        <FollowRequests_1.default isActive={fr}/>
+        <FollowRequests_1.default close={closepanel} isActive={fr}/>
       </Container>);
 });
 const Container = styled_components_1.default.div `
@@ -78,11 +120,14 @@ const Container = styled_components_1.default.div `
   border-radius: 0px 1rem 1rem 0px;
   z-index: 10;
   overflow: hidden;
+  display: flex;
+
   &.active {
     left: 0px;
   }
   .ctx {
     height: 100%;
+    overflow: hidden;
     overflow: hidden;
     width: 100%;
     transition: 0.3s ease-in-out all;
@@ -100,6 +145,7 @@ const Container = styled_components_1.default.div `
     ul {
       height: calc(100% - 80px);
       overflow-y: auto;
+      overflow-x: hidden;
       &::-webkit-scrollbar {
         width: 8px;
         background-color: #101010;

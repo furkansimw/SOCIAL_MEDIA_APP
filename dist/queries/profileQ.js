@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -129,53 +138,55 @@ const updateProfileQ = (id, values) => db_1.default.query(`update users set ${Ob
     .map(([key], index) => `${key} = $${index + 2}`)
     .join(", ")} where id = $1`, [id, ...Object.values(values)]);
 exports.updateProfileQ = updateProfileQ;
-const getMyNotificationsQ = (id, conv) => {
+const getMyNotificationsQ = (id, conv) => __awaiter(void 0, void 0, void 0, function* () {
     const values = [id];
     if (conv)
         values.push(conv.date, conv.id);
     const str = conv ? ` and (n.created, n.id) < ($2, $3) ` : ``;
     const b = (0, blocked_1.default)("u.id");
-    // 2 query !!
+    yield db_1.default.query(`update users set
+     npostlikescount = 0,
+     ncreatedcommentcount = 0,
+     nfollowcount = 0
+     where id = $1;`, [id]);
     return db_1.default
         .query(`    
-    select n.*, n.type::int, u.pp, u.username, p.images[1], r.type status from notifications n
+    select n.*, n.type::int, u.pp, u.username,u.ispublic, p.images[1], r.type status from notifications n
     left join users u on u.id = n.owner
     left join posts p on p.id = n.processid ${b}
-    left join relationships r on r.owner = n.owner
+    left join relationships r on r.owner = $1 and r.target = n.owner
     where n.target = $1 and b is null and n.owner != $1 ${str}
     order by n.created DESC, n.id DESC
     limit 12;
   `, values)
-        .then((r) => db_1.default
-        .query(`update users set
-           npostlikescount = 0,
-           ncreatedcommentcount = 0,
-           nfollowcount = 0
-           where id = $1;`, [id])
-        .then((_) => r.rows));
-};
+        .then((r) => r.rows);
+});
 exports.getMyNotificationsQ = getMyNotificationsQ;
-const getRequestsQ = (id, last, l) => {
+const getRequestsQ = (id, last, l) => __awaiter(void 0, void 0, void 0, function* () {
     const values = [id];
     if (last)
         values.push(last.date, last.id);
-    if (l)
-        values.push(l);
     const str = last ? `and (r.created, r.id) < ($2, $3)` : ``;
+    if (l == "false")
+        yield db_1.default.query(`update users set nreqcount = 0 where id = $1`, [id]);
     return db_1.default
         .query(`
-    select r.*, u.username, u.pp from relationships r
+    select r.*, u.username, u.pp, u.fullname, u.ispublic, rom.type status from relationships r
     left join users u on u.id = r.owner
+    left join relationships rom on rom.owner = $1 and rom.target = r.owner
     where r.target = $1 ${str} and r.type = 1
     order by r.created desc, r.id desc  
     limit ${l ? 1 : 12}
   `, values)
-        .then((r) => r.rows);
-};
+        .then((r) => __awaiter(void 0, void 0, void 0, function* () { return r.rows; }));
+});
 exports.getRequestsQ = getRequestsQ;
 const allowRequestQ = (id, ri) => db_1.default
-    .query(`update relationships set type = 0 where id = $2 and target = $1 returning owner`, [id, ri])
-    .then((r) => { var _a; return (_a = r.rows[0]) === null || _a === void 0 ? void 0 : _a.owner; });
+    .query(`update relationships set type = 0 where id = $2 and target = $1 `, [
+    id,
+    ri,
+])
+    .then((r) => { var _a; return (_a = r.rows[0]) === null || _a === void 0 ? void 0 : _a.target; });
 exports.allowRequestQ = allowRequestQ;
 const denyRequestQ = (id, ri) => db_1.default.query(`delete from relationships where id = $2 and target = $1`, [id, ri]);
 exports.denyRequestQ = denyRequestQ;

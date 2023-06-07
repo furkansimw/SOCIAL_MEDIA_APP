@@ -35,6 +35,9 @@ const react_redux_1 = require("react-redux");
 const profileReducer_1 = require("../../../redux/profileReducer");
 const react_redux_2 = require("react-redux");
 const LinkQ_1 = __importDefault(require("../LinkQ"));
+const profile_1 = require("../../../api/profile");
+const UnfollowPopup_1 = __importDefault(require("../../../pages/UnfollowPopup"));
+const Navigation_1 = require("../../navigation/Navigation");
 const Likes = ({ quit, postid, commentid, subcommentid, type }) => {
     const [loading, setLoading] = (0, react_1.useState)(true);
     const [hasmore, setHasmore] = (0, react_1.useState)(true);
@@ -95,8 +98,46 @@ const Likes = ({ quit, postid, commentid, subcommentid, type }) => {
     const con = (s) => {
         if (s == null)
             return `Follow`;
+        if (s == 0)
+            return `Following`;
+        if (s == 1)
+            return `Requested`;
+        return ``;
     };
     const { username: myusername } = (0, react_redux_1.useSelector)(profileReducer_1.selectValues, react_redux_2.shallowEqual);
+    const [p, _p] = (0, react_1.useState)({
+        active: false,
+        process: () => { },
+        data: { pp: null, username: "" },
+    });
+    const tap = (p) => {
+        const { status, ispublic, username, id, pp } = p;
+        if (status == null) {
+            // follow
+            (0, profile_1.followUserS)(id, true);
+            const newLikes = likes.map((l) => {
+                if (l.username == username)
+                    return Object.assign(Object.assign({}, l), { status: ispublic ? 0 : 1 });
+                return l;
+            });
+            setLikes(newLikes);
+        }
+        else {
+            (0, profile_1.followUserS)(id, false);
+            const process = () => {
+                const newLikes = likes.map((l) => {
+                    if (l.username == username)
+                        return Object.assign(Object.assign({}, l), { status: ispublic ? 0 : 1 });
+                    return l;
+                });
+                setLikes(newLikes);
+            };
+            if (ispublic)
+                process();
+            else
+                _p({ active: true, data: { username, pp }, process });
+        }
+    };
     return (<>
       <Bg onClick={quit}/>
       <Container>
@@ -106,11 +147,12 @@ const Likes = ({ quit, postid, commentid, subcommentid, type }) => {
             <Icons_1.CloseIcon />
           </button>
         </div>
+        {p.active && (<UnfollowPopup_1.default data={p.data} close={() => _p(Object.assign(Object.assign({}, p), { active: false }))} process={p.process}/>)}
         <ul onScroll={onScroll} className="contentx">
           {loading && <LoadingBox_1.default />}
           {likes.map((obj) => (<li>
               <LinkQ_1.default className="pp" to={`/${obj.username}`}>
-                <img src={obj.pp || "/pp.jpg"} alt="pp"/>
+                <img onContextMenu={Navigation_1.disableRightClick} src={obj.pp || "/pp.jpg"} alt="pp"/>
               </LinkQ_1.default>
               <div className="text">
                 <LinkQ_1.default to={`/${obj.username}`}>
@@ -118,7 +160,9 @@ const Likes = ({ quit, postid, commentid, subcommentid, type }) => {
                 </LinkQ_1.default>
                 {obj.fullname && <p className="fullname">{obj.fullname}</p>}
               </div>
-              {obj.username != myusername && <button>{con(obj.status)}</button>}
+              {obj.username != myusername && (<button className={con(obj.status)} onClick={() => tap(obj)}>
+                  {con(obj.status)}
+                </button>)}
             </li>))}
         </ul>
       </Container>
@@ -154,7 +198,6 @@ const Container = styled_components_1.default.div `
   left: calc(50% - 200px);
   top: calc(50% - 200px);
   border-radius: 1rem;
-  overflow: hidden;
   .headerxxx {
     height: 42px;
     display: flex;
@@ -223,12 +266,16 @@ const Container = styled_components_1.default.div `
         margin-left: 12px;
         padding: 7px 1rem;
         border-radius: 8px;
-        background-color: #0095f6;
+        background-color: #fafafa;
+        color: #000;
         font-size: 14px;
         font-weight: 600;
-        color: #fafafa;
         &:hover {
           opacity: 0.8;
+        }
+        &.Follow {
+          background-color: #0095f6;
+          color: #fafafa;
         }
       }
     }

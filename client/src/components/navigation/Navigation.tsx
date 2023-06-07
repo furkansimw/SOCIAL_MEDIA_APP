@@ -33,6 +33,18 @@ export const disableRightClick = (e: ME<HTMLImageElement, MouseEvent>) =>
   e.preventDefault();
 
 const Navigation = () => {
+  useEffect(() => {
+    const worker = (e: KeyboardEvent) => {
+      if (e.key == "Escape") setPanel(null);
+    };
+
+    window.addEventListener("keydown", worker);
+
+    return () => {
+      window.removeEventListener("keydown", worker);
+    };
+  }, []);
+
   const [mini, setMini] = useState(false);
   const { pathname } = useLocation();
   const [panel, setPanel] = useState<null | "search" | "notifications">(null);

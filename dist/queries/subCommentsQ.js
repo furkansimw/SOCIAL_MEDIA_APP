@@ -65,9 +65,10 @@ const deleteSubCommentQ = (id, subcommentid) => db_1.default.query(`
     SELECT 1 FROM posts p
     left join comments c on c.id = sc.comment
     left join users u on p.owner = u.id
+    left join subcomments scj on scj.id = $2 
     left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
-    ${(0, blocked_1.default)("p.owner, c.owner")}
+    ${(0, blocked_1.default)("p.owner, c.owner, scj.owner")}
     where p.id = c.post and (ispublic or f is not null or u.id = $1) and b is null
-
+    )
   `, [id, subcommentid]);
 exports.deleteSubCommentQ = deleteSubCommentQ;

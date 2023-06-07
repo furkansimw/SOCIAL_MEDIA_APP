@@ -3,30 +3,38 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useMemo } from "react";
 import { dateCalc } from "./post/postpopup/Bottom";
+import { followUserS } from "../api/profile";
 
 const NotificationItem = ({
   n,
   closepanel,
+  onc,
 }: {
   n: INotification;
   closepanel: () => void;
+  onc: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }) => {
-  const { id, targeturl, owner, pp, username, created, type, status } = n;
+  const { id, url, owner, ispublic, pp, username, created, type, status } = n;
 
-  const text = useMemo(() => ["started following you. "][type], []);
+  const text = useMemo(
+    () => ["started following you. ", "", "liked your post. "][type],
+    []
+  );
   const date = useMemo(() => dateCalc(created), []);
+
   const s = useMemo(() => {
-    if (type == null) return "Follow";
-    if (type == 0) return "Requested";
-    if (type == 1) return "Following";
+    if (status == null) return "Follow";
+    if (status == 0) return "Following";
+    if (status == 1) return "Requested";
     return "";
   }, [status]);
-  const onc = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
-  };
+
   return (
     <Container key={id}>
-      <Link to={targeturl} onClick={closepanel}>
+      <Link
+        to={type < 2 ? `/${owner}` : `/p/${url}`}
+        onClick={() => closepanel()}
+      >
         <img className="pp" src={pp || "/pp.jpg"} alt="pp" />
         <pre className="text">
           <Link to={`/${username}`}>{username}</Link>
@@ -44,12 +52,11 @@ const NotificationItem = ({
 const Container = styled.li`
   white-space: nowrap;
   width: 100%;
-
   a {
     display: flex;
     padding: 8px 24px;
     align-items: center;
-    width: 100%;
+    width: 366px;
     .pp {
       width: 44px;
       height: 44px;
@@ -84,6 +91,7 @@ const Container = styled.li`
       background-color: #fafafa;
       color: #000;
       margin-left: 10px;
+      font-weight: 600;
       &.Follow {
         background-color: #0095f6;
         color: #fafafa;

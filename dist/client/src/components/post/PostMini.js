@@ -16,7 +16,7 @@ const PostMini = ({ post, back }) => {
         dispatch((0, postsReducer_1.setCurrentPostId)(id));
         dispatch((0, postsReducer_1.setBack)(back));
     };
-    return (<Container onClick={tap}>
+    return (<Container onClick={tap} key={post.id}>
       <react_router_dom_1.Link to={`/p/${id}`} onClick={(e) => e.preventDefault()}>
         <img src={cover} alt={`cover ${id}`}/>
         <div className="text">

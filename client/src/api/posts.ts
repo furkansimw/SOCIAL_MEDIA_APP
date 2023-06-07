@@ -9,6 +9,7 @@ import {
   IGetPostLikes,
   IGetCommentLikes,
   IGetSubCommentLikes,
+  IDeleteComment,
 } from "../interfaces/IApi";
 import { IComment, IPost, ISubComment, ILikes } from "../interfaces/ISlices";
 
@@ -46,6 +47,17 @@ export const createComment = createAsyncThunk(
       "POST",
       { content }
     ).then((r) => r as string)
+);
+
+export const deleteComment = createAsyncThunk(
+  "/posts/:postid/comment~{DELETE}",
+  ({ postid, commentid, subcommentid }: IDeleteComment) =>
+    req(
+      `/posts/${postid}/comments/${commentid}${
+        subcommentid ? `/${subcommentid}` : ``
+      }`,
+      "DELETE"
+    )
 );
 
 export const createAction = createAsyncThunk(
@@ -94,4 +106,9 @@ export const getSubCommentLikes = ({
 export const removePost = createAsyncThunk(
   "/posts/:postid~{DELETE}",
   (postid: string) => req(`/posts/${postid}`, "DELETE")
+);
+
+export const getPost = createAsyncThunk(
+  "/posts/:postid/~{GET}",
+  (postid: string) => req(`/posts/${postid}`)
 );

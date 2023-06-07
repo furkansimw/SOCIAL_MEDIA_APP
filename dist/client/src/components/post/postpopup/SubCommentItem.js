@@ -12,6 +12,7 @@ const react_redux_1 = require("react-redux");
 const posts_1 = require("../../../api/posts");
 const Bottom_1 = require("./Bottom");
 const Likes_1 = __importDefault(require("./Likes"));
+const Report_1 = __importDefault(require("./Report"));
 const SubCommentItem = ({ subcomment, commentid, reply, }) => {
     const { isliked, pp, username, content, created, likecount, id: subcommentid, } = subcomment;
     const dispatch = (0, react_redux_1.useDispatch)();
@@ -27,6 +28,7 @@ const SubCommentItem = ({ subcomment, commentid, reply, }) => {
     const [likesPopup, setLikesPopup] = (0, react_1.useState)(false);
     const viewLikes = () => setLikesPopup(true);
     const quit = () => setLikesPopup(false);
+    const [r, _r] = (0, react_1.useState)(false);
     return (<Container onDoubleClick={like} className={lastActive ? "lastactive" : ""}>
       <div className="left">
         <div className="pp">
@@ -56,9 +58,11 @@ const SubCommentItem = ({ subcomment, commentid, reply, }) => {
           <button className="reply" onClick={reply}>
             Reply
           </button>
-          <button className="morex">
+          <button onClick={() => _r(true)} className="morex">
             <Icons_1.MoreIcon2 />
           </button>
+
+          {r && (<Report_1.default process={() => dispatch((0, posts_1.deleteComment)({ commentid, postid, subcommentid }))} close={() => _r(false)} data={subcomment}/>)}
         </div>
       </div>
     </Container>);

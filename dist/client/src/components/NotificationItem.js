@@ -7,24 +7,21 @@ const styled_components_1 = __importDefault(require("styled-components"));
 const react_router_dom_1 = require("react-router-dom");
 const react_1 = require("react");
 const Bottom_1 = require("./post/postpopup/Bottom");
-const NotificationItem = ({ n, closepanel, }) => {
-    const { id, targeturl, owner, pp, username, created, type, status } = n;
-    const text = (0, react_1.useMemo)(() => ["started following you. "][type], []);
+const NotificationItem = ({ n, closepanel, onc, }) => {
+    const { id, url, owner, ispublic, pp, username, created, type, status } = n;
+    const text = (0, react_1.useMemo)(() => ["started following you. ", "", "liked your post. "][type], []);
     const date = (0, react_1.useMemo)(() => (0, Bottom_1.dateCalc)(created), []);
     const s = (0, react_1.useMemo)(() => {
-        if (type == null)
+        if (status == null)
             return "Follow";
-        if (type == 0)
-            return "Requested";
-        if (type == 1)
+        if (status == 0)
             return "Following";
+        if (status == 1)
+            return "Requested";
         return "";
     }, [status]);
-    const onc = (e) => {
-        e.preventDefault();
-    };
     return (<Container key={id}>
-      <react_router_dom_1.Link to={targeturl} onClick={closepanel}>
+      <react_router_dom_1.Link to={type < 2 ? `/${owner}` : `/p/${url}`} onClick={() => closepanel()}>
         <img className="pp" src={pp || "/pp.jpg"} alt="pp"/>
         <pre className="text">
           <react_router_dom_1.Link to={`/${username}`}>{username}</react_router_dom_1.Link>
@@ -40,12 +37,11 @@ const NotificationItem = ({ n, closepanel, }) => {
 const Container = styled_components_1.default.li `
   white-space: nowrap;
   width: 100%;
-
   a {
     display: flex;
     padding: 8px 24px;
     align-items: center;
-    width: 100%;
+    width: 366px;
     .pp {
       width: 44px;
       height: 44px;
@@ -80,6 +76,7 @@ const Container = styled_components_1.default.li `
       background-color: #fafafa;
       color: #000;
       margin-left: 10px;
+      font-weight: 600;
       &.Follow {
         background-color: #0095f6;
         color: #fafafa;

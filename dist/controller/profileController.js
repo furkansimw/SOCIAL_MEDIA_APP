@@ -66,14 +66,12 @@ exports.getMySaved = getMySaved;
 const followUser = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id, guest } = res.locals;
     const { userid } = req.body;
-    if (guest || !userid)
-        (0, error_1.badRequest)();
-    if (userid == id)
+    if (guest || !userid || userid == id)
         (0, error_1.badRequest)();
     const type = yield (0, profileQ_1.followUserQ)(id, userid);
     if (type != undefined)
         __1.io.to((0, __1.findS)(userid)).emit("notifications", type);
-    res.json({ status: "ok" });
+    res.json(type);
 }));
 exports.followUser = followUser;
 const unFollowUser = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -172,7 +170,7 @@ const getRequests = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 
     const { id, guest } = res.locals;
     if (guest)
         (0, error_1.badRequest)();
-    const { l } = req.body;
+    const { l } = req.query;
     const requests = yield (0, profileQ_1.getRequestsQ)(id, (0, converter_1.default)(req.query), l);
     res.json(requests);
 }));
@@ -182,8 +180,7 @@ const allowRequest = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void
     const { ri } = req.query;
     if (guest || !ri || typeof ri != "string")
         return (0, error_1.badRequest)();
-    const owner = yield (0, profileQ_1.allowRequestQ)(id, ri);
-    __1.io.to((0, __1.findS)(owner)).emit("notifications", 0);
+    yield (0, profileQ_1.allowRequestQ)(id, ri);
     res.json({ status: "ok" });
 }));
 exports.allowRequest = allowRequest;

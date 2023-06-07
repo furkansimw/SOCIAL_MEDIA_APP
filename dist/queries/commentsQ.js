@@ -119,5 +119,5 @@ const createSubCommentQ = (id, commentid, content) => db_1.default
       )
       returning id
 `, [id, commentid, content])
-    .then((r) => r.rows[0].id);
+    .then((r) => { var _a; return (_a = r.rows[0]) === null || _a === void 0 ? void 0 : _a.id; });
 exports.createSubCommentQ = createSubCommentQ;

@@ -1,5 +1,6 @@
 import { findS, io } from "..";
 import { destroy } from "../db/cloudinary";
+import db from "../db/db";
 import conv from "../functions/converter";
 import urlConverter from "../functions/urlConverter";
 import { asyncErrorWrapper, badRequest, createError } from "../mw/error";
@@ -65,12 +66,11 @@ const getMySaved = asyncErrorWrapper(async (req, res) => {
 const followUser = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   const { userid } = req.body;
-  if (guest || !userid) badRequest();
-  if (userid == id) badRequest();
+  if (guest || !userid || userid == id) badRequest();
   const type = await followUserQ(id, userid);
   if (type != undefined) io.to(findS(userid)).emit("notifications", type);
 
-  res.json({ status: "ok" });
+  res.json(type);
 });
 
 const unFollowUser = asyncErrorWrapper(async (req, res) => {
@@ -169,7 +169,7 @@ const getMyNotifications = asyncErrorWrapper(async (req, res) => {
 const getRequests = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   if (guest) badRequest();
-  const { l } = req.body;
+  const { l } = req.query;
 
   const requests = await getRequestsQ(id, conv(req.query), l);
   res.json(requests);
@@ -180,8 +180,7 @@ const allowRequest = asyncErrorWrapper(async (req, res) => {
   const { ri } = req.query;
   if (guest || !ri || typeof ri != "string") return badRequest();
 
-  const owner = await allowRequestQ(id, ri);
-  io.to(findS(owner)).emit("notifications", 0);
+  await allowRequestQ(id, ri);
   res.json({ status: "ok" });
 });
 

@@ -24,7 +24,7 @@ const PostMini: FC<props> = ({ post, back }) => {
   };
 
   return (
-    <Container onClick={tap}>
+    <Container onClick={tap} key={post.id}>
       <Link to={`/p/${id}`} onClick={(e) => e.preventDefault()}>
         <img src={cover} alt={`cover ${id}`} />
         <div className="text">
