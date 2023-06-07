@@ -62,14 +62,17 @@ const Container = styled.li`
       height: 36px;
       line-height: 18px;
       overflow: hidden;
+      text-overflow: ellipsis;
       a {
         font-weight: 600;
         padding: 0px;
         display: inline-block;
         margin-right: 4px;
+        width: min-content;
       }
       span {
         color: #a8a8a8;
+        font-size: 12px;
       }
     }
     button {
