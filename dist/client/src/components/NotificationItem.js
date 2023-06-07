@@ -20,7 +20,9 @@ const NotificationItem = ({ n, closepanel, }) => {
             return "Following";
         return "";
     }, [status]);
-    const onc = () => { };
+    const onc = (e) => {
+        e.preventDefault();
+    };
     return (<Container key={id}>
       <react_router_dom_1.Link to={targeturl} onClick={closepanel}>
         <img className="pp" src={pp || "/pp.jpg"} alt="pp"/>

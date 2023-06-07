@@ -135,7 +135,7 @@ const Navigation = () => {
               </react_router_dom_1.Link>
             </li>
             <li ref={searchPanelBtnRef} className={uiController("search") ? "active" : ""}>
-              <div onClick={() => setPanel(panel ? null : "search")}>
+              <div onClick={() => setPanel(panel == "search" ? null : "search")}>
                 <Icons_1.SearchIcon isactive={uiController("search")}/>
                 <p>Search</p>
               </div>
@@ -156,7 +156,7 @@ const Navigation = () => {
               </react_router_dom_1.Link>
             </li>
             <li ref={notificationPanelBtnRef} className={uiController("notifications") ? "active" : ""}>
-              <div onClick={() => setPanel(panel ? null : "notifications")}>
+              <div onClick={() => setPanel(panel == "notifications" ? null : "notifications")}>
                 <Icons_1.NotificationsIcon isactive={uiController("notifications")}/>
                 <p>Notifications</p>
                 {notificationsHas && <div className="circle"></div>}

@@ -220,7 +220,9 @@ const Navigation = () => {
               ref={searchPanelBtnRef}
               className={uiController("search") ? "active" : ""}
             >
-              <div onClick={() => setPanel(panel ? null : "search")}>
+              <div
+                onClick={() => setPanel(panel == "search" ? null : "search")}
+              >
                 <SearchIcon isactive={uiController("search")} />
                 <p>Search</p>
               </div>
@@ -246,7 +248,11 @@ const Navigation = () => {
               ref={notificationPanelBtnRef}
               className={uiController("notifications") ? "active" : ""}
             >
-              <div onClick={() => setPanel(panel ? null : "notifications")}>
+              <div
+                onClick={() =>
+                  setPanel(panel == "notifications" ? null : "notifications")
+                }
+              >
                 <NotificationsIcon isactive={uiController("notifications")} />
                 <p>Notifications</p>
                 {notificationsHas && <div className="circle"></div>}

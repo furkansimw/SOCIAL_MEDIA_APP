@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useMemo } from "react";
 import { dateCalc } from "./post/postpopup/Bottom";
+import { MouseEvent } from "react";
 
 const NotificationItem = ({
   n,
@@ -21,7 +22,9 @@ const NotificationItem = ({
     if (type == 1) return "Following";
     return "";
   }, [status]);
-  const onc = () => {};
+  const onc = (e: MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+  };
   return (
     <Container key={id}>
       <Link to={targeturl} onClick={closepanel}>
