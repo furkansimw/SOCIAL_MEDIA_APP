@@ -10,7 +10,7 @@ const NotificationItem_1 = __importDefault(require("../NotificationItem"));
 const profile_1 = require("../../api/profile");
 const profile_2 = require("../../api/profile");
 const Icons_1 = require("../Icons");
-const NotificationsPanel = (0, react_1.forwardRef)(({ isActive }, ref) => {
+const NotificationsPanel = (0, react_1.forwardRef)(({ isActive, closepanel }, ref) => {
     const [lastrequest, setLastRequest] = (0, react_1.useState)(null);
     (0, react_1.useEffect)(() => {
         setFr(false);
@@ -55,7 +55,7 @@ const NotificationsPanel = (0, react_1.forwardRef)(({ isActive }, ref) => {
                 </span>
               </div>)}
             {notifications.map((n) => {
-            return <NotificationItem_1.default key={n.id} n={n}/>;
+            return (<NotificationItem_1.default key={n.id} n={n} closepanel={closepanel}/>);
         })}
             {loading && <LoadingBox_1.default />}
           </ul>

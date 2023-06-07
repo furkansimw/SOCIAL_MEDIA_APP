@@ -9,10 +9,11 @@ import { SmallRightIconFRFor } from "../Icons";
 
 type Props = {
   isActive: boolean;
+  closepanel: () => void;
 };
 
 const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
-  ({ isActive }: Props, ref) => {
+  ({ isActive, closepanel }: Props, ref) => {
     const [lastrequest, setLastRequest] = useState<any>(null);
 
     useEffect(() => {
@@ -67,7 +68,9 @@ const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
               </div>
             )}
             {notifications.map((n) => {
-              return <NotificationItem key={n.id} n={n} />;
+              return (
+                <NotificationItem key={n.id} n={n} closepanel={closepanel} />
+              );
             })}
             {loading && <LoadingBox />}
           </ul>

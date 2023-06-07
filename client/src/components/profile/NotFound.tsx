@@ -19,12 +19,20 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  a {
+    max-width: 80%;
+    text-align: center;
+  }
   h1 {
+    max-width: 80%;
+    text-align: center;
     margin: 1rem;
     font-size: 24px;
   }
   span {
     font-weight: 600;
+    max-width: 80%;
+    text-align: center;
     color: #e0f1ff;
   }
 `;

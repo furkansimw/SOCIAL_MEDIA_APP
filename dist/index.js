@@ -44,6 +44,7 @@ exports.io.use((socket, next) => {
         next(new Error("Error"));
     }
 });
+//
 app.use(express_1.default.static(__dirname.replace("\\dist", "") + "\\client\\dist"));
 app.use(express_1.default.json({ limit: "60mb" }));
 app.use((0, cookie_parser_1.default)());

@@ -21,7 +21,7 @@ const searchProfileQ = (id: string, u: string) =>
 const getMyProfileQ = (id: string) =>
   db
     .query(
-      `select id, pp, username, reqcount::int, unreadmessagescount::int, nreqcount::int, npostlikescount::int, ncreatedcommentcount::int from users where id = $1`,
+      `select id, pp, username, reqcount::int, unreadmessagescount::int, nreqcount::int, npostlikescount::int, ncreatedcommentcount::int, nfollowcount::int from users where id = $1`,
       [id]
     )
     .then((r) => r.rows[0]);
@@ -167,9 +167,10 @@ const getMyNotificationsQ = (id: string, conv?: ILast) => {
   return db
     .query(
       `    
-    select n.*, n.type::int, u.pp, u.username, p.images[1] from notifications n
+    select n.*, n.type::int, u.pp, u.username, p.images[1], r.type status from notifications n
     left join users u on u.id = n.owner
     left join posts p on p.id = n.processid ${b}
+    left join relationships r on r.owner = n.owner
     where n.target = $1 and b is null and n.owner != $1 ${str}
     order by n.created DESC, n.id DESC
     limit 12;
@@ -181,7 +182,9 @@ const getMyNotificationsQ = (id: string, conv?: ILast) => {
         .query(
           `update users set
            npostlikescount = 0,
-           ncreatedcommentcount = 0
+           ncreatedcommentcount = 0,
+           nfollowcount = 0,
+           nreqcount = 0
            where id = $1;`,
           [id]
         )

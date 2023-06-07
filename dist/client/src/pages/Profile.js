@@ -19,6 +19,7 @@ const profileReducer_ts_1 = require("../redux/profileReducer.ts");
 const Navigation_tsx_1 = require("../components/navigation/Navigation.tsx");
 const Priv_tsx_1 = __importDefault(require("../components/profile/Priv.tsx"));
 const Profile = () => {
+    const [s, _s] = (0, react_1.useState)(false);
     const p = (0, react_router_dom_1.useLocation)().pathname.split("/");
     const username = p[1];
     const [block, setBlock] = (0, react_1.useState)([false, false]);
@@ -55,9 +56,8 @@ const Profile = () => {
     const { info } = profile;
     const { followercount, followingcount, postcount, status, id: userid, fullname, bio, } = info;
     const statusClick = () => {
-        if (status == 2) {
+        if (status == 2)
             setBlock([true, false]);
-        }
         else {
             if (status == null)
                 dispatch((0, profile_1.followUser)({ a: true, userid }));
@@ -106,9 +106,6 @@ const Profile = () => {
                 <react_router_dom_1.Link to={`/account/edit`} className="edit">
                   Edit profile
                 </react_router_dom_1.Link>
-                <button className="settings">
-                  <Icons_1.SettingsIcon />
-                </button>
               </>) : (<>
                 <button onClick={statusClick} className={`state ${statusController()}`}>
                   {statusController()}

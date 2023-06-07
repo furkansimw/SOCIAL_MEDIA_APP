@@ -25,6 +25,7 @@ import { disableRightClick } from "../components/navigation/Navigation.tsx";
 import Priv from "../components/profile/Priv.tsx";
 
 const Profile = () => {
+  const [s, _s] = useState(false);
   const p = useLocation().pathname.split("/");
   const username = p[1];
   const [block, setBlock] = useState([false, false]);
@@ -82,9 +83,8 @@ const Profile = () => {
     bio,
   } = info!;
   const statusClick = () => {
-    if (status == 2) {
-      setBlock([true, false]);
-    } else {
+    if (status == 2) setBlock([true, false]);
+    else {
       if (status == null) dispatch(followUser({ a: true, userid }));
       else dispatch(followUser({ a: false, userid }));
     }
@@ -133,9 +133,6 @@ const Profile = () => {
                 <Link to={`/account/edit`} className="edit">
                   Edit profile
                 </Link>
-                <button className="settings">
-                  <SettingsIcon />
-                </button>
               </>
             ) : (
               <>

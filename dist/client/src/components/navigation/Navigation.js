@@ -114,9 +114,10 @@ const Navigation = () => {
             }));
         }
     }, [panel]);
+    const closepanel = () => setPanel(null);
     return (<>
       <SearchPanel_1.default close={closePanel} isActive={panel == "search"} ref={searchPanelRef}/>
-      <NotificationsPanel_1.default isActive={panel == "notifications"} ref={notificationPanelRef}/>
+      <NotificationsPanel_1.default isActive={panel == "notifications"} ref={notificationPanelRef} closepanel={closepanel}/>
       {createPostPopup && <CreatePostPopup_1.default close={closeCreatePostPopup}/>}
       <Container className={mini ? "mini" : ""}>
         <div className="content" ref={leftSideRef}>

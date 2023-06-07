@@ -18,6 +18,7 @@ const create = async () => {
     reqcount numeric not null default 0,
     postcount numeric not null default 0,
     
+    nfollowcount numeric not null default 0,
     nreqcount numeric not null default 0,
     npostlikescount numeric not null default 0,
     ncreatedcommentcount numeric not null default 0,
@@ -132,10 +133,10 @@ const create = async () => {
       IF NEW.ispublic = true THEN
           UPDATE relationships
           SET type = 0
-          WHERE id = NEW.id AND type = 1;
+          WHERE target = NEW.id AND type = 1;
           
       END IF;
-      return null;
+      return new;
       END;
     $$ LANGUAGE plpgsql;
     CREATE TRIGGER update_relationships
@@ -303,61 +304,66 @@ const create = async () => {
   // TRIGGER 7 relationships -> users followingcount
 
   await db.query(`
-        DROP TRIGGER IF EXISTS update_relationships_counts ON relationships;
-      CREATE OR REPLACE FUNCTION update_relationships_counts()
-      RETURNS TRIGGER AS $$
-      BEGIN
-        IF TG_OP = 'INSERT' THEN
-          IF NEW.type = 0 THEN
-            UPDATE users SET followercount = followercount + 1 WHERE id = NEW.target;
-            UPDATE users SET followingcount = followingcount + 1 WHERE id = NEW.owner;
-            INSERT INTO notifications (target, url, processid, type, owner)
-            VALUES (NEW.target, NEW.owner, NEW.id, 0, NEW.owner);
-          ELSIF NEW.type = 1 THEN
-            UPDATE users SET reqcount = reqcount + 1 WHERE id = NEW.target;
-          ELSIF NEW.type = 2 THEN
-            DELETE FROM relationships WHERE (owner = NEW.owner AND target = NEW.target AND type != 2)
-              OR (owner = NEW.target AND target = NEW.owner AND type != 2);
-          END IF;
-        ELSIF TG_OP = 'DELETE' THEN
-        DELETE FROM notifications WHERE processid = OLD.id;
-          IF OLD.type = 0 THEN
-            UPDATE users SET followercount = followercount - 1 WHERE id = OLD.target;
-            UPDATE users SET followingcount = followingcount - 1 WHERE id = OLD.owner;
-          ELSIF OLD.type = 1 THEN
-            UPDATE users SET reqcount = reqcount - 1 WHERE id = OLD.target;
-          END IF;
+  DROP TRIGGER IF EXISTS update_relationships_counts ON relationships;
+  CREATE OR REPLACE FUNCTION update_relationships_counts()
+    RETURNS TRIGGER AS $$
+  BEGIN
+    IF TG_OP = 'INSERT' THEN
+      IF NEW.type = 0 THEN
+        UPDATE users SET followercount = followercount + 1 WHERE id = NEW.target;
+        UPDATE users SET followingcount = followingcount + 1 WHERE id = NEW.owner;
+        INSERT INTO notifications (target, url, processid, type, owner)
+        VALUES (NEW.target, NEW.owner, NEW.id, 0, NEW.owner);
+      ELSIF NEW.type = 1 THEN
+        UPDATE users SET reqcount = reqcount + 1, nreqcount = nreqcount + 1 WHERE id = NEW.target;
+      ELSIF NEW.type = 2 THEN
+        DELETE FROM relationships WHERE (owner = NEW.owner AND target = NEW.target AND type != 2);
+        DELETE FROM relationships WHERE (target = NEW.owner AND owner = NEW.target AND type != 2);
+      END IF;
+    ELSIF TG_OP = 'DELETE' THEN
+      DELETE FROM notifications WHERE processid = OLD.id;
+      IF OLD.type = 0 THEN
+        UPDATE users SET followercount = followercount - 1 WHERE id = OLD.target;
+        UPDATE users SET followingcount = followingcount - 1 WHERE id = OLD.owner;
+      ELSIF OLD.type = 1 THEN
+        UPDATE users SET reqcount = reqcount - 1, nreqcount = nreqcount - 1 WHERE id = OLD.target;
+      END IF;
 
-        END IF;
+    ELSIF TG_OP = 'UPDATE' THEN
+      IF NEW.type = 0 THEN
+        UPDATE users SET followercount = followercount + 1 WHERE id = NEW.target;
+        UPDATE users SET followingcount = followingcount + 1 WHERE id = NEW.owner;
+        INSERT INTO notifications (target, url, processid, type, owner)
+        VALUES (NEW.target, NEW.owner, NEW.id, 0, NEW.owner);
+      END IF;
+    END IF;
 
-        RETURN NEW;
-      END;
-      $$ LANGUAGE plpgsql;
-
-      CREATE TRIGGER update_relationships_counts
-      AFTER INSERT OR DELETE OR UPDATE ON relationships
-      FOR EACH ROW
-      EXECUTE FUNCTION update_relationships_counts();
-
+    RETURN NEW;
+  END;
+  $$ LANGUAGE plpgsql;
+  
+  CREATE TRIGGER update_relationships_counts
+  AFTER INSERT OR DELETE OR UPDATE ON relationships
+  FOR EACH ROW
+  EXECUTE FUNCTION update_relationships_counts();
+  
   `);
   await db.query(`
   DROP TRIGGER IF EXISTS update_notification_count ON notifications;
   CREATE OR REPLACE  FUNCTION update_notification_count()
   RETURNS TRIGGER AS $$
       BEGIN
-
       IF (TG_OP = 'INSERT') THEN
-        IF (new.type = 0 OR new.type = 1) THEN
-          UPDATE users SET nreqcount = nreqcount + 1 where id =  new.target;
+        IF (new.type = 0) THEN
+          UPDATE users SET nfollowcount = nfollowcount + 1 where id =  new.target;
         ELSIF (new.type = 2) THEN
           UPDATE users SET npostlikescount = npostlikescount + 1 where id =  new.target;
         ELSIF (new.type = 3) THEN
           UPDATE users SET ncreatedcommentcount = ncreatedcommentcount + 1 where id =  new.target;
         END IF;
-
       ELSIF (TG_OP = 'DELETE') THEN
-        IF (old.type = 0 OR old.type = 1) THEN
-          UPDATE users SET nreqcount = nreqcount - 1 where id =  old.target;
+        IF (old.type = 0) THEN
+          UPDATE users SET nfollowcount = nfollowcount - 1 where id =  old.target;
         ELSIF (old.type = 2) THEN
           UPDATE users SET npostlikescount = npostlikescount - 1 where id =  old.target;
         ELSIF (old.type = 3) THEN
@@ -366,7 +372,6 @@ const create = async () => {
       END IF;
       return new;
     END;
-
     $$ LANGUAGE plpgsql; 
     CREATE TRIGGER update_notification_count
     AFTER INSERT OR DELETE ON notifications

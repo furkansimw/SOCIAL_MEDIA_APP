@@ -186,6 +186,8 @@ const Navigation = () => {
     }
   }, [panel]);
 
+  const closepanel = () => setPanel(null);
+
   return (
     <>
       <SearchPanel
@@ -196,6 +198,7 @@ const Navigation = () => {
       <NotificationsPanel
         isActive={panel == "notifications"}
         ref={notificationPanelRef}
+        closepanel={closepanel}
       />
       {createPostPopup && <CreatePostPopup close={closeCreatePostPopup} />}
       <Container className={mini ? "mini" : ""}>

@@ -121,5 +121,6 @@ export interface INotification {
   pp: string | null;
   created: string;
   owner: string;
+  status: null | 0 | 1;
   targeturl: string; // posturl, username
 }
