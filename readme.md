@@ -13,7 +13,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/furkansimw/SOCIAL_MEDIA_APP/#readme">
-    <img src="./client/public/vite.svg" alt="Logo" width="80" height="80">
+    <img src="./dist/client/public/vite.svg" alt="Logo" width="80" height="80">
   </a>
 
   <h1 align="center">FULL STACK SOCIAL MEDIA APP</h1>
