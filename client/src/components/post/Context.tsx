@@ -8,12 +8,7 @@ import { selectValues } from "../../redux/profileReducer";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../redux/store";
 import { removePost } from "../../api/posts";
-import {
-  selectBack,
-  setBack,
-  setCurrentPostId,
-} from "../../redux/postsReducer";
-import { Link, useNavigate } from "react-router-dom";
+import { selectBack } from "../../redux/postsReducer";
 
 type Props = {
   post: IPost;
@@ -26,7 +21,6 @@ const Context: FC<Props> = ({ post, close }) => {
   const dispatch = useDispatch<AppDispatch>();
   const remove = () => dispatch(removePost(post.id));
   const back = useSelector(selectBack, shallowEqual);
-  const nav = useNavigate();
   return (
     <>
       <Bg onClick={close} />

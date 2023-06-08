@@ -497,7 +497,7 @@ export const postsSlice = createSlice({
         state.profiles = profileU(profiles, username, obj);
       });
     builder.addCase(followUser.pending, (state, action) => {
-      const { profiles, posts, back } = state;
+      const { profiles, posts } = state;
       const { userid, a } = action.meta.arg;
 
       const ispublic = profiles.find((p) => p.info?.id == userid)?.info

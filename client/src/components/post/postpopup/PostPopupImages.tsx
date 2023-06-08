@@ -1,7 +1,7 @@
 import { createAction, getImages } from "../../../api/posts";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { selectBack, selectCurrentPost } from "../../../redux/postsReducer";
+import { selectCurrentPost } from "../../../redux/postsReducer";
 import { AppDispatch } from "../../../redux/store";
 import { memo, useEffect, useState } from "react";
 //@ts-ignore

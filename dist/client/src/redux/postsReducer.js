@@ -278,7 +278,7 @@ exports.postsSlice = (0, toolkit_1.createSlice)({
         });
         builder.addCase(profile_ts_1.followUser.pending, (state, action) => {
             var _a, _b, _c, _d;
-            const { profiles, posts, back } = state;
+            const { profiles, posts } = state;
             const { userid, a } = action.meta.arg;
             const ispublic = (_b = (_a = profiles.find((p) => { var _a; return ((_a = p.info) === null || _a === void 0 ? void 0 : _a.id) == userid; })) === null || _a === void 0 ? void 0 : _a.info) === null || _b === void 0 ? void 0 : _b.ispublic;
             if (!ispublic && !a)
