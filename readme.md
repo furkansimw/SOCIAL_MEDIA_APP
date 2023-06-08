@@ -71,7 +71,7 @@
 
 ### Screen Shots
 
-<img id="screenshots src="x"/><br>
+<img id="screenshots src=x"/><br>
 <img src="x"/><br>
 <img src="x"/><br>
 <img src="x"/><br>
