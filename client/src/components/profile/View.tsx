@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { ILikes, IView } from "../../interfaces/ISlices";
+import { IView } from "../../interfaces/ISlices";
 import { followUserS, getRelationships } from "../../api/profile";
 import { selectValues } from "../../redux/profileReducer";
 import { shallowEqual } from "react-redux";
