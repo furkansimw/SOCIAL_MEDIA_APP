@@ -43,7 +43,7 @@ exports.io.use((socket, next) => {
         next(new Error("Error"));
     }
 });
-app.use(express_1.default.static(path_1.default.join(__dirname, "../client/dist")));
+app.use(express_1.default.static(path_1.default.join(__dirname, "../../client/dist")));
 app.use(express_1.default.json({ limit: "60mb" }));
 app.use((0, cookie_parser_1.default)());
 app.use((0, morgan_1.default)("dev"));
@@ -57,7 +57,7 @@ exports.io.on("connection", (socket) => {
     });
 });
 app.get("*", (req, res) => {
-    res.sendFile(path_1.default.join(__dirname, "../client/dist/index.html"));
+    res.sendFile(path_1.default.join(__dirname, "../../client/dist/index.html"));
 });
 app.use(error_1.errorHandler);
 app.use(error_1.routeNotFound);
