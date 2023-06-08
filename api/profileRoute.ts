@@ -16,6 +16,8 @@ import {
   getRequests,
   allowRequest,
   denyRequest,
+  getFollowers,
+  getFollowings,
 } from "../controller/profileController";
 
 profileRoute.route("/search").get(searchProfile);
@@ -24,6 +26,8 @@ profileRoute.route("/edit").get(getMyProfileDetail).post(updateProfile);
 profileRoute.route("/mysaved").get(getMySaved);
 profileRoute.route("/notifications").get(getMyNotifications);
 profileRoute.route("/follow").post(followUser).delete(unFollowUser);
+profileRoute.route("/followers").get(getFollowers);
+profileRoute.route("/followings").get(getFollowings);
 profileRoute.route("/block").post(blockUser).delete(unBlockUser);
 profileRoute
   .route("/requests")

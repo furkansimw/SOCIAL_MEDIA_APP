@@ -9,6 +9,8 @@ profileRoute.route("/edit").get(profileController_1.getMyProfileDetail).post(pro
 profileRoute.route("/mysaved").get(profileController_1.getMySaved);
 profileRoute.route("/notifications").get(profileController_1.getMyNotifications);
 profileRoute.route("/follow").post(profileController_1.followUser).delete(profileController_1.unFollowUser);
+profileRoute.route("/followers").get(profileController_1.getFollowers);
+profileRoute.route("/followings").get(profileController_1.getFollowings);
 profileRoute.route("/block").post(profileController_1.blockUser).delete(profileController_1.unBlockUser);
 profileRoute
     .route("/requests")

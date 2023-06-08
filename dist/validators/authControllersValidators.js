@@ -15,6 +15,8 @@ const loginVal = (username, password) => username &&
         "notifications",
         "notification",
         "myprofile",
+        "followings",
+        "followers",
     ].includes(username) &&
     password.length >= 6 &&
     password.length <= 100;

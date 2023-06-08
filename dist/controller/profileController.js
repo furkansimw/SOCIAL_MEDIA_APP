@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.denyRequest = exports.allowRequest = exports.getRequests = exports.getMyNotifications = exports.updateProfile = exports.getMyProfileDetail = exports.unBlockUser = exports.blockUser = exports.unFollowUser = exports.followUser = exports.getMySaved = exports.getProfilePosts = exports.getProfile = exports.getMyProfile = exports.searchProfile = void 0;
+exports.getFollowings = exports.getFollowers = exports.denyRequest = exports.allowRequest = exports.getRequests = exports.getMyNotifications = exports.updateProfile = exports.getMyProfileDetail = exports.unBlockUser = exports.blockUser = exports.unFollowUser = exports.followUser = exports.getMySaved = exports.getProfilePosts = exports.getProfile = exports.getMyProfile = exports.searchProfile = void 0;
 const __1 = require("..");
 const cloudinary_1 = require("../db/cloudinary");
 const converter_1 = __importDefault(require("../functions/converter"));
@@ -193,3 +193,7 @@ const denyRequest = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 
     res.json({ status: "ok" });
 }));
 exports.denyRequest = denyRequest;
+const getFollowers = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () { }));
+exports.getFollowers = getFollowers;
+const getFollowings = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () { }));
+exports.getFollowings = getFollowings;

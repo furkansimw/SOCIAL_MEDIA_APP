@@ -193,6 +193,9 @@ const denyRequest = asyncErrorWrapper(async (req, res) => {
   res.json({ status: "ok" });
 });
 
+const getFollowers = asyncErrorWrapper(async (req, res) => {});
+const getFollowings = asyncErrorWrapper(async (req, res) => {});
+
 export {
   searchProfile,
   getMyProfile,
@@ -209,4 +212,6 @@ export {
   getRequests,
   allowRequest,
   denyRequest,
+  getFollowers,
+  getFollowings,
 };
