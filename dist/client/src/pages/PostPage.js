@@ -1,51 +1,42 @@
-import { shallowEqual, useSelector } from "react-redux";
-import {
-  selectCurrentPostP,
-  setBack,
-  setCurrentPostId,
-} from "../redux/postsReducer";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch, RootState } from "../redux/store";
-import { getPost } from "../api/posts";
-import NotFound from "../components/profile/NotFound";
-import PostPopupImages from "../components/post/postpopup/PostPopupImages";
-import PostPopupComments from "../components/post/postpopup/PostPopupComments";
-import styled from "styled-components";
-
-const PostPage = () => {
-  const postid = window.location.pathname.split("/")[2];
-  const dispatch = useDispatch<AppDispatch>();
-  const currentPost = useSelector(
-    (s: RootState) => selectCurrentPostP(s, postid),
-    shallowEqual
-  );
-
-  useEffect(() => {
-    if (currentPost == undefined) {
-      dispatch(setCurrentPostId(postid));
-      dispatch(getPost(postid));
-      dispatch(setBack(null));
-    }
-  }, []);
-
-  if (!currentPost) return <></>;
-
-  if (currentPost.exists == "not-found") return <NotFound />;
-
-  if (currentPost.exists == "loading") return <></>;
-
-  return (
-    <Contianer>
-      <div className="xd">
-        <PostPopupImages />
-        <PostPopupComments />
-      </div>
-    </Contianer>
-  );
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-
-const Contianer = styled.div`
+Object.defineProperty(exports, "__esModule", { value: true });
+const react_redux_1 = require("react-redux");
+const postsReducer_1 = require("../redux/postsReducer");
+const react_1 = require("react");
+const react_redux_2 = require("react-redux");
+const posts_1 = require("../api/posts");
+const NotFound_1 = __importDefault(require("../components/profile/NotFound"));
+const PostPopupImages_1 = __importDefault(require("../components/post/postpopup/PostPopupImages"));
+const PostPopupComments_1 = __importDefault(require("../components/post/postpopup/PostPopupComments"));
+const styled_components_1 = __importDefault(require("styled-components"));
+const PostPage = () => {
+    const postid = window.location.pathname.split("/")[2];
+    const dispatch = (0, react_redux_2.useDispatch)();
+    const currentPost = (0, react_redux_1.useSelector)((s) => (0, postsReducer_1.selectCurrentPostP)(s, postid), react_redux_1.shallowEqual);
+    (0, react_1.useEffect)(() => {
+        if (currentPost == undefined) {
+            dispatch((0, postsReducer_1.setCurrentPostId)(postid));
+            dispatch((0, posts_1.getPost)(postid));
+            dispatch((0, postsReducer_1.setBack)(null));
+        }
+    }, []);
+    if (!currentPost)
+        return <></>;
+    if (currentPost.exists == "not-found")
+        return <NotFound_1.default />;
+    if (currentPost.exists == "loading")
+        return <></>;
+    return (<Contianer>
+      <div className="xd">
+        <PostPopupImages_1.default />
+        <PostPopupComments_1.default />
+      </div>
+    </Contianer>);
+};
+const Contianer = styled_components_1.default.div `
   height: 100vh;
   padding: 6rem 2rem 0px !important;
   @media screen and (max-width: 1020px) {
@@ -180,5 +171,4 @@ const Contianer = styled.div`
     width: 100%;
   }
 `;
-
-export default PostPage;
+exports.default = PostPage;

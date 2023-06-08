@@ -82,7 +82,8 @@ const DataContainer = styled.ul`
   .content {
     padding: 1rem;
     display: flex;
-    width: 324px;
+    max-width: 324px;
+    width: 100%;
     margin-bottom: 1rem;
     pre {
       width: 100%;

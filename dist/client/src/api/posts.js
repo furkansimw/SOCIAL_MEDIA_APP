@@ -1,0 +1,25 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getPost = exports.removePost = exports.getSubCommentLikes = exports.getCommentLikes = exports.getPostLikes = exports.likeComment = exports.createAction = exports.deleteComment = exports.createComment = exports.getComments = exports.getImages = exports.createPost = exports.getPosts = void 0;
+const toolkit_1 = require("@reduxjs/toolkit");
+const req_1 = __importDefault(require("./req"));
+exports.getPosts = (0, toolkit_1.createAsyncThunk)("/posts", ({ explore, date, id }) => (0, req_1.default)(`${explore ? `/posts/explore` : `/posts`}?date=${date}&id=${id}`).then((r) => r));
+const createPost = (images, content) => (0, req_1.default)(`/posts/create`, "POST", { images, content }).then((r) => r);
+exports.createPost = createPost;
+exports.getImages = (0, toolkit_1.createAsyncThunk)("/posts/:postid/images", (postid) => (0, req_1.default)(`/posts/${postid}/images`).then((r) => r));
+exports.getComments = (0, toolkit_1.createAsyncThunk)("/posts/:postid/comments", ({ id, postid, date, commentid }) => (0, req_1.default)(`/posts/${postid}/comments/${commentid ? `${commentid}/subcomments` : ``}?date=${date}&id=${id}`).then((r) => r));
+exports.createComment = (0, toolkit_1.createAsyncThunk)("/posts/:postid/comment~{POST}", ({ postid, content, commentid, postowner }) => (0, req_1.default)(`/posts/${postid}/${commentid ? `comments/${commentid}` : `comment`}`, "POST", { content, postowner }).then((r) => r));
+exports.deleteComment = (0, toolkit_1.createAsyncThunk)("/posts/:postid/comment~{DELETE}", ({ postid, commentid, subcommentid }) => (0, req_1.default)(`/posts/${postid}/comments/${commentid}${subcommentid ? `/${subcommentid}` : ``}`, "DELETE"));
+exports.createAction = (0, toolkit_1.createAsyncThunk)(`/posts/:postid/like~{POST}`, ({ a, postid, t, postowner }) => (0, req_1.default)(`/posts/${postid}/${t}`, a ? "POST" : "DELETE", { postowner }));
+exports.likeComment = (0, toolkit_1.createAsyncThunk)("/posts/:postid/comments/:commentid/like~{POST}", ({ a, commentid, subcommentid, postid }) => (0, req_1.default)(`/posts/${postid}/comments/${commentid}${subcommentid ? `/${subcommentid}` : ""}/like`, a ? "POST" : "DELETE"));
+const getPostLikes = ({ id, postid, date }) => (0, req_1.default)(`/posts/${postid}/likes?date=${date}&id=${id}`).then((r) => r);
+exports.getPostLikes = getPostLikes;
+const getCommentLikes = ({ id, date, commentid, postid, }) => (0, req_1.default)(`/posts/${postid}/comments/${commentid}/likes?date=${date}&id=${id}`).then((r) => r);
+exports.getCommentLikes = getCommentLikes;
+const getSubCommentLikes = ({ commentid, postid, subcommentid, date, id, }) => (0, req_1.default)(`/posts/${postid}/likes/comments/${commentid}${subcommentid ? `/${subcommentid}` : ``}/likes?date=${date}&id=${id}`).then((r) => r);
+exports.getSubCommentLikes = getSubCommentLikes;
+exports.removePost = (0, toolkit_1.createAsyncThunk)("/posts/:postid~{DELETE}", (postid) => (0, req_1.default)(`/posts/${postid}`, "DELETE"));
+exports.getPost = (0, toolkit_1.createAsyncThunk)("/posts/:postid/~{GET}", (postid) => (0, req_1.default)(`/posts/${postid}`));
