@@ -41,6 +41,10 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(helmet());
 
+app.get("*", (req, res) => {
+  res.sendFile(__dirname.replace("\\dist", "") + "\\client\\dist\\index.html");
+});
+
 app.use("/api", apiRoute);
 app.use("/sessions", (req, res) => {
   res.json(sessions);
@@ -50,10 +54,6 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     sessions = sessions.filter((s) => s.socketid != socket.id);
   });
-});
-
-app.get("*", (req, res) => {
-  res.sendFile(__dirname.replace("\\dist", "") + "\\client\\dist");
 });
 
 app.use(errorHandler);

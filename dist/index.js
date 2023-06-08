@@ -50,6 +50,9 @@ app.use(express_1.default.json({ limit: "60mb" }));
 app.use((0, cookie_parser_1.default)());
 app.use((0, morgan_1.default)("dev"));
 app.use((0, helmet_1.default)());
+app.get("*", (req, res) => {
+    res.sendFile(__dirname.replace("\\dist", "") + "\\client\\dist\\index.html");
+});
 app.use("/api", routes_1.default);
 app.use("/sessions", (req, res) => {
     res.json(sessions);
@@ -58,9 +61,6 @@ exports.io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         sessions = sessions.filter((s) => s.socketid != socket.id);
     });
-});
-app.get("*", (req, res) => {
-    res.sendFile(__dirname.replace("\\dist", "") + "\\client\\dist");
 });
 app.use(error_1.errorHandler);
 app.use(error_1.routeNotFound);
