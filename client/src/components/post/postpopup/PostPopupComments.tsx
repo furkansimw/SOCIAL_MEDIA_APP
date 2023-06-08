@@ -13,10 +13,11 @@ import { startSmoothScroll } from "./functions";
 const PostPopupComments = () => {
   const dispatch = useDispatch<AppDispatch>();
   const postid = window.location.pathname.split("/")[2];
+  const cp = useSelector(selectCurrentPost, shallowEqual)!;
+
   const {
     comments: { hasmore, data, sending },
-  } = useSelector(selectCurrentPost, shallowEqual)!;
-
+  } = cp;
   useEffect(() => {
     if (hasmore && data.length == 0) dispatch(getComments({ postid }));
   }, [postid]);
@@ -101,7 +102,7 @@ const PostPopupComments = () => {
 
 const Container = styled.div`
   width: 100%;
-  min-width: 240px;
+  min-width: 400px;
   max-width: 400px;
   height: 100%;
 `;

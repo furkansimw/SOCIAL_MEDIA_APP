@@ -160,6 +160,7 @@ const Container = styled.li`
   display: flex;
   align-items: start;
   width: 100%;
+  max-width: 400px;
   border-radius: 6px;
   overflow: hidden;
   padding: 8px 1rem;

@@ -640,8 +640,8 @@ export const postsSlice = createSlice({
           page: "page",
           exists: "loading",
           comments: {
-            loading: false,
-            hasmore: false,
+            loading: true,
+            hasmore: true,
             sending: false,
             data: [],
           },

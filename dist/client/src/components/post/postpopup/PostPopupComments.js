@@ -16,7 +16,8 @@ const functions_1 = require("./functions");
 const PostPopupComments = () => {
     const dispatch = (0, react_redux_1.useDispatch)();
     const postid = window.location.pathname.split("/")[2];
-    const { comments: { hasmore, data, sending }, } = (0, react_redux_2.useSelector)(postsReducer_1.selectCurrentPost, react_redux_1.shallowEqual);
+    const cp = (0, react_redux_2.useSelector)(postsReducer_1.selectCurrentPost, react_redux_1.shallowEqual);
+    const { comments: { hasmore, data, sending }, } = cp;
     (0, react_1.useEffect)(() => {
         if (hasmore && data.length == 0)
             dispatch((0, posts_1.getComments)({ postid }));
@@ -88,7 +89,7 @@ const PostPopupComments = () => {
 };
 const Container = styled_components_1.default.div `
   width: 100%;
-  min-width: 240px;
+  min-width: 400px;
   max-width: 400px;
   height: 100%;
 `;
