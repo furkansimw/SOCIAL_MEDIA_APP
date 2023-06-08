@@ -30,7 +30,7 @@ const searchProfile = asyncErrorWrapper(async (req, res) => {
   if (guest || u == undefined || typeof u != "string" || u.trim().length == 0)
     return badRequest();
   u = u.trim();
-  const result = await searchProfileQ(id, u);
+  const result = await searchProfileQ(id, u.toLowerCase());
   res.json(result);
 });
 

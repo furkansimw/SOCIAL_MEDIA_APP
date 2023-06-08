@@ -67,7 +67,6 @@
 - There are session features in the application, but (normally you cannot like, comment, etc. + features such as advanced post like, comment like)
 - Real-time messaging
 - Relationships are blocked, all post likes, comments, sub-comments are completely hidden from you and vice versa (if he blocks you, you will not see it at all) but if you block him, you can see it in the search section.
-- Client /dist/dist/ react build exists manually moved
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Screen Shots
