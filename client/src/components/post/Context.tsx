@@ -8,6 +8,7 @@ import { selectValues } from "../../redux/profileReducer";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../redux/store";
 import { removePost } from "../../api/posts";
+import { selectBack } from "../../redux/postsReducer";
 
 type Props = {
   post: IPost;
@@ -19,6 +20,7 @@ const Context: FC<Props> = ({ post, close }) => {
   const mypost = post.owner == id;
   const dispatch = useDispatch<AppDispatch>();
   const remove = () => dispatch(removePost(post.id));
+  const back = useSelector(selectBack, shallowEqual);
   return (
     <>
       <Bg onClick={close} />
@@ -28,7 +30,7 @@ const Context: FC<Props> = ({ post, close }) => {
             Remove
           </button>
         )}
-        <LinkQ to={`/p/${post.id}`}>Go to post</LinkQ>
+        {back != null && <LinkQ to={`/p/${post.id}`}>Go to post</LinkQ>}
         <button
           onClick={() =>
             navigator.clipboard
@@ -55,10 +57,6 @@ const Container = styled.div`
   }
   animation: identifierx 0.1s ease-in-out all;
   width: 400px;
-  height: 150px;
-  &.my {
-    height: 200px;
-  }
   background-color: #262626;
   border-radius: 12px;
   border-radius: 12px;

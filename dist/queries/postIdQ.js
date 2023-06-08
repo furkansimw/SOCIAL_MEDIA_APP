@@ -59,12 +59,12 @@ const getPostQ = (id, postid, guest) => {
         values.shift();
     const query = guest
         ? `
-    select p.*, likecount::int, commentcount::int from posts p
+    select p.*,u.username, u.pp, likecount::int, commentcount::int from posts p
     left join users u on u.id = p.owner
     where p.id = $1 and ispublic
   `
         : `
-    select p.*, likecount::int, commentcount::int, pl is not null isliked, s is not null issaved, f is not null isfollowing from posts p
+    select p.*, u.username, u.pp, likecount::int, commentcount::int, pl is not null isliked, s is not null issaved, f is not null isfollowing from posts p
     left join users u on u.id = p.owner
     left join postlikes pl on pl.post = p.id and pl.owner = $1
     left join saved s on s.post = p.id and pl.owner = $1

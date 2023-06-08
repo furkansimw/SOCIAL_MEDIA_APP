@@ -1,7 +1,7 @@
 import { findS, io } from "..";
 import db from "../db/db";
 import conv from "../functions/converter";
-import { asyncErrorWrapper, badRequest } from "../mw/error";
+import { asyncErrorWrapper, badRequest, createError } from "../mw/error";
 import {
   getCommentsQ,
   getPostImagesQ,
@@ -30,6 +30,7 @@ const getPost = asyncErrorWrapper(async (req, res) => {
   const { postid } = req.params;
   const post = await getPostQ(id, postid, guest);
 
+  if (post == null) return createError("Post not found", 404);
   res.json(post);
 });
 

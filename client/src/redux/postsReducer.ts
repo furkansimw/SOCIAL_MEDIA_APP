@@ -13,6 +13,7 @@ import {
   deleteComment,
   getComments,
   getImages,
+  getPost,
   getPosts,
   likeComment,
   removePost,
@@ -613,11 +614,61 @@ export const postsSlice = createSlice({
         return post;
       });
     });
+    builder
+      .addCase(getPost.pending, (state, action) => {
+        const { posts } = state;
+        const id = action.meta.arg;
+        const post: IPost = {
+          isfollowing: false,
+          owner: "",
+          username: "",
+          created: "",
+          id,
+          pp: null,
+          content: null,
+          likecount: 0,
+          commentcount: 0,
+          isliked: false,
+          issaved: false,
+          page: "page",
+          exists: "loading",
+          comments: {
+            loading: false,
+            hasmore: false,
+            sending: false,
+            data: [],
+          },
+        };
+        state.posts = [...posts, post];
+      })
+      .addCase(getPost.fulfilled, (state, action) => {
+        const { posts } = state;
+        const data = action.payload as any;
+        const postid = action.meta.arg;
+        console.log(postid);
+        state.posts = posts.map((p) => {
+          if (p.id == postid) {
+            const obj: IPost = { ...{ ...p, exists: undefined }, ...data };
+            return obj;
+          }
+          return p;
+        });
+      })
+      .addCase(getPost.rejected, (state, action) => {
+        const postid = action.meta.arg;
+        const { posts } = state;
+        state.posts = posts.map((p) => {
+          if (p.id == postid) return { ...p, exists: "not-found" };
+          return p;
+        });
+      });
   },
 });
 
 export const { setBack, toggleSubCommetsT, setCurrentPostId, setOffset } =
   postsSlice.actions;
+
+export const selectCurrentId = (s: RootState) => s.posts.currentId;
 
 export const selectPostsHome = (state: RootState) =>
   state.posts.posts.filter((post) => post.page == "home");
@@ -638,6 +689,9 @@ export const selectBack = (state: RootState) => state.posts.back;
 
 export const selectCurrentPost = (state: RootState) =>
   state.posts.posts.find((post) => post.id == state.posts.currentId);
+
+export const selectCurrentPostP = (s: RootState, postid: string) =>
+  s.posts.posts.find((p) => p.id == postid);
 
 export const selectpostsForBack = (state: RootState) =>
   state.posts.posts.filter((post) => post.page == state.posts.back);

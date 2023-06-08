@@ -3,7 +3,7 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { selectCurrentPost } from "../../../redux/postsReducer";
 import { AppDispatch } from "../../../redux/store";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 //@ts-ignore
 import { Pagination, Navigation } from "swiper";
 
@@ -13,7 +13,9 @@ const PostPopupImages = () => {
   const cp = useSelector(selectCurrentPost, shallowEqual)!;
 
   useEffect(() => {
-    if (more && !images) dispach(getImages(id));
+    if (cp.page != "page") {
+      if (more && !images) dispach(getImages(id));
+    }
   }, [cp]);
 
   const [likeA, setLikeA] = useState(false);
@@ -23,7 +25,7 @@ const PostPopupImages = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setLikeA(false);
-    }, 1000);
+    }, 500);
 
     return () => {
       clearTimeout(timeout);
@@ -70,4 +72,4 @@ const PostPopupImages = () => {
   );
 };
 
-export default PostPopupImages;
+export default memo(PostPopupImages);

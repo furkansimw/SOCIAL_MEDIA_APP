@@ -26,7 +26,7 @@ export interface IPostsSliceInitialState {
 
 export interface IPost {
   cover?: string;
-  exists?: boolean;
+  exists?: "loading" | "not-found";
   isfollowing: boolean;
   images?: string[];
   owner: string;

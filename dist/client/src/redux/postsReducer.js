@@ -1,7 +1,7 @@
 "use strict";
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.selectMetaData = exports.selectpostsForBack = exports.selectCurrentPost = exports.selectBack = exports.selectProfile = exports.selectPostsSaved = exports.selectPostsExplore = exports.selectPostsProfile = exports.selectPostsHome = exports.setOffset = exports.setCurrentPostId = exports.toggleSubCommetsT = exports.setBack = exports.postsSlice = void 0;
+exports.selectMetaData = exports.selectpostsForBack = exports.selectCurrentPostP = exports.selectCurrentPost = exports.selectBack = exports.selectProfile = exports.selectPostsSaved = exports.selectPostsExplore = exports.selectPostsProfile = exports.selectPostsHome = exports.selectCurrentId = exports.setOffset = exports.setCurrentPostId = exports.toggleSubCommetsT = exports.setBack = exports.postsSlice = void 0;
 const toolkit_1 = require("@reduxjs/toolkit");
 const posts_ts_1 = require("../api/posts.ts");
 const functions_ts_1 = require("./functions.ts");
@@ -367,9 +367,60 @@ exports.postsSlice = (0, toolkit_1.createSlice)({
                 return post;
             });
         });
+        builder
+            .addCase(posts_ts_1.getPost.pending, (state, action) => {
+            const { posts } = state;
+            const id = action.meta.arg;
+            const post = {
+                isfollowing: false,
+                owner: "",
+                username: "",
+                created: "",
+                id,
+                pp: null,
+                content: null,
+                likecount: 0,
+                commentcount: 0,
+                isliked: false,
+                issaved: false,
+                page: "page",
+                exists: "loading",
+                comments: {
+                    loading: false,
+                    hasmore: false,
+                    sending: false,
+                    data: [],
+                },
+            };
+            state.posts = [...posts, post];
+        })
+            .addCase(posts_ts_1.getPost.fulfilled, (state, action) => {
+            const { posts } = state;
+            const data = action.payload;
+            const postid = action.meta.arg;
+            console.log(postid);
+            state.posts = posts.map((p) => {
+                if (p.id == postid) {
+                    const obj = Object.assign(Object.assign({}, Object.assign(Object.assign({}, p), { exists: undefined })), data);
+                    return obj;
+                }
+                return p;
+            });
+        })
+            .addCase(posts_ts_1.getPost.rejected, (state, action) => {
+            const postid = action.meta.arg;
+            const { posts } = state;
+            state.posts = posts.map((p) => {
+                if (p.id == postid)
+                    return Object.assign(Object.assign({}, p), { exists: "not-found" });
+                return p;
+            });
+        });
     },
 });
 _a = exports.postsSlice.actions, exports.setBack = _a.setBack, exports.toggleSubCommetsT = _a.toggleSubCommetsT, exports.setCurrentPostId = _a.setCurrentPostId, exports.setOffset = _a.setOffset;
+const selectCurrentId = (s) => s.posts.currentId;
+exports.selectCurrentId = selectCurrentId;
 const selectPostsHome = (state) => state.posts.posts.filter((post) => post.page == "home");
 exports.selectPostsHome = selectPostsHome;
 const selectPostsProfile = (state, username) => state.posts.posts.filter((post) => post.page == username);
@@ -384,6 +435,8 @@ const selectBack = (state) => state.posts.back;
 exports.selectBack = selectBack;
 const selectCurrentPost = (state) => state.posts.posts.find((post) => post.id == state.posts.currentId);
 exports.selectCurrentPost = selectCurrentPost;
+const selectCurrentPostP = (s, postid) => s.posts.posts.find((p) => p.id == postid);
+exports.selectCurrentPostP = selectCurrentPostP;
 const selectpostsForBack = (state) => state.posts.posts.filter((post) => post.page == state.posts.back);
 exports.selectpostsForBack = selectpostsForBack;
 const selectMetaData = (state) => ({

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { shallowEqual, useDispatch } from "react-redux";
 import { AppDispatch } from "../../../redux/store";
@@ -91,7 +91,7 @@ const PostPopupComments = () => {
   }, [data, isRepliying]);
 
   return (
-    <Container>
+    <Container className="c">
       <Info />
       <Data reply={reply} ref={dataRef} />
       <Bottom ref={commentInputRef} {...{ comment, setComment, isRepliying }} />
@@ -106,4 +106,4 @@ const Container = styled.div`
   height: 100%;
 `;
 
-export default PostPopupComments;
+export default memo(PostPopupComments);

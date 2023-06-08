@@ -80,7 +80,7 @@ const PostPopupComments = () => {
             setTotalHeight(heightSum + ((_a = dataRef.current.contentRef.current) === null || _a === void 0 ? void 0 : _a.clientHeight));
         }
     }, [data, isRepliying]);
-    return (<Container>
+    return (<Container className="c">
       <Info_1.default />
       <Data_1.default reply={reply} ref={dataRef}/>
       <Bottom_1.default ref={commentInputRef} {...{ comment, setComment, isRepliying }}/>
@@ -92,4 +92,4 @@ const Container = styled_components_1.default.div `
   max-width: 400px;
   height: 100%;
 `;
-exports.default = PostPopupComments;
+exports.default = (0, react_1.memo)(PostPopupComments);

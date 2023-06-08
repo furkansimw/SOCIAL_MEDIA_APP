@@ -216,18 +216,22 @@ const Navigation = () => {
             </li>
           </ul>
           <div className="bottom">
-            <button ref={moreBtnRef} className={moreIconActive ? "active" : ""}>
-              <Icons_1.MoreIcon isactive={moreIconActive}/>
-              <p>More</p>
-              <MorePanel moreIconActive={moreIconActive} ref={morePanelRef}/>
-            </button>
+            <MorePanelButton moreIconActive={moreIconActive} ref={moreBtnRef}/>
+            <MorePanel moreIconActive={moreIconActive} ref={morePanelRef}/>
           </div>
         </div>
       </Container>
     </>);
 };
+const MorePanelButton = (0, react_1.forwardRef)(({ moreIconActive }, ref) => (<button ref={ref} className={moreIconActive ? "active" : ""}>
+    <Icons_1.MoreIcon isactive={moreIconActive}/>
+    <p>More</p>
+  </button>));
 const MorePanel = (0, react_1.forwardRef)(({ moreIconActive }, ref) => {
     const myusername = (0, react_redux_1.useSelector)(profileReducer_1.selectValues, react_redux_1.shallowEqual).username;
+    const handleLogout = () => {
+        (0, auth_1.logout)();
+    };
     return (<div ref={ref} className={`morepanel ${moreIconActive ? "a" : ""}`}>
         <react_router_dom_1.Link to={`/account/edit`}>
           <Icons_1.SettingsIcon />
@@ -237,14 +241,17 @@ const MorePanel = (0, react_1.forwardRef)(({ moreIconActive }, ref) => {
           <Icons_1.SavedIcon />
           <p>Saved</p>
         </react_router_dom_1.Link>
-        <button onClick={auth_1.logout}>
-          <p>Logout</p>
+        <button className="logout" onClick={handleLogout}>
+          Logout
         </button>
       </div>);
 });
 const Container = styled_components_1.default.div `
   height: 100vh;
   width: 360px;
+  .logout {
+    color: #fafafa !important;
+  }
   .content {
     position: relative;
     z-index: 70;

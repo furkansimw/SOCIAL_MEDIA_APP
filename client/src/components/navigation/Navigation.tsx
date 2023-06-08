@@ -325,21 +325,31 @@ const Navigation = () => {
             </li>
           </ul>
           <div className="bottom">
-            <button ref={moreBtnRef} className={moreIconActive ? "active" : ""}>
-              <MoreIcon isactive={moreIconActive} />
-              <p>More</p>
-              <MorePanel moreIconActive={moreIconActive} ref={morePanelRef} />
-            </button>
+            <MorePanelButton moreIconActive={moreIconActive} ref={moreBtnRef} />
+            <MorePanel moreIconActive={moreIconActive} ref={morePanelRef} />
           </div>
         </div>
       </Container>
     </>
   );
 };
-
+const MorePanelButton = forwardRef<
+  HTMLButtonElement,
+  { moreIconActive: boolean }
+>(({ moreIconActive }, ref) => (
+  <button ref={ref} className={moreIconActive ? "active" : ""}>
+    <MoreIcon isactive={moreIconActive} />
+    <p>More</p>
+  </button>
+));
 const MorePanel = forwardRef<HTMLDivElement, { moreIconActive: boolean }>(
   ({ moreIconActive }, ref) => {
     const myusername = useSelector(selectValues, shallowEqual).username;
+
+    const handleLogout = () => {
+      logout();
+    };
+
     return (
       <div ref={ref} className={`morepanel ${moreIconActive ? "a" : ""}`}>
         <Link to={`/account/edit`}>
@@ -350,8 +360,8 @@ const MorePanel = forwardRef<HTMLDivElement, { moreIconActive: boolean }>(
           <SavedIcon />
           <p>Saved</p>
         </Link>
-        <button onClick={logout}>
-          <p>Logout</p>
+        <button className="logout" onClick={handleLogout}>
+          Logout
         </button>
       </div>
     );
@@ -361,6 +371,9 @@ const MorePanel = forwardRef<HTMLDivElement, { moreIconActive: boolean }>(
 const Container = styled.div`
   height: 100vh;
   width: 360px;
+  .logout {
+    color: #fafafa !important;
+  }
   .content {
     position: relative;
     z-index: 70;

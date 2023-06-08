@@ -10,15 +10,17 @@ import helmet from "helmet";
 import create from "./db/create";
 const app = express();
 const port = process.env.PORT || 4000;
+
 export const server = app.listen(port, async () => await create());
+
 import cookieP from "./functions/cookieP";
 import jwt from "jsonwebtoken";
 import { Server } from "socket.io";
-export const io = new Server(server);
-let sessions: { userid: string; socketid: string }[] = [];
+import path from "path";
 
-export const findS = (ui: string) =>
-  sessions.find((s) => s.userid == ui)?.socketid || "";
+export const io = new Server(server);
+
+let sessions: { userid: string; socketid: string }[] = [];
 
 io.use((socket, next) => {
   const cookies = cookieP(socket.handshake.headers.cookie || "");
@@ -35,31 +37,13 @@ io.use((socket, next) => {
   }
 });
 
-const dev = process.env.DEVELOPMENT;
-console.log(__dirname, __dirname);
-app.use(
-  express.static(
-    __dirname.replace(dev ? "\\dist" : "/dist", "") +
-      (dev ? "\\client\\dist" : "/client/dist")
-  )
-);
+app.use(express.static(path.join(__dirname, "../client/dist")));
 app.use(express.json({ limit: "60mb" }));
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(helmet());
 
-app.get("*", (req, res) => {
-  res.sendFile(
-    __dirname.replace(dev ? "\\dist" : "/dist", "") + dev
-      ? "\\client\\dist\\index.html"
-      : "/client/dist/index.html"
-  );
-});
-
 app.use("/api", apiRoute);
-app.use("/sessions", (req, res) => {
-  res.json(sessions);
-});
 
 io.on("connection", (socket) => {
   socket.on("disconnect", () => {
@@ -67,5 +51,12 @@ io.on("connection", (socket) => {
   });
 });
 
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+});
+
 app.use(errorHandler);
 app.use(routeNotFound);
+
+export const findS = (ui: string) =>
+  sessions.find((s) => s.userid == ui)?.socketid || "";

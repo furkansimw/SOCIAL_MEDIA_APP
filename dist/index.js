@@ -28,10 +28,9 @@ exports.server = app.listen(port, () => __awaiter(void 0, void 0, void 0, functi
 const cookieP_1 = __importDefault(require("./functions/cookieP"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const socket_io_1 = require("socket.io");
+const path_1 = __importDefault(require("path"));
 exports.io = new socket_io_1.Server(exports.server);
 let sessions = [];
-const findS = (ui) => { var _a; return ((_a = sessions.find((s) => s.userid == ui)) === null || _a === void 0 ? void 0 : _a.socketid) || ""; };
-exports.findS = findS;
 exports.io.use((socket, next) => {
     const cookies = (0, cookieP_1.default)(socket.handshake.headers.cookie || "");
     const token = cookies.token;
@@ -44,26 +43,21 @@ exports.io.use((socket, next) => {
         next(new Error("Error"));
     }
 });
-const dev = process.env.DEVELOPMENT;
-app.use(express_1.default.static(__dirname.replace(dev ? "\\dist" : "/dist", "") +
-    (dev ? "\\client\\dist" : "/client/dist")));
+app.use(express_1.default.static(path_1.default.join(__dirname, "../client/dist")));
 app.use(express_1.default.json({ limit: "60mb" }));
 app.use((0, cookie_parser_1.default)());
 app.use((0, morgan_1.default)("dev"));
 app.use((0, helmet_1.default)());
-app.get("*", (req, res) => {
-    res.sendFile(__dirname.replace(dev ? "\\dist" : "/dist", "") + dev
-        ? "\\client\\dist\\index.html"
-        : "/client/dist/index.html");
-});
 app.use("/api", routes_1.default);
-app.use("/sessions", (req, res) => {
-    res.json(sessions);
-});
 exports.io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         sessions = sessions.filter((s) => s.socketid != socket.id);
     });
 });
+app.get("*", (req, res) => {
+    res.sendFile(path_1.default.join(__dirname, "../client/dist/index.html"));
+});
 app.use(error_1.errorHandler);
 app.use(error_1.routeNotFound);
+const findS = (ui) => { var _a; return ((_a = sessions.find((s) => s.userid == ui)) === null || _a === void 0 ? void 0 : _a.socketid) || ""; };
+exports.findS = findS;

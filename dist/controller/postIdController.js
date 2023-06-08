@@ -33,6 +33,8 @@ const getPost = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, v
     const { id, guest } = res.locals;
     const { postid } = req.params;
     const post = yield (0, postIdQ_1.getPostQ)(id, postid, guest);
+    if (post == null)
+        return (0, error_1.createError)("Post not found", 404);
     res.json(post);
 }));
 exports.getPost = getPost;

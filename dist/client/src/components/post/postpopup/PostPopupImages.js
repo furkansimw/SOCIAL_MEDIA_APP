@@ -11,15 +11,17 @@ const PostPopupImages = () => {
     const dispach = (0, react_redux_1.useDispatch)();
     const cp = (0, react_redux_1.useSelector)(postsReducer_1.selectCurrentPost, react_redux_1.shallowEqual);
     (0, react_2.useEffect)(() => {
-        if (more && !images)
-            dispach((0, posts_1.getImages)(id));
+        if (cp.page != "page") {
+            if (more && !images)
+                dispach((0, posts_1.getImages)(id));
+        }
     }, [cp]);
     const [likeA, setLikeA] = (0, react_2.useState)(false);
     const { images, cover, more, id, isliked, owner: postowner } = cp;
     (0, react_2.useEffect)(() => {
         const timeout = setTimeout(() => {
             setLikeA(false);
-        }, 1000);
+        }, 500);
         return () => {
             clearTimeout(timeout);
         };
@@ -50,4 +52,4 @@ const PostPopupImages = () => {
       <div className={`like-a ${likeA ? `a` : ``}`}></div>
     </div>);
 };
-exports.default = PostPopupImages;
+exports.default = (0, react_2.memo)(PostPopupImages);
