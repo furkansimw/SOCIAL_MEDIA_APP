@@ -193,7 +193,21 @@ const denyRequest = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 
     res.json({ status: "ok" });
 }));
 exports.denyRequest = denyRequest;
-const getFollowers = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () { }));
+const getFollowers = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id, guest } = res.locals;
+    const { u } = req.query;
+    if (guest || typeof u != "string")
+        return (0, error_1.badRequest)();
+    const followers = yield (0, profileQ_1.getFollowersQ)(id, u, (0, converter_1.default)(req.query));
+    res.json(followers);
+}));
 exports.getFollowers = getFollowers;
-const getFollowings = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () { }));
+const getFollowings = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id, guest } = res.locals;
+    const { u } = req.query;
+    if (guest || typeof u != "string")
+        return (0, error_1.badRequest)();
+    const followings = yield (0, profileQ_1.getFollowingQ)(id, u, (0, converter_1.default)(req.query));
+    res.json(followings);
+}));
 exports.getFollowings = getFollowings;

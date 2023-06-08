@@ -186,7 +186,7 @@ const getMyNotificationsQ = async (id: string, conv?: ILast) => {
   `,
       values
     )
-    .then((r) => r.rows);
+    .then(then);
 };
 
 const getRequestsQ = async (id: string, last?: ILast, l?: any) => {
@@ -208,8 +208,9 @@ const getRequestsQ = async (id: string, last?: ILast, l?: any) => {
   `,
       values
     )
-    .then(async (r) => r.rows);
+    .then(then);
 };
+
 const allowRequestQ = (id: string, ri: string) =>
   db
     .query(`update relationships set type = 0 where id = $2 and target = $1 `, [
@@ -217,8 +218,54 @@ const allowRequestQ = (id: string, ri: string) =>
       ri,
     ])
     .then((r) => r.rows[0]?.target);
+
 const denyRequestQ = (id: string, ri: string) =>
   db.query(`delete from relationships where id = $2 and target = $1`, [id, ri]);
+
+const getFollowersQ = (id: string, userid: string, last?: ILast) => {
+  const values: any[] = [id, userid];
+  if (last) values.push(last.date, last.id);
+
+  const b = blocked("u.id");
+  const str = last ? `and (r.created, rid) < ($3, $4) ` : ``;
+  return db
+    .query(
+      `
+      select r.id rid,u.id, u.username, u.pp, u.fullname, u.ispublic, f.type status from relationships r
+      left join users u on u.id = r.owner
+      left join relationships f on f.owner = $1 and f.target = u.id
+      ${b}
+      where r.target = $2 and r.type = 0 ${str} and b is null
+      
+      order by r.created desc, rid desc
+      limit 12
+  `,
+      values
+    )
+    .then(then);
+};
+
+const getFollowingQ = (id: string, userid: string, last?: ILast) => {
+  const values: any[] = [id, userid];
+  if (last) values.push(last.date, last.id);
+
+  const b = blocked("u.id");
+  const str = last ? `and (r.created, rid) < ($3 ,$4) ` : ``;
+  return db
+    .query(
+      `
+      select r.created, r.id rid, u.id, u.username, u.pp, u.ispublic, u.fullname, f.type status from relationships r
+      left join users u on u.id = r.owner
+      left join relationships f on f.owner = $1 and f.target = u.id
+      ${b}
+      where r.owner = $2 and r.type = 0 ${str} and b is null
+      order by r.created desc, rid desc
+      limit 12
+  `,
+      values
+    )
+    .then(then);
+};
 
 export {
   searchProfileQ,
@@ -236,4 +283,6 @@ export {
   getRequestsQ,
   allowRequestQ,
   denyRequestQ,
+  getFollowersQ,
+  getFollowingQ,
 };

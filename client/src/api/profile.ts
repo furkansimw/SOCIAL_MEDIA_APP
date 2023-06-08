@@ -61,3 +61,12 @@ export const followUserS = (userid: string, a: boolean) =>
 
 export const requestAction = (ri: string, a: boolean) =>
   req(`/profile/requests?ri=${ri}`, a ? "POST" : "DELETE");
+
+export const getRelationships = (
+  userid: string,
+  type: "followings" | "followers",
+  last?: ILast
+) =>
+  req(`/profile/${type}?u=${userid}&date=${last?.date}&id=${last?.id}`).then(
+    (r) => r as any[]
+  );

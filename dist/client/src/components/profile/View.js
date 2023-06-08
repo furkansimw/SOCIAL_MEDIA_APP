@@ -1,47 +1,23 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const react_1 = __importStar(require("react"));
-const styled_components_1 = __importDefault(require("styled-components"));
-const posts_1 = require("../../../api/posts");
-const LoadingBox_1 = __importDefault(require("../../LoadingBox"));
-const Icons_1 = require("../../Icons");
+const react_1 = require("react");
+const profile_1 = require("../../api/profile");
+const profileReducer_1 = require("../../redux/profileReducer");
 const react_redux_1 = require("react-redux");
-const profileReducer_1 = require("../../../redux/profileReducer");
 const react_redux_2 = require("react-redux");
-const LinkQ_1 = __importDefault(require("../LinkQ"));
-const profile_1 = require("../../../api/profile");
-const UnfollowPopup_1 = __importDefault(require("../../../pages/UnfollowPopup"));
-const Navigation_1 = require("../../navigation/Navigation");
-const Likes = ({ quit, postid, commentid, subcommentid, type }) => {
+const Icons_1 = require("../Icons");
+const UnfollowPopup_1 = __importDefault(require("../../pages/UnfollowPopup"));
+const LoadingBox_1 = __importDefault(require("../LoadingBox"));
+const LinkQ_1 = __importDefault(require("../post/LinkQ"));
+const Navigation_1 = require("../navigation/Navigation");
+const styled_components_1 = __importDefault(require("styled-components"));
+const Views = ({ quit, type, userid }) => {
     const [loading, setLoading] = (0, react_1.useState)(true);
     const [hasmore, setHasmore] = (0, react_1.useState)(true);
-    const [likes, setLikes] = (0, react_1.useState)([]);
+    const [relationships, setRelationships] = (0, react_1.useState)([]);
     (0, react_1.useEffect)(() => {
         const worker = (e) => {
             if (e.key == "Escape")
@@ -52,47 +28,29 @@ const Likes = ({ quit, postid, commentid, subcommentid, type }) => {
             window.removeEventListener("keydown", worker);
         };
     }, []);
-    const next = (data) => {
-        setLikes([...likes, ...data]);
-        setHasmore(data.length == 1);
-        setLoading(false);
-    };
     (0, react_1.useEffect)(() => {
-        if (type == "post")
-            (0, posts_1.getPostLikes)({ postid }).then(next);
-        else if (type == "comment")
-            (0, posts_1.getCommentLikes)({ postid, commentid: commentid }).then(next);
-        else
-            (0, posts_1.getSubCommentLikes)({
-                postid,
-                commentid: commentid,
-                subcommentid: subcommentid,
-            }).then(next);
+        (0, profile_1.getRelationships)(userid, type)
+            .then((r) => {
+            setRelationships(r);
+            setHasmore(r.length == 12);
+        })
+            .catch(() => setHasmore(false))
+            .finally(() => setLoading(false));
     }, []);
     const onScroll = (e) => {
-        const { created: date, id } = likes[likes.length - 1];
+        const { created: date, rid: id } = relationships[relationships.length - 1];
         if (loading || !hasmore)
             return;
         const { scrollTop, clientHeight, scrollHeight } = e.target;
         if (scrollTop + clientHeight + 40 > scrollHeight) {
             setLoading(true);
-            if (type == "post")
-                (0, posts_1.getPostLikes)({ postid, id, date }).then(next);
-            else if (type == "comment")
-                (0, posts_1.getCommentLikes)({
-                    postid,
-                    commentid: commentid,
-                    id,
-                    date,
-                }).then(next);
-            else
-                (0, posts_1.getSubCommentLikes)({
-                    postid,
-                    commentid: commentid,
-                    subcommentid: subcommentid,
-                    id,
-                    date,
-                }).then(next);
+            (0, profile_1.getRelationships)(userid, type, { date, id })
+                .then((r) => {
+                setRelationships([...relationships, ...r]);
+                setHasmore(r.length == 12);
+            })
+                .catch(() => setHasmore(false))
+                .finally(() => setLoading(false));
         }
     };
     const con = (s) => {
@@ -104,7 +62,7 @@ const Likes = ({ quit, postid, commentid, subcommentid, type }) => {
             return `Requested`;
         return ``;
     };
-    const { username: myusername } = (0, react_redux_1.useSelector)(profileReducer_1.selectValues, react_redux_2.shallowEqual);
+    const { username: myusername } = (0, react_redux_2.useSelector)(profileReducer_1.selectValues, react_redux_1.shallowEqual);
     const [p, _p] = (0, react_1.useState)({
         active: false,
         process: () => { },
@@ -115,22 +73,22 @@ const Likes = ({ quit, postid, commentid, subcommentid, type }) => {
         if (status == null) {
             // follow
             (0, profile_1.followUserS)(id, true);
-            const newLikes = likes.map((l) => {
+            const newLikes = relationships.map((l) => {
                 if (l.username == username)
                     return Object.assign(Object.assign({}, l), { status: ispublic ? 0 : 1 });
                 return l;
             });
-            setLikes(newLikes);
+            setRelationships(newLikes);
         }
         else {
             (0, profile_1.followUserS)(id, false);
             const process = () => {
-                const newLikes = likes.map((l) => {
+                const newLikes = relationships.map((l) => {
                     if (l.username == username)
                         return Object.assign(Object.assign({}, l), { status: ispublic ? 0 : 1 });
                     return l;
                 });
-                setLikes(newLikes);
+                setRelationships(newLikes);
             };
             if (ispublic)
                 process();
@@ -142,19 +100,19 @@ const Likes = ({ quit, postid, commentid, subcommentid, type }) => {
       <Bg onClick={quit}/>
       <Container>
         <div className="headerxxx">
-          <p>Likes</p>
+          <p>{type}</p>
           <button onClick={quit}>
             <Icons_1.CloseIcon />
           </button>
         </div>
         {p.active && (<UnfollowPopup_1.default data={p.data} close={() => _p(Object.assign(Object.assign({}, p), { active: false }))} process={p.process}/>)}
         <ul onScroll={onScroll} className="contentx">
-          {likes.map((obj) => (<li>
-              <LinkQ_1.default className="pp" to={`/${obj.username}`}>
+          {relationships.map((obj) => (<li key={obj.rid}>
+              <LinkQ_1.default onClick={quit} className="pp" to={`/${obj.username}`}>
                 <img onContextMenu={Navigation_1.disableRightClick} src={obj.pp || "/pp.jpg"} alt="pp"/>
               </LinkQ_1.default>
               <div className="text">
-                <LinkQ_1.default to={`/${obj.username}`}>
+                <LinkQ_1.default onClick={quit} to={`/${obj.username}`}>
                   <p className="username">{obj.username}</p>
                 </LinkQ_1.default>
                 {obj.fullname && <p className="fullname">{obj.fullname}</p>}
@@ -216,6 +174,8 @@ const Container = styled_components_1.default.div `
   .contentx {
     height: calc(100% - 42px);
     overflow-y: auto;
+    display: block;
+    padding: 0px;
     .loading-box {
       margin: 2rem 0px;
       position: relative;
@@ -289,4 +249,4 @@ const Container = styled_components_1.default.div `
     max-height: calc(100% - 4rem);
   }
 `;
-exports.default = Likes;
+exports.default = Views;

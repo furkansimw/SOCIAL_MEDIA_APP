@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requestAction = exports.followUserS = exports.followRequests = exports.notificationsGet = exports.changePassword = exports.updateProfile = exports.accountDetail = exports.blockUser = exports.followUser = exports.searchProfile = exports.getProfilePosts = exports.getProfile = exports.getMyProfile = void 0;
+exports.getRelationships = exports.requestAction = exports.followUserS = exports.followRequests = exports.notificationsGet = exports.changePassword = exports.updateProfile = exports.accountDetail = exports.blockUser = exports.followUser = exports.searchProfile = exports.getProfilePosts = exports.getProfile = exports.getMyProfile = void 0;
 const toolkit_1 = require("@reduxjs/toolkit");
 const req_1 = __importDefault(require("./req"));
 exports.getMyProfile = (0, toolkit_1.createAsyncThunk)("/profile/my", () => (0, req_1.default)("/profile/my"));
@@ -27,3 +27,5 @@ const followUserS = (userid, a) => (0, req_1.default)(`/profile/follow/`, a ? "P
 exports.followUserS = followUserS;
 const requestAction = (ri, a) => (0, req_1.default)(`/profile/requests?ri=${ri}`, a ? "POST" : "DELETE");
 exports.requestAction = requestAction;
+const getRelationships = (userid, type, last) => (0, req_1.default)(`/profile/${type}?u=${userid}&date=${last === null || last === void 0 ? void 0 : last.date}&id=${last === null || last === void 0 ? void 0 : last.id}`).then((r) => r);
+exports.getRelationships = getRelationships;

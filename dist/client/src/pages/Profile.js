@@ -19,6 +19,7 @@ const profileReducer_ts_1 = require("../redux/profileReducer.ts");
 const Navigation_tsx_1 = require("../components/navigation/Navigation.tsx");
 const Priv_tsx_1 = __importDefault(require("../components/profile/Priv.tsx"));
 const UnfollowPopup_tsx_1 = __importDefault(require("./UnfollowPopup.tsx"));
+const View_tsx_1 = __importDefault(require("../components/profile/View.tsx"));
 const Profile = () => {
     const isloggedin = (0, react_redux_1.useSelector)(profileReducer_ts_1.selectIsLoggedin, react_redux_1.shallowEqual);
     const p = (0, react_router_dom_1.useLocation)().pathname.split("/");
@@ -52,6 +53,8 @@ const Profile = () => {
         pp: null,
         username: "",
     });
+    const [viewC, setViewC] = (0, react_1.useState)(null);
+    const closeViewC = () => setViewC(null);
     const closeUnfollowpostpopup = () => setUnfollowpopupx({ active: false, username: "", pp: null });
     if (!profile)
         return <></>;
@@ -110,8 +113,19 @@ const Profile = () => {
             dispatch((0, profileReducer_ts_1.toggleSetLoginPopupActive)());
         // todo
     };
+    const viewfollowing = () => {
+        if (!isloggedin)
+            return dispatch((0, profileReducer_ts_1.toggleSetLoginPopupActive)());
+        setViewC("followings");
+    };
+    const viewfollowers = () => {
+        if (!isloggedin)
+            return dispatch((0, profileReducer_ts_1.toggleSetLoginPopupActive)());
+        setViewC("followers");
+    };
     return (<Container onScroll={onScroll} ref={listRef}>
       <Title_1.default title={username}/>
+      {viewC && <View_tsx_1.default quit={closeViewC} type={viewC} userid={userid}/>}
       {unfollowpopupx.active && (<UnfollowPopup_tsx_1.default data={{ pp, username }} close={closeUnfollowpostpopup} process={process}/>)}
       <div className="info">
         <div className="pp">
@@ -140,10 +154,10 @@ const Profile = () => {
             <p>
               <span>{a}</span> posts
             </p>
-            <p>
+            <p onClick={viewfollowers}>
               <span>{b}</span> followers
             </p>
-            <p>
+            <p onClick={viewfollowing}>
               <span>{c}</span> following
             </p>
           </div>

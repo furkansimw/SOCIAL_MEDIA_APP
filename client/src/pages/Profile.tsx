@@ -28,6 +28,7 @@ import {
 import { disableRightClick } from "../components/navigation/Navigation.tsx";
 import Priv from "../components/profile/Priv.tsx";
 import UnfollowPopup from "./UnfollowPopup.tsx";
+import Views from "../components/profile/View.tsx";
 
 const Profile = () => {
   const isloggedin = useSelector(selectIsLoggedin, shallowEqual);
@@ -78,6 +79,9 @@ const Profile = () => {
     pp: null,
     username: "",
   });
+
+  const [viewC, setViewC] = useState<"followings" | "followers" | null>(null);
+  const closeViewC = () => setViewC(null);
   const closeUnfollowpostpopup = () =>
     setUnfollowpopupx({ active: false, username: "", pp: null });
 
@@ -147,9 +151,20 @@ const Profile = () => {
     // todo
   };
 
+  const viewfollowing = () => {
+    if (!isloggedin) return dispatch(toggleSetLoginPopupActive());
+    setViewC("followings");
+  };
+
+  const viewfollowers = () => {
+    if (!isloggedin) return dispatch(toggleSetLoginPopupActive());
+    setViewC("followers");
+  };
+
   return (
     <Container onScroll={onScroll} ref={listRef}>
       <Title title={username} />
+      {viewC && <Views quit={closeViewC} type={viewC} userid={userid} />}
       {unfollowpopupx.active && (
         <UnfollowPopup
           data={{ pp, username }}
@@ -191,10 +206,10 @@ const Profile = () => {
             <p>
               <span>{a}</span> posts
             </p>
-            <p>
+            <p onClick={viewfollowers}>
               <span>{b}</span> followers
             </p>
-            <p>
+            <p onClick={viewfollowing}>
               <span>{c}</span> following
             </p>
           </div>

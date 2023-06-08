@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.denyRequestQ = exports.allowRequestQ = exports.getRequestsQ = exports.updateProfileQ = exports.getMyProfileDetailQ = exports.unBlockUserQ = exports.blockUserQ = exports.getMyNotificationsQ = exports.unFollowUserQ = exports.followUserQ = exports.getMySavedQ = exports.getProfilePostsQ = exports.getProfileQ = exports.getMyProfileQ = exports.searchProfileQ = void 0;
+exports.getFollowingQ = exports.getFollowersQ = exports.denyRequestQ = exports.allowRequestQ = exports.getRequestsQ = exports.updateProfileQ = exports.getMyProfileDetailQ = exports.unBlockUserQ = exports.blockUserQ = exports.getMyNotificationsQ = exports.unFollowUserQ = exports.followUserQ = exports.getMySavedQ = exports.getProfilePostsQ = exports.getProfileQ = exports.getMyProfileQ = exports.searchProfileQ = void 0;
 const db_1 = __importDefault(require("../db/db"));
 const blocked_1 = __importDefault(require("../functions/blocked"));
 const then_1 = __importDefault(require("../functions/then"));
@@ -159,7 +159,7 @@ const getMyNotificationsQ = (id, conv) => __awaiter(void 0, void 0, void 0, func
     order by n.created DESC, n.id DESC
     limit 12;
   `, values)
-        .then((r) => r.rows);
+        .then(then_1.default);
 });
 exports.getMyNotificationsQ = getMyNotificationsQ;
 const getRequestsQ = (id, last, l) => __awaiter(void 0, void 0, void 0, function* () {
@@ -178,7 +178,7 @@ const getRequestsQ = (id, last, l) => __awaiter(void 0, void 0, void 0, function
     order by r.created desc, r.id desc  
     limit ${l ? 1 : 12}
   `, values)
-        .then((r) => __awaiter(void 0, void 0, void 0, function* () { return r.rows; }));
+        .then(then_1.default);
 });
 exports.getRequestsQ = getRequestsQ;
 const allowRequestQ = (id, ri) => db_1.default
@@ -190,3 +190,42 @@ const allowRequestQ = (id, ri) => db_1.default
 exports.allowRequestQ = allowRequestQ;
 const denyRequestQ = (id, ri) => db_1.default.query(`delete from relationships where id = $2 and target = $1`, [id, ri]);
 exports.denyRequestQ = denyRequestQ;
+const getFollowersQ = (id, userid, last) => {
+    const values = [id, userid];
+    if (last)
+        values.push(last.date, last.id);
+    const b = (0, blocked_1.default)("u.id");
+    const str = last ? `and (r.created, rid) < ($3, $4) ` : ``;
+    return db_1.default
+        .query(`
+      select r.id rid,u.id, u.username, u.pp, u.fullname, u.ispublic, f.type status from relationships r
+      left join users u on u.id = r.owner
+      left join relationships f on f.owner = $1 and f.target = u.id
+      ${b}
+      where r.target = $2 and r.type = 0 ${str} and b is null
+      
+      order by r.created desc, rid desc
+      limit 12
+  `, values)
+        .then(then_1.default);
+};
+exports.getFollowersQ = getFollowersQ;
+const getFollowingQ = (id, userid, last) => {
+    const values = [id, userid];
+    if (last)
+        values.push(last.date, last.id);
+    const b = (0, blocked_1.default)("u.id");
+    const str = last ? `and (r.created, rid) < ($3 ,$4) ` : ``;
+    return db_1.default
+        .query(`
+      select r.created, r.id rid, u.id, u.username, u.pp, u.ispublic, u.fullname, f.type status from relationships r
+      left join users u on u.id = r.owner
+      left join relationships f on f.owner = $1 and f.target = u.id
+      ${b}
+      where r.owner = $2 and r.type = 0 ${str} and b is null
+      order by r.created desc, rid desc
+      limit 12
+  `, values)
+        .then(then_1.default);
+};
+exports.getFollowingQ = getFollowingQ;

@@ -20,6 +20,8 @@ import {
   getRequestsQ,
   allowRequestQ,
   denyRequestQ,
+  getFollowersQ,
+  getFollowingQ,
 } from "../queries/profileQ";
 
 const searchProfile = asyncErrorWrapper(async (req, res) => {
@@ -193,8 +195,20 @@ const denyRequest = asyncErrorWrapper(async (req, res) => {
   res.json({ status: "ok" });
 });
 
-const getFollowers = asyncErrorWrapper(async (req, res) => {});
-const getFollowings = asyncErrorWrapper(async (req, res) => {});
+const getFollowers = asyncErrorWrapper(async (req, res) => {
+  const { id, guest } = res.locals;
+  const { u } = req.query;
+  if (guest || typeof u != "string") return badRequest();
+  const followers = await getFollowersQ(id, u, conv(req.query));
+  res.json(followers);
+});
+const getFollowings = asyncErrorWrapper(async (req, res) => {
+  const { id, guest } = res.locals;
+  const { u } = req.query;
+  if (guest || typeof u != "string") return badRequest();
+  const followings = await getFollowingQ(id, u, conv(req.query));
+  res.json(followings);
+});
 
 export {
   searchProfile,

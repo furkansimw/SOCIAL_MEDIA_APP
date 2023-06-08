@@ -110,6 +110,17 @@ export interface ILikes {
   ispublic: boolean;
 }
 
+export interface IView {
+  rid: string;
+  id: string;
+  username: string;
+  pp: null | string;
+  created: string;
+  fullname: string | null;
+  status: null | 0 | 1;
+  ispublic: boolean;
+}
+
 export interface INotification {
   id: string;
   type: 0 | 1 | 2 | 3; // following, followrequest, postlike, createdcomment

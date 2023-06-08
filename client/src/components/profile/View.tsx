@@ -1,33 +1,26 @@
-import React, { FC, useEffect, useState } from "react";
-import styled from "styled-components";
-import {
-  getCommentLikes,
-  getPostLikes,
-  getSubCommentLikes,
-} from "../../../api/posts";
-import { ILikes } from "../../../interfaces/ISlices";
-import LoadingBox from "../../LoadingBox";
-import { CloseIcon } from "../../Icons";
-import { useSelector } from "react-redux";
-import { selectValues } from "../../../redux/profileReducer";
+import { FC, useEffect, useState } from "react";
+import { ILikes, IView } from "../../interfaces/ISlices";
+import { followUserS, getRelationships } from "../../api/profile";
+import { selectValues } from "../../redux/profileReducer";
 import { shallowEqual } from "react-redux";
-import LinkQ from "../LinkQ";
-import { followUserS } from "../../../api/profile";
-import UnfollowPopup from "../../../pages/UnfollowPopup";
-import { disableRightClick } from "../../navigation/Navigation";
+import { useSelector } from "react-redux";
+import { CloseIcon } from "../Icons";
+import UnfollowPopup from "../../pages/UnfollowPopup";
+import LoadingBox from "../LoadingBox";
+import LinkQ from "../post/LinkQ";
+import { disableRightClick } from "../navigation/Navigation";
+import styled from "styled-components";
 
 type Props = {
   quit: () => void;
-  type: "post" | "comment" | "subcomment";
-  postid: string;
-  commentid?: string;
-  subcommentid?: string;
+  type: "followers" | "followings";
+  userid: string;
 };
 
-const Likes: FC<Props> = ({ quit, postid, commentid, subcommentid, type }) => {
+const Views: FC<Props> = ({ quit, type, userid }) => {
   const [loading, setLoading] = useState(true);
   const [hasmore, setHasmore] = useState(true);
-  const [likes, setLikes] = useState<ILikes[]>([]);
+  const [relationships, setRelationships] = useState<IView[]>([]);
   useEffect(() => {
     const worker = (e: KeyboardEvent) => {
       if (e.key == "Escape") quit();
@@ -38,47 +31,30 @@ const Likes: FC<Props> = ({ quit, postid, commentid, subcommentid, type }) => {
     };
   }, []);
 
-  const next = (data: ILikes[]) => {
-    setLikes([...likes, ...data]);
-    setHasmore(data.length == 1);
-    setLoading(false);
-  };
-
   useEffect(() => {
-    if (type == "post") getPostLikes({ postid }).then(next);
-    else if (type == "comment")
-      getCommentLikes({ postid, commentid: commentid! }).then(next);
-    else
-      getSubCommentLikes({
-        postid,
-        commentid: commentid!,
-        subcommentid: subcommentid!,
-      }).then(next);
+    getRelationships(userid, type)
+      .then((r) => {
+        setRelationships(r);
+        setHasmore(r.length == 12);
+      })
+      .catch(() => setHasmore(false))
+      .finally(() => setLoading(false));
   }, []);
 
   const onScroll = (e: React.UIEvent<HTMLUListElement, UIEvent>) => {
-    const { created: date, id } = likes[likes.length - 1];
+    const { created: date, rid: id } = relationships[relationships.length - 1];
 
     if (loading || !hasmore) return;
     const { scrollTop, clientHeight, scrollHeight } = e.target as Element;
     if (scrollTop + clientHeight + 40 > scrollHeight) {
       setLoading(true);
-      if (type == "post") getPostLikes({ postid, id, date }).then(next);
-      else if (type == "comment")
-        getCommentLikes({
-          postid,
-          commentid: commentid!,
-          id,
-          date,
-        }).then(next);
-      else
-        getSubCommentLikes({
-          postid,
-          commentid: commentid!,
-          subcommentid: subcommentid!,
-          id,
-          date,
-        }).then(next);
+      getRelationships(userid, type, { date, id })
+        .then((r) => {
+          setRelationships([...relationships, ...r]);
+          setHasmore(r.length == 12);
+        })
+        .catch(() => setHasmore(false))
+        .finally(() => setLoading(false));
     }
   };
   const con = (s: null | number) => {
@@ -103,24 +79,26 @@ const Likes: FC<Props> = ({ quit, postid, commentid, subcommentid, type }) => {
     data: { pp: null, username: "" },
   });
 
-  const tap = (p: ILikes) => {
+  const tap = (p: IView) => {
     const { status, ispublic, username, id, pp } = p;
     if (status == null) {
       // follow
       followUserS(id, true);
-      const newLikes = likes.map((l) => {
-        if (l.username == username) return { ...l, status: ispublic ? 0 : 1 };
+      const newLikes = relationships.map((l) => {
+        if (l.username == username)
+          return { ...l, status: ispublic ? 0 : 1 } as IView;
         return l;
       });
-      setLikes(newLikes);
+      setRelationships(newLikes);
     } else {
       followUserS(id, false);
       const process = () => {
-        const newLikes = likes.map((l) => {
-          if (l.username == username) return { ...l, status: ispublic ? 0 : 1 };
+        const newLikes = relationships.map((l) => {
+          if (l.username == username)
+            return { ...l, status: ispublic ? 0 : 1 } as IView;
           return l;
         });
-        setLikes(newLikes);
+        setRelationships(newLikes);
       };
       if (ispublic) process();
       else _p({ active: true, data: { username, pp }, process });
@@ -132,7 +110,7 @@ const Likes: FC<Props> = ({ quit, postid, commentid, subcommentid, type }) => {
       <Bg onClick={quit} />
       <Container>
         <div className="headerxxx">
-          <p>Likes</p>
+          <p>{type}</p>
           <button onClick={quit}>
             <CloseIcon />
           </button>
@@ -145,9 +123,9 @@ const Likes: FC<Props> = ({ quit, postid, commentid, subcommentid, type }) => {
           />
         )}
         <ul onScroll={onScroll} className="contentx">
-          {likes.map((obj) => (
-            <li>
-              <LinkQ className="pp" to={`/${obj.username}`}>
+          {relationships.map((obj) => (
+            <li key={obj.rid}>
+              <LinkQ onClick={quit} className="pp" to={`/${obj.username}`}>
                 <img
                   onContextMenu={disableRightClick}
                   src={obj.pp || "/pp.jpg"}
@@ -155,7 +133,7 @@ const Likes: FC<Props> = ({ quit, postid, commentid, subcommentid, type }) => {
                 />
               </LinkQ>
               <div className="text">
-                <LinkQ to={`/${obj.username}`}>
+                <LinkQ onClick={quit} to={`/${obj.username}`}>
                   <p className="username">{obj.username}</p>
                 </LinkQ>
                 {obj.fullname && <p className="fullname">{obj.fullname}</p>}
@@ -223,6 +201,8 @@ const Container = styled.div`
   .contentx {
     height: calc(100% - 42px);
     overflow-y: auto;
+    display: block;
+    padding: 0px;
     .loading-box {
       margin: 2rem 0px;
       position: relative;
@@ -297,4 +277,4 @@ const Container = styled.div`
   }
 `;
 
-export default Likes;
+export default Views;
