@@ -36,7 +36,7 @@ io.use((socket, next) => {
 });
 
 const dev = process.env.DEVELOPMENT;
-
+console.log(__dirname, __dirname);
 app.use(
   express.static(
     __dirname.replace(dev ? "\\dist" : "/dist", "") +
