@@ -1,4 +1,4 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { IProfileInitialState } from "../interfaces/ISlices";
 import { RootState } from "./store";
 import { getMyProfile } from "../api/profile";
@@ -17,6 +17,7 @@ const initialState: IProfileInitialState = {
     nreqcount: 0,
     reqcount: 0,
     unreadmessagescount: 0,
+    nfollowcount: 0,
   },
 };
 

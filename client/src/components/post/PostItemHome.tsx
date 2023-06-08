@@ -91,7 +91,7 @@ const PostItemHome: FC<props> = ({ post }) => {
   const [isOverflow, setIsOverflow] = useState(false);
 
   return (
-    <Container>
+    <Container className="homelistitem">
       <div className="info-s">
         <div className="left">
           <Link className="pp" to={`/${username}`}>
@@ -248,6 +248,8 @@ const Container = styled.li`
     height: 100%;
     position: relative;
     width: 100%;
+    object-fit: cover;
+    aspect-ratio: 1;
     max-width: 500px !important;
     max-height: 500px !important;
     img {

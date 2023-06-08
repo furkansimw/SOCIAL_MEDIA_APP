@@ -55,7 +55,7 @@ const PostItemHome = ({ post }) => {
     }, []);
     const [more, setMore] = (0, react_1.useState)(false);
     const [isOverflow, setIsOverflow] = (0, react_1.useState)(false);
-    return (<Container>
+    return (<Container className="homelistitem">
       <div className="info-s">
         <div className="left">
           <react_router_dom_1.Link className="pp" to={`/${username}`}>
@@ -188,6 +188,8 @@ const Container = styled_components_1.default.li `
     height: 100%;
     position: relative;
     width: 100%;
+    object-fit: cover;
+    aspect-ratio: 1;
     max-width: 500px !important;
     max-height: 500px !important;
     img {

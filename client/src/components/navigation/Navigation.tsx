@@ -140,19 +140,20 @@ const Navigation = () => {
   const {
     username,
     pp,
-    id,
     ncreatedcommentcount,
     npostlikescount,
     nreqcount,
-    reqcount,
     unreadmessagescount,
+    nfollowcount,
   } = useSelector(selectValues, shallowEqual);
 
   useEffect(() => {
     socket.on("notifications", (type) => {
       setNewNotification(true);
       setNotificationsHas(true);
-      if ([0, 1].includes(type))
+      if (type == 0)
+        dispatch(setUpdateValues({ nfollowcount: nfollowcount + 1 }));
+      else if (type == 1)
         dispatch(setUpdateValues({ nreqcount: nreqcount + 1 }));
       else if (type == 2)
         dispatch(setUpdateValues({ npostlikescount: npostlikescount + 1 }));
@@ -179,13 +180,25 @@ const Navigation = () => {
 
   useEffect(() => {
     setNotificationsHas(
-      ncreatedcommentcount > 0 || npostlikescount > 0 || nreqcount > 0
+      ncreatedcommentcount > 0 ||
+        npostlikescount > 0 ||
+        nreqcount > 0 ||
+        nfollowcount > 0
     );
     setUnreadMessagesCount(unreadmessagescount);
     setNewNotification(
-      ncreatedcommentcount > 0 || npostlikescount > 0 || nreqcount > 0
+      ncreatedcommentcount > 0 ||
+        npostlikescount > 0 ||
+        nreqcount > 0 ||
+        nfollowcount > 0
     );
-  }, [ncreatedcommentcount, unreadmessagescount, npostlikescount, nreqcount]);
+  }, [
+    ncreatedcommentcount,
+    unreadmessagescount,
+    npostlikescount,
+    nreqcount,
+    nfollowcount,
+  ]);
 
   useEffect(() => {
     if (panel == "notifications") {
@@ -194,6 +207,7 @@ const Navigation = () => {
           ncreatedcommentcount: 0,
           nreqcount: 0,
           npostlikescount: 0,
+          nfollowcount: 0,
         })
       );
     }
@@ -271,10 +285,10 @@ const Navigation = () => {
                 {notificationsHas && <div className="circle"></div>}
                 {newNotification && (
                   <div className={`newnotif`}>
-                    {nreqcount > 0 && (
+                    {(nreqcount > 0 || nfollowcount > 0) && (
                       <span>
                         <div className="icon people"></div>
-                        <p>{nreqcount}</p>
+                        <p>{nreqcount + nfollowcount}</p>
                       </span>
                     )}
                     {npostlikescount > 0 && (

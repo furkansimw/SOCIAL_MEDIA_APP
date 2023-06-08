@@ -9,22 +9,30 @@ import {
 } from "../../../redux/postsReducer";
 import LinkQ from "../LinkQ";
 import { selectValues } from "../../../redux/profileReducer";
-import { RootState } from "../../../redux/store";
+import { AppDispatch, RootState } from "../../../redux/store";
 import { useState } from "react";
 import Context from "../Context";
+import { useDispatch } from "react-redux";
+import { followUser } from "../../../api/profile";
 
 const Info = () => {
   const back = useSelector(selectBack, shallowEqual);
-  const { username, pp } = useSelector(selectCurrentPost, shallowEqual)!;
+  const {
+    username,
+    pp,
+    owner: userid,
+  } = useSelector(selectCurrentPost, shallowEqual)!;
   const { username: myusername } = useSelector(selectValues, shallowEqual);
   const profile = useSelector(
     (s: RootState) => selectProfile(s, username),
     shallowEqual
   )!;
-  const post = useSelector(selectCurrentPost, shallowEqual);
+  const post = useSelector(selectCurrentPost, shallowEqual)!;
   const to = `/${username}`;
   const isfollowing = profile?.info?.status == 0;
   const [p, _p] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const follow = () => dispatch(followUser({ a: true, userid }));
   return (
     <InfoContainer>
       <div className="l">
@@ -41,7 +49,7 @@ const Info = () => {
         {username != myusername && !isfollowing && back != "home" && (
           <>
             <span>•</span>
-            <button>Follow</button>
+            <button onClick={follow}>Follow</button>
           </>
         )}
       </div>

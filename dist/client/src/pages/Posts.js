@@ -57,11 +57,17 @@ const Container = styled_components_1.default.ul `
       min-height: 400px;
     }
   }
+  .homelistitem {
+    min-height: 650px;
+    display: block;
+    @media screen and (max-width: 620px) {
+      min-height: calc(100% + 40px);
+    }
+  }
   li {
     max-width: 500px;
     width: 100%;
     min-width: 0px;
-    min-height: 700px;
     &:first-child {
       border-top: none;
     }

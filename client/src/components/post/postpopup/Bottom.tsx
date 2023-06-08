@@ -128,6 +128,7 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
                 postid,
                 ...myvalues,
                 commentid: isRepliying?.commentid,
+                postowner,
               })
             );
           }}

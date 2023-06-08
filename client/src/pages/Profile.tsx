@@ -16,7 +16,7 @@ import {
 } from "../api/profile";
 import LoadingBox from "../components/LoadingBox";
 import styled from "styled-components";
-import { MoreIcon3, SettingsIcon } from "../components/Icons";
+import { MoreIcon3 } from "../components/Icons";
 import Title from "../components/Title";
 import PostMini from "../components/post/PostMini";
 import NotFound from "../components/profile/NotFound.tsx";

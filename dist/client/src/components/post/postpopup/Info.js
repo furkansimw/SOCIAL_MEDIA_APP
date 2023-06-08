@@ -12,16 +12,20 @@ const LinkQ_1 = __importDefault(require("../LinkQ"));
 const profileReducer_1 = require("../../../redux/profileReducer");
 const react_1 = require("react");
 const Context_1 = __importDefault(require("../Context"));
+const react_redux_2 = require("react-redux");
+const profile_1 = require("../../../api/profile");
 const Info = () => {
     var _a;
     const back = (0, react_redux_1.useSelector)(postsReducer_1.selectBack, react_redux_1.shallowEqual);
-    const { username, pp } = (0, react_redux_1.useSelector)(postsReducer_1.selectCurrentPost, react_redux_1.shallowEqual);
+    const { username, pp, owner: userid, } = (0, react_redux_1.useSelector)(postsReducer_1.selectCurrentPost, react_redux_1.shallowEqual);
     const { username: myusername } = (0, react_redux_1.useSelector)(profileReducer_1.selectValues, react_redux_1.shallowEqual);
     const profile = (0, react_redux_1.useSelector)((s) => (0, postsReducer_1.selectProfile)(s, username), react_redux_1.shallowEqual);
     const post = (0, react_redux_1.useSelector)(postsReducer_1.selectCurrentPost, react_redux_1.shallowEqual);
     const to = `/${username}`;
     const isfollowing = ((_a = profile === null || profile === void 0 ? void 0 : profile.info) === null || _a === void 0 ? void 0 : _a.status) == 0;
     const [p, _p] = (0, react_1.useState)(false);
+    const dispatch = (0, react_redux_2.useDispatch)();
+    const follow = () => dispatch((0, profile_1.followUser)({ a: true, userid }));
     return (<InfoContainer>
       <div className="l">
         <LinkQ_1.default className="pp" to={to}>
@@ -32,7 +36,7 @@ const Info = () => {
         </LinkQ_1.default>
         {username != myusername && !isfollowing && back != "home" && (<>
             <span>•</span>
-            <button>Follow</button>
+            <button onClick={follow}>Follow</button>
           </>)}
       </div>
       <button onClick={() => _p(true)} className="d">

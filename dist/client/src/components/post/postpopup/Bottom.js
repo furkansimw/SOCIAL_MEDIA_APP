@@ -89,7 +89,7 @@ const Bottom = (0, react_1.forwardRef)(({ comment, setComment, isRepliying }, in
                 return;
             const content = comment.replace(/\s+/g, " ").trim();
             dispatch((0, posts_1.createComment)(Object.assign(Object.assign({ content,
-                postid }, myvalues), { commentid: isRepliying === null || isRepliying === void 0 ? void 0 : isRepliying.commentid })));
+                postid }, myvalues), { commentid: isRepliying === null || isRepliying === void 0 ? void 0 : isRepliying.commentid, postowner })));
         }}>
           <input type="text" name="comment" id="comment" placeholder="Add a comment..." ref={inputRef} onChange={(e) => setComment(e.target.value)} value={comment} maxLength={200}/>
           {isRepliying && (<LinkQ_1.default to={`/${isRepliying.username}`}>

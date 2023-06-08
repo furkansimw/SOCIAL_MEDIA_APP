@@ -2,11 +2,7 @@ import React, { FC, useEffect, useState } from "react";
 import styled from "styled-components";
 import { BigLeftArrow } from "../Icons";
 import { IFollowRequest } from "../../interfaces/ISlices";
-import {
-  followRequests,
-  notificationsGet,
-  requestAction,
-} from "../../api/profile";
+import { followRequests, requestAction } from "../../api/profile";
 import { Link } from "react-router-dom";
 import LoadingBox from "../LoadingBox";
 

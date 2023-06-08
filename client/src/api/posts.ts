@@ -41,11 +41,11 @@ export const getComments = createAsyncThunk(
 
 export const createComment = createAsyncThunk(
   "/posts/:postid/comment~{POST}",
-  ({ postid, content, commentid }: ICreateComment) =>
+  ({ postid, content, commentid, postowner }: ICreateComment) =>
     req(
       `/posts/${postid}/${commentid ? `comments/${commentid}` : `comment`}`,
       "POST",
-      { content }
+      { content, postowner }
     ).then((r) => r as string)
 );
 
@@ -100,7 +100,9 @@ export const getSubCommentLikes = ({
   id,
 }: IGetSubCommentLikes) =>
   req(
-    `/posts/${postid}/likes/comments/${commentid}/${subcommentid}/likes?date=${date}&id=${id}`
+    `/posts/${postid}/likes/comments/${commentid}${
+      subcommentid ? `/${subcommentid}` : ``
+    }/likes?date=${date}&id=${id}`
   ).then((r) => r as ILikes[]);
 
 export const removePost = createAsyncThunk(

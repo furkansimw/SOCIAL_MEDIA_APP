@@ -11,7 +11,7 @@ const createPost = (images, content) => (0, req_1.default)(`/posts/create`, "POS
 exports.createPost = createPost;
 exports.getImages = (0, toolkit_1.createAsyncThunk)("/posts/:postid/images", (postid) => (0, req_1.default)(`/posts/${postid}/images`).then((r) => r));
 exports.getComments = (0, toolkit_1.createAsyncThunk)("/posts/:postid/comments", ({ id, postid, date, commentid }) => (0, req_1.default)(`/posts/${postid}/comments/${commentid ? `${commentid}/subcomments` : ``}?date=${date}&id=${id}`).then((r) => r));
-exports.createComment = (0, toolkit_1.createAsyncThunk)("/posts/:postid/comment~{POST}", ({ postid, content, commentid }) => (0, req_1.default)(`/posts/${postid}/${commentid ? `comments/${commentid}` : `comment`}`, "POST", { content }).then((r) => r));
+exports.createComment = (0, toolkit_1.createAsyncThunk)("/posts/:postid/comment~{POST}", ({ postid, content, commentid, postowner }) => (0, req_1.default)(`/posts/${postid}/${commentid ? `comments/${commentid}` : `comment`}`, "POST", { content, postowner }).then((r) => r));
 exports.deleteComment = (0, toolkit_1.createAsyncThunk)("/posts/:postid/comment~{DELETE}", ({ postid, commentid, subcommentid }) => (0, req_1.default)(`/posts/${postid}/comments/${commentid}${subcommentid ? `/${subcommentid}` : ``}`, "DELETE"));
 exports.createAction = (0, toolkit_1.createAsyncThunk)(`/posts/:postid/like~{POST}`, ({ a, postid, t, postowner }) => (0, req_1.default)(`/posts/${postid}/${t}`, a ? "POST" : "DELETE", { postowner }));
 exports.likeComment = (0, toolkit_1.createAsyncThunk)("/posts/:postid/comments/:commentid/like~{POST}", ({ a, commentid, subcommentid, postid }) => (0, req_1.default)(`/posts/${postid}/comments/${commentid}${subcommentid ? `/${subcommentid}` : ""}/like`, a ? "POST" : "DELETE"));
@@ -19,7 +19,7 @@ const getPostLikes = ({ id, postid, date }) => (0, req_1.default)(`/posts/${post
 exports.getPostLikes = getPostLikes;
 const getCommentLikes = ({ id, date, commentid, postid, }) => (0, req_1.default)(`/posts/${postid}/comments/${commentid}/likes?date=${date}&id=${id}`).then((r) => r);
 exports.getCommentLikes = getCommentLikes;
-const getSubCommentLikes = ({ commentid, postid, subcommentid, date, id, }) => (0, req_1.default)(`/posts/${postid}/likes/comments/${commentid}/${subcommentid}/likes?date=${date}&id=${id}`).then((r) => r);
+const getSubCommentLikes = ({ commentid, postid, subcommentid, date, id, }) => (0, req_1.default)(`/posts/${postid}/likes/comments/${commentid}${subcommentid ? `/${subcommentid}` : ``}/likes?date=${date}&id=${id}`).then((r) => r);
 exports.getSubCommentLikes = getSubCommentLikes;
 exports.removePost = (0, toolkit_1.createAsyncThunk)("/posts/:postid~{DELETE}", (postid) => (0, req_1.default)(`/posts/${postid}`, "DELETE"));
 exports.getPost = (0, toolkit_1.createAsyncThunk)("/posts/:postid/~{GET}", (postid) => (0, req_1.default)(`/posts/${postid}`));

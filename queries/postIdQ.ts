@@ -131,7 +131,12 @@ const postUnlikeQ = (id: string, postid: string) =>
     [id, postid]
   );
 
-const postCommentQ = (id: string, postid: string, content: string) =>
+const postCommentQ = (
+  id: string,
+  postid: string,
+  content: string,
+  powner: string
+) =>
   db
     .query(
       `
@@ -141,10 +146,10 @@ const postCommentQ = (id: string, postid: string, content: string) =>
       left join users u on p.owner = u.id
       left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
       ${blocked("p.owner")}
-      where p.id = $2 and (ispublic or f is not null or u.id = $1) and b is null
+      where p.id = $2 and (ispublic or f is not null or u.id = $1) and b is null and p.owner = $4
       returning id
   `,
-      [id, postid, content]
+      [id, postid, content, powner]
     )
     .then((r) => r.rows[0]?.id);
 

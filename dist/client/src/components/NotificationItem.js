@@ -8,8 +8,14 @@ const react_router_dom_1 = require("react-router-dom");
 const react_1 = require("react");
 const Bottom_1 = require("./post/postpopup/Bottom");
 const NotificationItem = ({ n, closepanel, onc, }) => {
-    const { id, url, owner, ispublic, pp, username, created, type, status } = n;
-    const text = (0, react_1.useMemo)(() => ["started following you. ", "", "liked your post. "][type], []);
+    const { id, url, pp, username, created, type, status, text } = n;
+    console.log(n);
+    const viewtext = (0, react_1.useMemo)(() => [
+        "started following you. ",
+        "",
+        "liked your post. ",
+        `commented on your post: ${text} `,
+    ][typeof type == "object" ? 3 : type], []);
     const date = (0, react_1.useMemo)(() => (0, Bottom_1.dateCalc)(created), []);
     const s = (0, react_1.useMemo)(() => {
         if (status == null)
@@ -21,12 +27,12 @@ const NotificationItem = ({ n, closepanel, onc, }) => {
         return "";
     }, [status]);
     return (<Container key={id}>
-      <react_router_dom_1.Link to={type < 2 ? `/${owner}` : `/p/${url}`} onClick={() => closepanel()}>
+      <react_router_dom_1.Link to={type == 0 ? `/${username}` : `/p/${url}`} onClick={() => closepanel()}>
         <img className="pp" src={pp || "/pp.jpg"} alt="pp"/>
         <pre className="text">
           <react_router_dom_1.Link to={`/${username}`}>{username}</react_router_dom_1.Link>
-          {text}
-          <span>{date}</span>{" "}
+          {viewtext}
+          <span>{date}</span>
         </pre>
         <button className={s} onClick={onc}>
           {s}
@@ -40,7 +46,7 @@ const Container = styled_components_1.default.li `
   a {
     display: flex;
     padding: 8px 24px;
-    align-items: center;
+    align-items: start;
     width: 366px;
     .pp {
       width: 44px;
@@ -53,7 +59,6 @@ const Container = styled_components_1.default.li `
       white-space: pre-wrap;
       font-size: 14px;
       max-lines: 2;
-      height: 36px;
       line-height: 18px;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -70,6 +75,8 @@ const Container = styled_components_1.default.li `
       }
     }
     button {
+      min-width: 94px;
+      margin-top: 3px;
       font-size: 14px;
       border-radius: 8px;
       padding: 7px 1rem;

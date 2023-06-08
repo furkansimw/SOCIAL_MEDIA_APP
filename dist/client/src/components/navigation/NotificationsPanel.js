@@ -44,13 +44,13 @@ const NotificationsPanel = (0, react_1.forwardRef)(({ isActive, closepanel }, re
     const setNotificationViewOpen = () => setFr(true);
     const [p, _p] = (0, react_1.useState)({ active: false, data: { pp: null, username: "" }, process: () => { } });
     const onc = (e, n) => {
-        const { id, status, ispublic, username, pp, owner } = n;
+        const { status, ispublic, username, pp, owner } = n;
         e.preventDefault();
         e.stopPropagation();
         if (status == null) {
             (0, profile_1.followUserS)(owner, true);
             const newNotifications = notifications.map((_) => {
-                if (_.id == id)
+                if (_.username == username)
                     return Object.assign(Object.assign({}, _), { status: ispublic ? 0 : 1 });
                 return _;
             });
@@ -60,7 +60,7 @@ const NotificationsPanel = (0, react_1.forwardRef)(({ isActive, closepanel }, re
             (0, profile_1.followUserS)(owner, false);
             const process = () => {
                 const newNotifications = notifications.map((_) => {
-                    if (_.id == id)
+                    if (_.username == username)
                         return Object.assign(Object.assign({}, _), { status: null });
                     return _;
                 });
@@ -103,7 +103,7 @@ const NotificationsPanel = (0, react_1.forwardRef)(({ isActive, closepanel }, re
             {loading && <LoadingBox_1.default />}
           </ul>
         </div>
-        <FollowRequests_1.default close={closepanel} isActive={fr}/>
+        <FollowRequests_1.default close={() => setFr(false)} isActive={fr}/>
       </Container>);
 });
 const Container = styled_components_1.default.div `

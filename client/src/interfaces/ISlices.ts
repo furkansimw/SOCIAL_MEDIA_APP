@@ -10,6 +10,7 @@ export interface IProfileInitialState {
     nreqcount: number;
     npostlikescount: number;
     ncreatedcommentcount: number;
+    nfollowcount: number;
   };
 }
 
@@ -117,6 +118,7 @@ export interface INotification {
   created: string;
   owner: string;
   ispublic: boolean;
+  text: string | null;
   status: null | 0 | 1;
   url: string; // posturl, username
 }

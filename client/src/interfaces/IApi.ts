@@ -19,6 +19,7 @@ export interface ICreateComment {
   username: string;
   pp: string | null;
   id: string;
+  postowner: string;
 }
 
 export interface ICreateAction {

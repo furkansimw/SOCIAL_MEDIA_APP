@@ -123,7 +123,7 @@ const postUnlikeQ = (id, postid) => db_1.default.query(`
       );
 `, [id, postid]);
 exports.postUnlikeQ = postUnlikeQ;
-const postCommentQ = (id, postid, content) => db_1.default
+const postCommentQ = (id, postid, content, powner) => db_1.default
     .query(`
       insert into comments (owner, post, content)
       SELECT $1, $2, $3
@@ -131,9 +131,9 @@ const postCommentQ = (id, postid, content) => db_1.default
       left join users u on p.owner = u.id
       left join relationships f on f.owner = $1 and f.target = p.owner and f.type = 0
       ${(0, blocked_1.default)("p.owner")}
-      where p.id = $2 and (ispublic or f is not null or u.id = $1) and b is null
+      where p.id = $2 and (ispublic or f is not null or u.id = $1) and b is null and p.owner = $4
       returning id
-  `, [id, postid, content])
+  `, [id, postid, content, powner])
     .then((r) => { var _a; return (_a = r.rows[0]) === null || _a === void 0 ? void 0 : _a.id; });
 exports.postCommentQ = postCommentQ;
 const postSaveQ = (id, postid) => db_1.default.query(`

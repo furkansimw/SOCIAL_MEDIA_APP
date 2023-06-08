@@ -74,13 +74,17 @@ const postComment = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   if (guest) badRequest();
   const { postid } = req.params;
-  let { content }: { content?: string } = req.body;
+  let { content, postowner }: { content?: string; postowner?: string } =
+    req.body;
 
-  if (!content || content?.trim().length == 0) return badRequest();
+  if (!content || content?.trim().length == 0 || !postowner)
+    return badRequest();
   content = content.replace(/\s+/g, " ").trim().toString();
 
-  const commentId = await postCommentQ(id, postid, content);
+  const commentId = await postCommentQ(id, postid, content, postowner);
   if (!commentId) badRequest();
+  if (id != postowner)
+    io.to(findS(postowner)).emit("notifications", { type: 3, content });
   res.json(commentId);
 });
 

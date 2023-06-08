@@ -87,12 +87,14 @@ const Navigation = () => {
     }, []);
     const [newNotification, setNewNotification] = (0, react_1.useState)(false);
     const [notificationsHas, setNotificationsHas] = (0, react_1.useState)(false);
-    const { username, pp, id, ncreatedcommentcount, npostlikescount, nreqcount, reqcount, unreadmessagescount, } = (0, react_redux_1.useSelector)(profileReducer_1.selectValues, react_redux_1.shallowEqual);
+    const { username, pp, ncreatedcommentcount, npostlikescount, nreqcount, unreadmessagescount, nfollowcount, } = (0, react_redux_1.useSelector)(profileReducer_1.selectValues, react_redux_1.shallowEqual);
     (0, react_1.useEffect)(() => {
         socket_1.default.on("notifications", (type) => {
             setNewNotification(true);
             setNotificationsHas(true);
-            if ([0, 1].includes(type))
+            if (type == 0)
+                dispatch((0, profileReducer_1.setUpdateValues)({ nfollowcount: nfollowcount + 1 }));
+            else if (type == 1)
                 dispatch((0, profileReducer_1.setUpdateValues)({ nreqcount: nreqcount + 1 }));
             else if (type == 2)
                 dispatch((0, profileReducer_1.setUpdateValues)({ npostlikescount: npostlikescount + 1 }));
@@ -112,16 +114,29 @@ const Navigation = () => {
     }, [newNotification]);
     const [unreadMessagesCount, setUnreadMessagesCount] = (0, react_1.useState)(0);
     (0, react_1.useEffect)(() => {
-        setNotificationsHas(ncreatedcommentcount > 0 || npostlikescount > 0 || nreqcount > 0);
+        setNotificationsHas(ncreatedcommentcount > 0 ||
+            npostlikescount > 0 ||
+            nreqcount > 0 ||
+            nfollowcount > 0);
         setUnreadMessagesCount(unreadmessagescount);
-        setNewNotification(ncreatedcommentcount > 0 || npostlikescount > 0 || nreqcount > 0);
-    }, [ncreatedcommentcount, unreadmessagescount, npostlikescount, nreqcount]);
+        setNewNotification(ncreatedcommentcount > 0 ||
+            npostlikescount > 0 ||
+            nreqcount > 0 ||
+            nfollowcount > 0);
+    }, [
+        ncreatedcommentcount,
+        unreadmessagescount,
+        npostlikescount,
+        nreqcount,
+        nfollowcount,
+    ]);
     (0, react_1.useEffect)(() => {
         if (panel == "notifications") {
             dispatch((0, profileReducer_1.setUpdateValues)({
                 ncreatedcommentcount: 0,
                 nreqcount: 0,
                 npostlikescount: 0,
+                nfollowcount: 0,
             }));
         }
     }, [panel]);
@@ -172,9 +187,9 @@ const Navigation = () => {
                 <p>Notifications</p>
                 {notificationsHas && <div className="circle"></div>}
                 {newNotification && (<div className={`newnotif`}>
-                    {nreqcount > 0 && (<span>
+                    {(nreqcount > 0 || nfollowcount > 0) && (<span>
                         <div className="icon people"></div>
-                        <p>{nreqcount}</p>
+                        <p>{nreqcount + nfollowcount}</p>
                       </span>)}
                     {npostlikescount > 0 && (<span>
                         <div className="icon post"></div>

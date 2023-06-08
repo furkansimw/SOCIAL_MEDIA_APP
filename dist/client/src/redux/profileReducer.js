@@ -17,6 +17,7 @@ const initialState = {
         nreqcount: 0,
         reqcount: 0,
         unreadmessagescount: 0,
+        nfollowcount: 0,
     },
 };
 exports.profileSlice = (0, toolkit_1.createSlice)({

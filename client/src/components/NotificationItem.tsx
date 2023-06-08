@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useMemo } from "react";
 import { dateCalc } from "./post/postpopup/Bottom";
-import { followUserS } from "../api/profile";
 
 const NotificationItem = ({
   n,
@@ -14,10 +13,16 @@ const NotificationItem = ({
   closepanel: () => void;
   onc: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }) => {
-  const { id, url, owner, ispublic, pp, username, created, type, status } = n;
-
-  const text = useMemo(
-    () => ["started following you. ", "", "liked your post. "][type],
+  const { id, url, pp, username, created, type, status, text } = n;
+  console.log(n);
+  const viewtext = useMemo(
+    () =>
+      [
+        "started following you. ",
+        "",
+        "liked your post. ",
+        `commented on your post: ${text} `,
+      ][typeof type == "object" ? 3 : type],
     []
   );
   const date = useMemo(() => dateCalc(created), []);
@@ -32,14 +37,14 @@ const NotificationItem = ({
   return (
     <Container key={id}>
       <Link
-        to={type < 2 ? `/${owner}` : `/p/${url}`}
+        to={type == 0 ? `/${username}` : `/p/${url}`}
         onClick={() => closepanel()}
       >
         <img className="pp" src={pp || "/pp.jpg"} alt="pp" />
         <pre className="text">
           <Link to={`/${username}`}>{username}</Link>
-          {text}
-          <span>{date}</span>{" "}
+          {viewtext}
+          <span>{date}</span>
         </pre>
         <button className={s} onClick={onc}>
           {s}
@@ -55,7 +60,7 @@ const Container = styled.li`
   a {
     display: flex;
     padding: 8px 24px;
-    align-items: center;
+    align-items: start;
     width: 366px;
     .pp {
       width: 44px;
@@ -68,7 +73,6 @@ const Container = styled.li`
       white-space: pre-wrap;
       font-size: 14px;
       max-lines: 2;
-      height: 36px;
       line-height: 18px;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -85,6 +89,8 @@ const Container = styled.li`
       }
     }
     button {
+      min-width: 94px;
+      margin-top: 3px;
       font-size: 14px;
       border-radius: 8px;
       padding: 7px 1rem;

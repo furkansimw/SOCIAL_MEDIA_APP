@@ -105,6 +105,7 @@ const create = async () => {
     id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     target UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,
     url uuid not null,
+    text varchar(200),
     processid uuid not null,
     type numeric not null default 0,
     owner UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,
@@ -186,15 +187,23 @@ const create = async () => {
   DROP TRIGGER IF EXISTS update_comment_count ON comments;
   CREATE OR REPLACE  FUNCTION update_post_comment_count()
   RETURNS TRIGGER AS $$
+  DECLARE
+        owner_id uuid;
   BEGIN
+  owner_id := (SELECT owner FROM posts WHERE id = NEW.post);
+
     IF (TG_OP = 'INSERT') THEN
       UPDATE posts
       SET commentcount = commentcount + 1
       WHERE id = NEW.post;
+      INSERT INTO notifications (target, url, processid, type, owner, text)
+      VALUES (owner_id, NEW.post, NEW.id, 3, NEW.owner, new.content);
+
     ELSIF (TG_OP = 'DELETE') THEN
       UPDATE posts
       SET commentcount = commentcount - 1
       WHERE id = OLD.post;
+      DELETE FROM notifications where processid = old.id;
     END IF; 
     RETURN NULL;
   END;

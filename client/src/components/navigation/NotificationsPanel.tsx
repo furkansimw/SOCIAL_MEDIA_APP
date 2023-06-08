@@ -2,7 +2,7 @@ import { forwardRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import LoadingBox from "../LoadingBox";
 import NotificationItem from "../NotificationItem";
-import { IFollowRequest, INotification } from "../../interfaces/ISlices";
+import { INotification } from "../../interfaces/ISlices";
 import { followUserS, notificationsGet } from "../../api/profile";
 import { followRequests } from "../../api/profile";
 import { SmallRightIconFRFor } from "../Icons";
@@ -64,14 +64,14 @@ const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
       e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
       n: INotification
     ) => {
-      const { id, status, ispublic, username, pp, owner } = n;
+      const { status, ispublic, username, pp, owner } = n;
       e.preventDefault();
       e.stopPropagation();
 
       if (status == null) {
         followUserS(owner, true);
         const newNotifications = notifications.map((_) => {
-          if (_.id == id)
+          if (_.username == username)
             return { ..._, status: ispublic ? 0 : 1 } as INotification;
           return _;
         });
@@ -80,7 +80,8 @@ const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
         followUserS(owner, false);
         const process = () => {
           const newNotifications = notifications.map((_) => {
-            if (_.id == id) return { ..._, status: null } as INotification;
+            if (_.username == username)
+              return { ..._, status: null } as INotification;
             return _;
           });
           setNotifications(newNotifications);
@@ -139,7 +140,7 @@ const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
             {loading && <LoadingBox />}
           </ul>
         </div>
-        <FollowRequests close={closepanel} isActive={fr} />
+        <FollowRequests close={() => setFr(false)} isActive={fr} />
       </Container>
     );
   }
