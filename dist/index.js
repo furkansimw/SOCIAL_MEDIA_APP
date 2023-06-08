@@ -44,14 +44,17 @@ exports.io.use((socket, next) => {
         next(new Error("Error"));
     }
 });
-//
-app.use(express_1.default.static(__dirname.replace("\\dist", "") + "\\client\\dist"));
+const dev = process.env.DEVELOPMENT;
+app.use(express_1.default.static(__dirname.replace(dev ? "\\dist" : "/dist", "") +
+    (dev ? "\\client\\dist" : "/client/dist")));
 app.use(express_1.default.json({ limit: "60mb" }));
 app.use((0, cookie_parser_1.default)());
 app.use((0, morgan_1.default)("dev"));
 app.use((0, helmet_1.default)());
 app.get("*", (req, res) => {
-    res.sendFile(__dirname.replace("\\dist", "") + "\\client\\dist\\index.html");
+    res.sendFile(__dirname.replace(dev ? "\\dist" : "/dist", "") + dev
+        ? "\\client\\dist\\index.html"
+        : "/client/dist/index.html");
 });
 app.use("/api", routes_1.default);
 app.use("/sessions", (req, res) => {
