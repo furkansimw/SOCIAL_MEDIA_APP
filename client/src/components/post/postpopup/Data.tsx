@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import LoadingBox from "../../LoadingBox";
 import { shallowEqual, useSelector } from "react-redux";
-import { selectCurrentPost } from "../../../redux/postsReducer";
+import { selectBack, selectCurrentPost } from "../../../redux/postsReducer";
 import { AppDispatch } from "../../../redux/store";
 import { dateCalc } from "./Bottom";
 import { forwardRef, useMemo } from "react";
@@ -50,9 +50,13 @@ const Data = forwardRef<Refs, Props>(({ reply }, ref) => {
     dataContainerRef,
     contentRef,
   }));
-
+  const back = useSelector(selectBack, shallowEqual);
   return (
-    <DataContainer ref={dataContainerRef} onScroll={onScroll}>
+    <DataContainer
+      ref={dataContainerRef}
+      onScroll={onScroll}
+      className={back == null ? "backnone" : ""}
+    >
       <Content ref={contentRef} />
       {data.map((comment) => (
         <CommentItem key={comment.id} comment={comment} reply={reply} />
@@ -63,7 +67,10 @@ const Data = forwardRef<Refs, Props>(({ reply }, ref) => {
 });
 
 const DataContainer = styled.ul`
-  height: calc(100% - 146px - 71px);
+  height: calc(100% - 146px - 90px);
+  &.backnone {
+    height: calc(100% - 146px - 71px) !important;
+  }
   overflow-y: auto;
   width: 100%;
   &::-webkit-scrollbar {

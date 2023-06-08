@@ -61,14 +61,18 @@ const Data = (0, react_1.forwardRef)(({ reply }, ref) => {
         dataContainerRef,
         contentRef,
     }));
-    return (<DataContainer ref={dataContainerRef} onScroll={onScroll}>
+    const back = (0, react_redux_1.useSelector)(postsReducer_1.selectBack, react_redux_1.shallowEqual);
+    return (<DataContainer ref={dataContainerRef} onScroll={onScroll} className={back == null ? "backnone" : ""}>
       <Content ref={contentRef}/>
       {data.map((comment) => (<CommentItem_1.default key={comment.id} comment={comment} reply={reply}/>))}
       {loading && <LoadingBox_1.default />}
     </DataContainer>);
 });
 const DataContainer = styled_components_1.default.ul `
-  height: calc(100% - 146px - 71px);
+  height: calc(100% - 146px - 90px);
+  &.backnone {
+    height: calc(100% - 146px - 71px) !important;
+  }
   overflow-y: auto;
   width: 100%;
   &::-webkit-scrollbar {

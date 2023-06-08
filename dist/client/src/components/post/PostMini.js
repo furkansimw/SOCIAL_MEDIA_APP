@@ -12,7 +12,7 @@ const PostMini = ({ post, back }) => {
     const dispatch = (0, react_redux_1.useDispatch)();
     const { cover, id, likecount, commentcount, more } = post;
     const tap = () => {
-        window.history.replaceState(null, "", `/p/${id}`);
+        window.history.pushState(null, "", `/p/${id}`);
         dispatch((0, postsReducer_1.setCurrentPostId)(id));
         dispatch((0, postsReducer_1.setBack)(back));
     };

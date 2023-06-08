@@ -20,6 +20,7 @@ const Navigation_tsx_1 = require("../components/navigation/Navigation.tsx");
 const Priv_tsx_1 = __importDefault(require("../components/profile/Priv.tsx"));
 const UnfollowPopup_tsx_1 = __importDefault(require("./UnfollowPopup.tsx"));
 const Profile = () => {
+    const isloggedin = (0, react_redux_1.useSelector)(profileReducer_ts_1.selectIsLoggedin, react_redux_1.shallowEqual);
     const p = (0, react_router_dom_1.useLocation)().pathname.split("/");
     const username = p[1];
     const [block, setBlock] = (0, react_1.useState)([false, false]);
@@ -62,6 +63,8 @@ const Profile = () => {
     const { info } = profile;
     const { followercount, followingcount, postcount, status, id: userid, ispublic, fullname, bio, pp, } = info;
     const statusClick = () => {
+        if (!isloggedin)
+            return dispatch((0, profileReducer_ts_1.toggleSetLoginPopupActive)());
         if (status == 1 && !ispublic)
             setUnfollowpopupx({ active: true, pp, username });
         else if (status == 2)
@@ -102,6 +105,11 @@ const Profile = () => {
         }
     };
     const process = () => dispatch((0, profile_1.followUser)({ a: false, userid }));
+    const message = () => {
+        if (!isloggedin)
+            dispatch((0, profileReducer_ts_1.toggleSetLoginPopupActive)());
+        // todo
+    };
     return (<Container onScroll={onScroll} ref={listRef}>
       <Title_1.default title={username}/>
       {unfollowpopupx.active && (<UnfollowPopup_tsx_1.default data={{ pp, username }} close={closeUnfollowpostpopup} process={process}/>)}
@@ -120,7 +128,9 @@ const Profile = () => {
                 <button onClick={statusClick} className={`state ${statusController()}`}>
                   {statusController()}
                 </button>
-                <button className="message">Message</button>
+                <button className="message" onClick={message}>
+                  Message
+                </button>
                 <button className="more" onClick={() => setMore(true)}>
                   <Icons_1.MoreIcon3 />
                 </button>

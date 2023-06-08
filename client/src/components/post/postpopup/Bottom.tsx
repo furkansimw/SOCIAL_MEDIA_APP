@@ -2,7 +2,11 @@ import styled from "styled-components";
 import LoadingBox from "../../LoadingBox";
 import { createAction, createComment } from "../../../api/posts";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { selectValues } from "../../../redux/profileReducer";
+import {
+  selectIsLoggedin,
+  selectValues,
+  toggleSetLoginPopupActive,
+} from "../../../redux/profileReducer";
 import { AppDispatch } from "../../../redux/store";
 import { forwardRef, useMemo, useState } from "react";
 import { Dispatch, SetStateAction } from "react";
@@ -76,16 +80,30 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
     } = useSelector(selectCurrentPost, shallowEqual)!;
 
     const date = useMemo(() => dateCalc(created), []);
-
-    const like = () =>
+    const isloggedin = useSelector(selectIsLoggedin, shallowEqual);
+    const like = () => {
+      if (!isloggedin) return dispatch(toggleSetLoginPopupActive());
       dispatch(createAction({ postid, a: !isliked, t: "like", postowner }));
+    };
 
-    const save = () =>
+    const save = () => {
+      if (!isloggedin) return dispatch(toggleSetLoginPopupActive());
       dispatch(createAction({ postid, a: !issaved, t: "save", postowner }));
+    };
 
     const [likesPopup, setLikesPopup] = useState(false);
     const quit = () => setLikesPopup(false);
-    const viewLikes = () => setLikesPopup(true);
+    const viewLikes = () => {
+      if (!isloggedin) return dispatch(toggleSetLoginPopupActive());
+      setLikesPopup(true);
+    };
+
+    const share = () => {
+      if (!isloggedin) return dispatch(toggleSetLoginPopupActive());
+
+      //todo
+    };
+
     return (
       <BottomContainer>
         <div className="icons">
@@ -103,7 +121,7 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
               <CommentIcon />
             </button>
             {likesPopup && <Likes type="post" quit={quit} postid={id} />}
-            <button>
+            <button onClick={share}>
               <ShareIcon />
             </button>
           </div>
@@ -120,6 +138,7 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
         <form
           onSubmit={(e) => {
             e.preventDefault();
+            if (!isloggedin) return dispatch(toggleSetLoginPopupActive());
             if (comment.trim().length === 0) return;
             const content = comment.replace(/\s+/g, " ").trim();
             dispatch(

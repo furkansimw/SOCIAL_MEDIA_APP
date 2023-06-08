@@ -8,7 +8,11 @@ import {
   selectProfile,
 } from "../../../redux/postsReducer";
 import LinkQ from "../LinkQ";
-import { selectValues } from "../../../redux/profileReducer";
+import {
+  selectIsLoggedin,
+  selectValues,
+  toggleSetLoginPopupActive,
+} from "../../../redux/profileReducer";
 import { AppDispatch, RootState } from "../../../redux/store";
 import { useState } from "react";
 import Context from "../Context";
@@ -32,7 +36,11 @@ const Info = () => {
   const isfollowing = profile?.info?.status == 0;
   const [p, _p] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
-  const follow = () => dispatch(followUser({ a: true, userid }));
+  const isloggedin = useSelector(selectIsLoggedin, shallowEqual);
+  const follow = () => {
+    if (!isloggedin) return dispatch(toggleSetLoginPopupActive());
+    dispatch(followUser({ a: true, userid }));
+  };
   return (
     <InfoContainer>
       <div className="l">

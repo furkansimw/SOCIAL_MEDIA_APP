@@ -11,12 +11,14 @@ const profileReducer_1 = require("../../redux/profileReducer");
 const react_redux_2 = require("react-redux");
 const posts_1 = require("../../api/posts");
 const postsReducer_1 = require("../../redux/postsReducer");
+const react_router_dom_1 = require("react-router-dom");
 const Context = ({ post, close }) => {
     const { id } = (0, react_redux_1.useSelector)(profileReducer_1.selectValues, react_redux_1.shallowEqual);
     const mypost = post.owner == id;
     const dispatch = (0, react_redux_2.useDispatch)();
     const remove = () => dispatch((0, posts_1.removePost)(post.id));
     const back = (0, react_redux_1.useSelector)(postsReducer_1.selectBack, react_redux_1.shallowEqual);
+    const nav = (0, react_router_dom_1.useNavigate)();
     return (<>
       <PostPopup_1.Bg onClick={close}/>
       <Container className={mypost ? "my" : ""}>

@@ -20,6 +20,7 @@ const postsReducer_1 = require("./redux/postsReducer");
 const LoginPopup_tsx_1 = __importDefault(require("./components/unauthorization/LoginPopup.tsx"));
 const EditProfile_tsx_1 = __importDefault(require("./pages/EditProfile.tsx"));
 const LoginBanner_tsx_1 = __importDefault(require("./components/unauthorization/LoginBanner.tsx"));
+const NotFound_tsx_1 = __importDefault(require("./components/profile/NotFound.tsx"));
 const App = () => {
     const { isloggedin, loginPopupActive } = (0, react_redux_1.useSelector)(profileReducer_1.selectProfile);
     const back = (0, react_redux_1.useSelector)(postsReducer_1.selectBack, react_redux_1.shallowEqual);
@@ -35,9 +36,10 @@ const App = () => {
           <react_router_dom_1.Route path="/:username/saved?" element={<Profile_1.default />}/>
           {isloggedin && (<>
               <react_router_dom_1.Route path="/explore" element={<Explore_1.default />}/>
-              <react_router_dom_1.Route path="/direct/inbox" element={<Messages_1.default />}/>
+              <react_router_dom_1.Route path="/direct/inbox/:messagegroupid?" element={<Messages_1.default />}/>
               <react_router_dom_1.Route path="/account/edit" element={<EditProfile_tsx_1.default />}/>
             </>)}
+          <react_router_dom_1.Route path="*" element={<NotFound_tsx_1.default />}/>
         </react_router_dom_1.Routes>
       </View>
       {back && <PostPopup_1.default />}

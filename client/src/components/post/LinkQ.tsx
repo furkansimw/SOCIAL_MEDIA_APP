@@ -15,7 +15,7 @@ const LinkQ: FC<Props> = (props) => {
   const closex = () => dispatch(setBack(null));
 
   return (
-    <Link to={props.to} className={props.className} onClick={closex} replace>
+    <Link replace to={props.to} className={props.className} onClick={closex}>
       {props.children}
     </Link>
   );

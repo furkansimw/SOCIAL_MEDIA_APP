@@ -13,6 +13,8 @@ const posts_1 = require("../../../api/posts");
 const Bottom_1 = require("./Bottom");
 const Likes_1 = __importDefault(require("./Likes"));
 const Report_1 = __importDefault(require("./Report"));
+const profileReducer_1 = require("../../../redux/profileReducer");
+const react_redux_2 = require("react-redux");
 const SubCommentItem = ({ subcomment, commentid, reply, }) => {
     const { isliked, pp, username, content, created, likecount, id: subcommentid, } = subcomment;
     const dispatch = (0, react_redux_1.useDispatch)();
@@ -21,12 +23,19 @@ const SubCommentItem = ({ subcomment, commentid, reply, }) => {
     const date = (0, react_1.useMemo)(() => (0, Bottom_1.dateCalc)(created), []);
     const lastActive = (0, react_1.useMemo)(() => (new Date(Date.now()).getTime() - new Date(created).getTime()) / 1000 < 1, []);
     const like = () => {
+        if (!isloggedin)
+            return dispatch((0, profileReducer_1.toggleSetLoginPopupActive)());
         if (isliked)
             return;
         dispatch((0, posts_1.likeComment)({ a: true, commentid, postid, subcommentid }));
     };
     const [likesPopup, setLikesPopup] = (0, react_1.useState)(false);
-    const viewLikes = () => setLikesPopup(true);
+    const isloggedin = (0, react_redux_2.useSelector)(profileReducer_1.selectValues, react_redux_1.shallowEqual);
+    const viewLikes = () => {
+        if (!isloggedin)
+            return dispatch((0, profileReducer_1.toggleSetLoginPopupActive)());
+        setLikesPopup(true);
+    };
     const quit = () => setLikesPopup(false);
     const [r, _r] = (0, react_1.useState)(false);
     return (<Container onDoubleClick={like} className={lastActive ? "lastactive" : ""}>

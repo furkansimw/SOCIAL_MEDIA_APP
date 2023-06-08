@@ -277,8 +277,8 @@ exports.postsSlice = (0, toolkit_1.createSlice)({
             state.profiles = (0, functions_ts_1.profileU)(profiles, username, obj);
         });
         builder.addCase(profile_ts_1.followUser.pending, (state, action) => {
-            var _a, _b;
-            const { profiles, posts } = state;
+            var _a, _b, _c, _d;
+            const { profiles, posts, back } = state;
             const { userid, a } = action.meta.arg;
             const ispublic = (_b = (_a = profiles.find((p) => { var _a; return ((_a = p.info) === null || _a === void 0 ? void 0 : _a.id) == userid; })) === null || _a === void 0 ? void 0 : _a.info) === null || _b === void 0 ? void 0 : _b.ispublic;
             if (!ispublic && !a)
@@ -300,6 +300,12 @@ exports.postsSlice = (0, toolkit_1.createSlice)({
                                                 : 0) }) });
                 else
                     return p;
+            });
+            const isfollowing = ((_d = (_c = state.profiles.find((p) => { var _a; return ((_a = p === null || p === void 0 ? void 0 : p.info) === null || _a === void 0 ? void 0 : _a.id) == userid; })) === null || _c === void 0 ? void 0 : _c.info) === null || _d === void 0 ? void 0 : _d.status) == 0;
+            state.posts = posts.map((p) => {
+                if (p.owner == userid)
+                    return Object.assign(Object.assign({}, p), { isfollowing });
+                return p;
             });
         });
         builder

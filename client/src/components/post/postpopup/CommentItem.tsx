@@ -6,13 +6,18 @@ import LoadingBox from "../../LoadingBox";
 import LinkConverter from "../LinkConverter";
 import LinkQ from "../LinkQ";
 import SubCommentItem from "./SubCommentItem";
-import { useDispatch } from "react-redux";
+import { shallowEqual, useDispatch } from "react-redux";
 import { IComment } from "../../../interfaces/ISlices";
 import { AppDispatch } from "../../../redux/store";
 import { dateCalc } from "./Bottom";
 import styled from "styled-components";
 import Likes from "./Likes";
 import Report from "./Report";
+import {
+  selectIsLoggedin,
+  toggleSetLoginPopupActive,
+} from "../../../redux/profileReducer";
+import { useSelector } from "react-redux";
 
 type Props = {
   comment: IComment;
@@ -33,9 +38,11 @@ const CommentItem = ({ comment, reply }: Props) => {
     subcomments: { data, hasmore, t, loading },
   } = comment;
   const postid = window.location.pathname.split("/")[2];
-  const likeCommentT = () =>
+  const isloggedin = useSelector(selectIsLoggedin, shallowEqual);
+  const likeCommentT = () => {
+    if (!isloggedin) return dispatch(toggleSetLoginPopupActive());
     dispatch(likeComment({ a: !isliked, commentid, postid }));
-
+  };
   const date = useMemo(() => dateCalc(created), []);
 
   const replyHandle = () => reply(commentid, username);
@@ -54,12 +61,16 @@ const CommentItem = ({ comment, reply }: Props) => {
   );
 
   const like = () => {
+    if (!isloggedin) return dispatch(toggleSetLoginPopupActive());
     if (isliked) return;
     dispatch(likeComment({ a: true, commentid, postid }));
   };
 
   const [likesPopup, setLikesPopup] = useState(false);
-  const viewLikes = () => setLikesPopup(true);
+  const viewLikes = () => {
+    if (!isloggedin) return dispatch(toggleSetLoginPopupActive());
+    setLikesPopup(true);
+  };
   const quit = () => setLikesPopup(false);
   const [r, _r] = useState(false);
 

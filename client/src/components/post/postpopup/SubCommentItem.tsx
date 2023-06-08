@@ -4,12 +4,17 @@ import styled from "styled-components";
 import { LikeIconComment, MoreIcon2 } from "../../Icons";
 import LinkConverter from "../LinkConverter";
 import LinkQ from "../LinkQ";
-import { useDispatch } from "react-redux";
+import { shallowEqual, useDispatch } from "react-redux";
 import { AppDispatch } from "../../../redux/store";
 import { deleteComment, likeComment } from "../../../api/posts";
 import { dateCalc } from "./Bottom";
 import Likes from "./Likes";
 import Report from "./Report";
+import {
+  selectValues,
+  toggleSetLoginPopupActive,
+} from "../../../redux/profileReducer";
+import { useSelector } from "react-redux";
 
 const SubCommentItem = ({
   subcomment,
@@ -45,13 +50,17 @@ const SubCommentItem = ({
   );
 
   const like = () => {
+    if (!isloggedin) return dispatch(toggleSetLoginPopupActive());
     if (isliked) return;
     dispatch(likeComment({ a: true, commentid, postid, subcommentid }));
   };
 
   const [likesPopup, setLikesPopup] = useState(false);
-
-  const viewLikes = () => setLikesPopup(true);
+  const isloggedin = useSelector(selectValues, shallowEqual);
+  const viewLikes = () => {
+    if (!isloggedin) return dispatch(toggleSetLoginPopupActive());
+    setLikesPopup(true);
+  };
   const quit = () => setLikesPopup(false);
   const [r, _r] = useState(false);
   return (

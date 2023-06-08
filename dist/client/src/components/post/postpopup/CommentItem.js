@@ -16,11 +16,18 @@ const Bottom_1 = require("./Bottom");
 const styled_components_1 = __importDefault(require("styled-components"));
 const Likes_1 = __importDefault(require("./Likes"));
 const Report_1 = __importDefault(require("./Report"));
+const profileReducer_1 = require("../../../redux/profileReducer");
+const react_redux_2 = require("react-redux");
 const CommentItem = ({ comment, reply }) => {
     const dispatch = (0, react_redux_1.useDispatch)();
     const { id: commentid, username, pp, likecount, subcommentcount, content, isliked, created, subcomments: { data, hasmore, t, loading }, } = comment;
     const postid = window.location.pathname.split("/")[2];
-    const likeCommentT = () => dispatch((0, posts_1.likeComment)({ a: !isliked, commentid, postid }));
+    const isloggedin = (0, react_redux_2.useSelector)(profileReducer_1.selectIsLoggedin, react_redux_1.shallowEqual);
+    const likeCommentT = () => {
+        if (!isloggedin)
+            return dispatch((0, profileReducer_1.toggleSetLoginPopupActive)());
+        dispatch((0, posts_1.likeComment)({ a: !isliked, commentid, postid }));
+    };
     const date = (0, react_1.useMemo)(() => (0, Bottom_1.dateCalc)(created), []);
     const replyHandle = () => reply(commentid, username);
     const view = () => {
@@ -33,12 +40,18 @@ const CommentItem = ({ comment, reply }) => {
     };
     const lastActive = (0, react_1.useMemo)(() => (new Date(Date.now()).getTime() - new Date(created).getTime()) / 1000 < 1, []);
     const like = () => {
+        if (!isloggedin)
+            return dispatch((0, profileReducer_1.toggleSetLoginPopupActive)());
         if (isliked)
             return;
         dispatch((0, posts_1.likeComment)({ a: true, commentid, postid }));
     };
     const [likesPopup, setLikesPopup] = (0, react_1.useState)(false);
-    const viewLikes = () => setLikesPopup(true);
+    const viewLikes = () => {
+        if (!isloggedin)
+            return dispatch((0, profileReducer_1.toggleSetLoginPopupActive)());
+        setLikesPopup(true);
+    };
     const quit = () => setLikesPopup(false);
     const [r, _r] = (0, react_1.useState)(false);
     return (<Container className={lastActive ? "lastactive" : ""}>

@@ -15,6 +15,7 @@ import { selectBack } from "./redux/postsReducer";
 import LoginPopup from "./components/unauthorization/LoginPopup.tsx";
 import EditProfile from "./pages/EditProfile.tsx";
 import LoginBanner from "./components/unauthorization/LoginBanner.tsx";
+import NotFound from "./components/profile/NotFound.tsx";
 
 const App = () => {
   const { isloggedin, loginPopupActive } = useSelector(selectProfile);
@@ -33,10 +34,14 @@ const App = () => {
           {isloggedin && (
             <>
               <Route path="/explore" element={<Explore />} />
-              <Route path="/direct/inbox" element={<Messages />} />
+              <Route
+                path="/direct/inbox/:messagegroupid?"
+                element={<Messages />}
+              />
               <Route path="/account/edit" element={<EditProfile />} />
             </>
           )}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </View>
       {back && <PostPopup />}

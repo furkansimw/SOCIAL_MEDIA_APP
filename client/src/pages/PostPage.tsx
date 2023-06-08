@@ -47,7 +47,34 @@ const PostPage = () => {
 
 const Contianer = styled.div`
   height: 100vh;
-  padding-top: 6rem;
+  padding: 6rem 2rem 0px !important;
+  @media screen and (max-width: 1340px) {
+    .xd {
+      max-width: calc(100% - 4rem) !important;
+      min-width: 0px;
+    }
+  }
+  .cvr {
+    height: 100%;
+    max-width: 800px;
+    width: 100%;
+    min-width: 500px;
+    position: relative;
+
+    .layer {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      z-index: 10;
+    }
+    .cover {
+      width: 100%;
+      object-fit: cover;
+      height: 100%;
+    }
+  }
   .xd {
     height: 100%;
     border-radius: 4px;

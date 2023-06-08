@@ -7,6 +7,7 @@ const postsReducer_1 = require("../../../redux/postsReducer");
 const react_2 = require("react");
 //@ts-ignore
 const swiper_1 = require("swiper");
+const profileReducer_1 = require("../../../redux/profileReducer");
 const PostPopupImages = () => {
     const dispach = (0, react_redux_1.useDispatch)();
     const cp = (0, react_redux_1.useSelector)(postsReducer_1.selectCurrentPost, react_redux_1.shallowEqual);
@@ -26,7 +27,10 @@ const PostPopupImages = () => {
             clearTimeout(timeout);
         };
     }, [likeA]);
+    const isloggedin = (0, react_redux_1.useSelector)(profileReducer_1.selectIsLoggedin, react_redux_1.shallowEqual);
     const dc = () => {
+        if (!isloggedin)
+            return dispach((0, profileReducer_1.toggleSetLoginPopupActive)());
         setLikeA(true);
         if (isliked)
             return;

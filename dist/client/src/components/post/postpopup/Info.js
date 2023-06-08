@@ -25,7 +25,12 @@ const Info = () => {
     const isfollowing = ((_a = profile === null || profile === void 0 ? void 0 : profile.info) === null || _a === void 0 ? void 0 : _a.status) == 0;
     const [p, _p] = (0, react_1.useState)(false);
     const dispatch = (0, react_redux_2.useDispatch)();
-    const follow = () => dispatch((0, profile_1.followUser)({ a: true, userid }));
+    const isloggedin = (0, react_redux_1.useSelector)(profileReducer_1.selectIsLoggedin, react_redux_1.shallowEqual);
+    const follow = () => {
+        if (!isloggedin)
+            return dispatch((0, profileReducer_1.toggleSetLoginPopupActive)());
+        dispatch((0, profile_1.followUser)({ a: true, userid }));
+    };
     return (<InfoContainer>
       <div className="l">
         <LinkQ_1.default className="pp" to={to}>

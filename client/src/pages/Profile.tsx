@@ -20,12 +20,17 @@ import { MoreIcon3 } from "../components/Icons";
 import Title from "../components/Title";
 import PostMini from "../components/post/PostMini";
 import NotFound from "../components/profile/NotFound.tsx";
-import { selectValues } from "../redux/profileReducer.ts";
+import {
+  selectIsLoggedin,
+  selectValues,
+  toggleSetLoginPopupActive,
+} from "../redux/profileReducer.ts";
 import { disableRightClick } from "../components/navigation/Navigation.tsx";
 import Priv from "../components/profile/Priv.tsx";
 import UnfollowPopup from "./UnfollowPopup.tsx";
 
 const Profile = () => {
+  const isloggedin = useSelector(selectIsLoggedin, shallowEqual);
   const p = useLocation().pathname.split("/");
   const username = p[1];
   const [block, setBlock] = useState([false, false]);
@@ -97,6 +102,8 @@ const Profile = () => {
   } = info!;
 
   const statusClick = () => {
+    if (!isloggedin) return dispatch(toggleSetLoginPopupActive());
+
     if (status == 1 && !ispublic)
       setUnfollowpopupx({ active: true, pp, username });
     else if (status == 2) setBlock([true, false]);
@@ -135,6 +142,11 @@ const Profile = () => {
   };
   const process = () => dispatch(followUser({ a: false, userid }));
 
+  const message = () => {
+    if (!isloggedin) dispatch(toggleSetLoginPopupActive());
+    // todo
+  };
+
   return (
     <Container onScroll={onScroll} ref={listRef}>
       <Title title={username} />
@@ -166,7 +178,9 @@ const Profile = () => {
                 >
                   {statusController()}
                 </button>
-                <button className="message">Message</button>
+                <button className="message" onClick={message}>
+                  Message
+                </button>
                 <button className="more" onClick={() => setMore(true)}>
                   <MoreIcon3 />
                 </button>

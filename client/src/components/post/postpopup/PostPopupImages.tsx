@@ -1,11 +1,15 @@
 import { createAction, getImages } from "../../../api/posts";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { selectCurrentPost } from "../../../redux/postsReducer";
+import { selectBack, selectCurrentPost } from "../../../redux/postsReducer";
 import { AppDispatch } from "../../../redux/store";
 import { memo, useEffect, useState } from "react";
 //@ts-ignore
 import { Pagination, Navigation } from "swiper";
+import {
+  selectIsLoggedin,
+  toggleSetLoginPopupActive,
+} from "../../../redux/profileReducer";
 
 const PostPopupImages = () => {
   const dispach = useDispatch<AppDispatch>();
@@ -31,8 +35,9 @@ const PostPopupImages = () => {
       clearTimeout(timeout);
     };
   }, [likeA]);
-
+  const isloggedin = useSelector(selectIsLoggedin, shallowEqual);
   const dc = () => {
+    if (!isloggedin) return dispach(toggleSetLoginPopupActive());
     setLikeA(true);
     if (isliked) return;
     dispach(createAction({ a: true, t: "like", postid: id, postowner }));

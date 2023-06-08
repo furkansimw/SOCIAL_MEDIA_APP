@@ -497,8 +497,9 @@ export const postsSlice = createSlice({
         state.profiles = profileU(profiles, username, obj);
       });
     builder.addCase(followUser.pending, (state, action) => {
-      const { profiles, posts } = state;
+      const { profiles, posts, back } = state;
       const { userid, a } = action.meta.arg;
+
       const ispublic = profiles.find((p) => p.info?.id == userid)?.info
         ?.ispublic!;
       if (!ispublic && !a) state.posts = posts.filter((p) => p.owner != userid);
@@ -526,6 +527,12 @@ export const postsSlice = createSlice({
             },
           };
         else return p;
+      });
+      const isfollowing =
+        state.profiles.find((p) => p?.info?.id == userid)?.info?.status == 0;
+      state.posts = posts.map((p) => {
+        if (p.owner == userid) return { ...p, isfollowing };
+        return p;
       });
     });
 

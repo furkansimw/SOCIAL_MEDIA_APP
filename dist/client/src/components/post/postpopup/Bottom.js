@@ -54,11 +54,29 @@ const Bottom = (0, react_1.forwardRef)(({ comment, setComment, isRepliying }, in
     const postid = window.location.pathname.split("/")[2];
     const { comments: { sending }, isliked, id, likecount, issaved, created, owner: postowner, } = (0, react_redux_1.useSelector)(postsReducer_1.selectCurrentPost, react_redux_1.shallowEqual);
     const date = (0, react_1.useMemo)(() => (0, exports.dateCalc)(created), []);
-    const like = () => dispatch((0, posts_1.createAction)({ postid, a: !isliked, t: "like", postowner }));
-    const save = () => dispatch((0, posts_1.createAction)({ postid, a: !issaved, t: "save", postowner }));
+    const isloggedin = (0, react_redux_1.useSelector)(profileReducer_1.selectIsLoggedin, react_redux_1.shallowEqual);
+    const like = () => {
+        if (!isloggedin)
+            return dispatch((0, profileReducer_1.toggleSetLoginPopupActive)());
+        dispatch((0, posts_1.createAction)({ postid, a: !isliked, t: "like", postowner }));
+    };
+    const save = () => {
+        if (!isloggedin)
+            return dispatch((0, profileReducer_1.toggleSetLoginPopupActive)());
+        dispatch((0, posts_1.createAction)({ postid, a: !issaved, t: "save", postowner }));
+    };
     const [likesPopup, setLikesPopup] = (0, react_1.useState)(false);
     const quit = () => setLikesPopup(false);
-    const viewLikes = () => setLikesPopup(true);
+    const viewLikes = () => {
+        if (!isloggedin)
+            return dispatch((0, profileReducer_1.toggleSetLoginPopupActive)());
+        setLikesPopup(true);
+    };
+    const share = () => {
+        if (!isloggedin)
+            return dispatch((0, profileReducer_1.toggleSetLoginPopupActive)());
+        //todo
+    };
     return (<BottomContainer>
         <div className="icons">
           <div className="l">
@@ -69,7 +87,7 @@ const Bottom = (0, react_1.forwardRef)(({ comment, setComment, isRepliying }, in
               <Icons_1.CommentIcon />
             </button>
             {likesPopup && <Likes_1.default type="post" quit={quit} postid={id}/>}
-            <button>
+            <button onClick={share}>
               <Icons_1.ShareIcon />
             </button>
           </div>
@@ -85,6 +103,8 @@ const Bottom = (0, react_1.forwardRef)(({ comment, setComment, isRepliying }, in
         </div>
         <form onSubmit={(e) => {
             e.preventDefault();
+            if (!isloggedin)
+                return dispatch((0, profileReducer_1.toggleSetLoginPopupActive)());
             if (comment.trim().length === 0)
                 return;
             const content = comment.replace(/\s+/g, " ").trim();
