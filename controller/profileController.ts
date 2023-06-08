@@ -120,7 +120,7 @@ const updateProfile = asyncErrorWrapper(async (req, res) => {
     } else if (pp == null) {
       values["pp"] = null;
       try {
-        await destroy(`${id}-pp`, "pp");
+        await destroy(`${id}-pp`, "/pp");
       } catch (error) {}
     }
   } catch (error) {

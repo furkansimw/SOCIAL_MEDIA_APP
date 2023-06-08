@@ -335,7 +335,7 @@ const create = async () => {
         UPDATE users SET followercount = followercount - 1 WHERE id = OLD.target and followercount > 0;
         UPDATE users SET followingcount = followingcount - 1 WHERE id = OLD.owner and followingcount > 0;
       ELSIF OLD.type = 1 THEN
-        UPDATE users SET reqcount = reqcount - 1 WHERE id = OLD.target and nreqcount > 0;
+        UPDATE users SET reqcount = reqcount - 1 WHERE id = OLD.target and reqcount > 0;
         UPDATE users SET nreqcount = nreqcount - 1 WHERE id = OLD.target and nreqcount > 0;
       END IF;
 
@@ -376,7 +376,7 @@ const create = async () => {
         IF (old.type = 0) THEN
           UPDATE users SET nfollowcount = nfollowcount - 1 where id =  old.target and nfollowcount > 0;
         ELSIF (old.type = 2) THEN
-          UPDATE users SET npostlikescount = npostlikescount - 1 where id =  old.target and nfollowcount > 0;
+          UPDATE users SET npostlikescount = npostlikescount - 1 where id =  old.target and npostlikescount > 0;
         ELSIF (old.type = 3) THEN
           UPDATE users SET ncreatedcommentcount = ncreatedcommentcount - 1 where id =  old.target and ncreatedcommentcount > 0;
         END IF;

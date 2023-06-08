@@ -127,7 +127,7 @@ const updateProfile = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(voi
         else if (pp == null) {
             values["pp"] = null;
             try {
-                yield (0, cloudinary_1.destroy)(`${id}-pp`, "pp");
+                yield (0, cloudinary_1.destroy)(`${id}-pp`, "/pp");
             }
             catch (error) { }
         }
