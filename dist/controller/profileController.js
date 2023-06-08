@@ -25,7 +25,7 @@ const searchProfile = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(voi
     if (guest || u == undefined || typeof u != "string" || u.trim().length == 0)
         return (0, error_1.badRequest)();
     u = u.trim();
-    const result = yield (0, profileQ_1.searchProfileQ)(id, u);
+    const result = yield (0, profileQ_1.searchProfileQ)(id, u.toLowerCase());
     res.json(result);
 }));
 exports.searchProfile = searchProfile;
