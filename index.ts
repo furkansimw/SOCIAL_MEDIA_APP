@@ -41,7 +41,11 @@ app.use(express.static(path.join(__dirname, "../client/dist")));
 app.use(express.json({ limit: "60mb" }));
 app.use(cookieParser());
 app.use(morgan("dev"));
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
 
 app.use("/api", apiRoute);
 
