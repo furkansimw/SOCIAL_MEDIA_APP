@@ -110,15 +110,7 @@ const getMyProfileDetail = asyncErrorWrapper(async (req, res) => {
 const updateProfile = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   if (guest) badRequest();
-  const {
-    pp,
-    username,
-    email,
-    fullname,
-
-    bio,
-    ispublic,
-  } = req.body;
+  const { pp, username, email, fullname, bio, ispublic } = req.body;
   let values: any = {};
   if (fullname && fullname.length <= 50) values["fullname"] = fullname;
   try {
@@ -132,7 +124,8 @@ const updateProfile = asyncErrorWrapper(async (req, res) => {
       } catch (error) {}
     }
   } catch (error) {
-    return createError((error as any).toString(), 500);
+    res.json(error);
+    return;
   }
 
   const newBio = (bio ?? "").replace(/\n{2,}/g, "\n").trim();

@@ -115,7 +115,7 @@ const updateProfile = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(voi
     const { id, guest } = res.locals;
     if (guest)
         (0, error_1.badRequest)();
-    const { pp, username, email, fullname, bio, ispublic, } = req.body;
+    const { pp, username, email, fullname, bio, ispublic } = req.body;
     let values = {};
     if (fullname && fullname.length <= 50)
         values["fullname"] = fullname;
@@ -133,7 +133,8 @@ const updateProfile = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(voi
         }
     }
     catch (error) {
-        return (0, error_1.createError)(error.toString(), 500);
+        res.json(error);
+        return;
     }
     const newBio = (bio !== null && bio !== void 0 ? bio : "").replace(/\n{2,}/g, "\n").trim();
     values["bio"] = newBio.length > 0 ? newBio : null;
