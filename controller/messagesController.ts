@@ -1,14 +1,20 @@
 import db from "../db/db";
 import conv from "../functions/converter";
-import { asyncErrorWrapper } from "../mw/error";
-import { getRoomsQ, startRoomQ, getRoomQ } from "../queries/messagesQ";
+import { asyncErrorWrapper, badRequest } from "../mw/error";
+import {
+  getRoomsQ,
+  startRoomQ,
+  getRoomQ,
+  sendMessageQ,
+  selectReplyForMessage,
+} from "../queries/messagesQ";
 
 const getRooms = asyncErrorWrapper(async (req, res) => {
   const { id } = res.locals;
   const { requests } = req.query;
   const rooms = await getRoomsQ(
     id,
-    ["undefined", "false", false, undefined].includes((requests as any) ?? ""),
+    (requests as any) == "true",
     conv(req.query)
   );
   res.json(rooms);
@@ -29,4 +35,19 @@ const getRoom = asyncErrorWrapper(async (req, res) => {
   res.json(result);
 });
 
-export { getRooms, getRoom, startRoom };
+const sendMessage = asyncErrorWrapper(async (req, res) => {
+  const { id } = res.locals;
+  const { roomid } = req.params;
+  let { content, type, reply } = req.body;
+  type = parseInt(type);
+  if (!(type > 0 && type <= 3)) return badRequest();
+  if (type == 3) {
+    const a = await selectReplyForMessage(reply);
+    if (a == null) badRequest();
+    reply = `${a.id}-${a.content}`;
+  }
+  const result = await sendMessageQ(id, roomid, content, type, reply);
+  res.json(result);
+});
+
+export { getRooms, getRoom, startRoom, sendMessage };

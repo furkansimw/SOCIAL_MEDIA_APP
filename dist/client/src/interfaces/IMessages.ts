@@ -16,12 +16,14 @@ export interface IRoom extends IUser {
   mreply: string | null;
   mcreated: string | null;
   messages: IMessage[];
+  useen: string;
+  mseen: string;
 }
 export interface IMessage extends IUser {
   id: string;
   owner: string;
   content: string;
-  type: 0 | 1 | 2 | 3;
+  type: 0 | 1 | 2 | 3; // text image post reply
   reply: string | null; // "repying message id + repying message content";
   created: string;
 }

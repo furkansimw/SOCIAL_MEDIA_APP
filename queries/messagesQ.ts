@@ -1,4 +1,5 @@
 import db from "../db/db";
+import blocked from "../functions/blocked";
 import ILast from "../functions/last";
 import then from "../functions/then";
 
@@ -10,10 +11,11 @@ const getRoomsQ = (id: string, requests: boolean, last?: ILast) => {
   return db
     .query(
       `
-    select r.id rid, m.*,c.inbox inbox, u.id, u.username, u.pp, u.fullname, u.is_online, u.lastonline from rooms r
+    select r.id rid,mc.seen mseen,uc.seen useen, m.*,c.inbox inbox, u.id uid, u.username, u.pp, u.fullname, u.is_online, u.lastonline from rooms r
     left join users u on u.id = case WHEN r.members[1] <> $1 then r.members[1] else r.members[2] END
     left join messages m on m.id = r.last_msg
-    left join cursor c on c.room = r.id and c.owner = $1
+    left join cursor mc on mc.room = r.id and c.owner = $1
+    left join cursor uc on uc.room = r.id and c.owner = u.id
     left join relationships b on (b.owner = $1 and b.target = any(r.members) and b.type = 2) or (b.target = $1 and b.owner = any(r.members) and b.type = 2) 
     left join relationships f on f.owner = $1 and f.target = u.id and f.type = 0
     WHERE $1 = any(r.members) ${str} and b is null and (c is not null and c.inbox = ${!requests}) 
@@ -28,23 +30,24 @@ const getRoomsQ = (id: string, requests: boolean, last?: ILast) => {
 const startRoomQ = async (id: string, userid: string) => {
   const roomsIsExists = await db.query(
     `
-    select r.id rid, m.*, u.id, u.username, u.pp, u.fullname, u.is_online, u.lastonline from rooms r
+    select r.id from rooms r
     left join users u on u.id = case WHEN r.members[1] <> $1 then r.members[1] else r.members[2] END
     left join messages m on m.id = r.last_msg
-    left join relationships b on (b.owner = $1 and b.target = any(r.members) and b.type = 2) or (b.target = $1 and b.owner = any(r.members) and b.type = 2) 
-    WHERE $1 = any(r.members) and b is null
+    ${blocked("u.id")}
+    WHERE $1 = any(r.members) and $2 = any(r.members) and b is null
     order by m.created desc,m.id desc
     limit 1
-    `
+    `,
+    [id, userid]
   );
-  // await db.query(`insert into rooms (members) values ($1)`, [id, userid]);
+  if (roomsIsExists.rows[0]?.id) return roomsIsExists.rows[0]?.id;
 };
 
 const getRoomQ = (id: string, roomid: string) =>
   db
     .query(
       `
-    select r.id rid,c.inbox inbox, m.id mid, m.owner mowner,m.type mtype,m.content mcontent,m.reply mreply,m.created mcreated, u.id uid, u.username, u.pp, u.fullname, u.is_online, u.lastonline from rooms r
+    select r.id rid,c.inbox inbox, m.id mid, m.owner mowner,m.type::int mtype,m.content mcontent,m.reply mreply,m.created mcreated, u.id uid, u.username, u.pp, u.fullname, u.is_online, u.lastonline from rooms r
     left join users u on u.id = case WHEN r.members[1] <> $1 then r.members[1] else r.members[2] END
     left join messages m on m.id = r.last_msg
     left join cursor c on c.room = r.id
@@ -57,4 +60,23 @@ const getRoomQ = (id: string, roomid: string) =>
     )
     .then((r) => r.rows[0] || null);
 
-export { getRoomsQ, startRoomQ, getRoomQ };
+const selectReplyForMessage = (id: string) =>
+  db
+    .query(`select id,content from messages where id = $1`)
+    .then((r) => r.rows[0] || null);
+
+const sendMessageQ = (
+  id: string,
+  roomid: string,
+  content: string,
+  type: 0 | 1 | 2 | 3,
+  reply?: string
+) =>
+  db
+    .query(
+      `insert into messages (owner, room, content, type, reply) values ($1, $2, $3, $4, $5) returning *,type::int`,
+      [id, roomid, content, type, reply]
+    )
+    .then((r) => r.rows[0]);
+
+export { getRoomsQ, startRoomQ, getRoomQ, sendMessageQ, selectReplyForMessage };

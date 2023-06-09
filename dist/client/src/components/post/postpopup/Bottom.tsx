@@ -14,6 +14,7 @@ import { selectCurrentPost } from "../../../redux/postsReducer";
 import { CommentIcon, LikeIcon, SaveIcon, ShareIcon } from "../../Icons";
 import LinkQ from "../LinkQ";
 import Likes from "./Likes";
+import MessagesPopup from "../../messages/MessagesPopup";
 
 type BottomProps = {
   comment: string;
@@ -97,15 +98,16 @@ const Bottom = forwardRef<HTMLInputElement, BottomProps>(
       if (!isloggedin) return dispatch(toggleSetLoginPopupActive());
       setLikesPopup(true);
     };
-
+    const [m, _m] = useState(false);
     const share = () => {
       if (!isloggedin) return dispatch(toggleSetLoginPopupActive());
-
+      _m(true);
       //todo
     };
 
     return (
       <BottomContainer>
+        {m && <MessagesPopup title="Share" close={() => _m(false)} />}
         <div className="icons">
           <div className="l">
             <button

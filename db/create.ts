@@ -160,6 +160,34 @@ const create = async () => {
 
   // -------- TRIGGERS
 
+  await db.query(`
+      DROP TRIGGER IF EXISTS room_member_check ON messages;
+      CREATE OR REPLACE FUNCTION room_member_check()
+      RETURNS TRIGGER AS $$
+      BEGIN
+        IF (TG_OP = 'INSERT') THEN
+          IF NOT (NEW.owner = ANY(SELECT unnest(members) FROM rooms WHERE id = NEW.room)) THEN
+            RAISE EXCEPTION 'Invalid room member';
+          END IF;
+          UPDATE rooms set last_msg = new.id, where room = new.room;
+          // buradaya select cursor yapilsin  
+        ELSIF (TG_OP = 'DELETE') THEN
+          IF NOT (OLD.owner = ANY(SELECT unnest(members) FROM rooms WHERE id = OLD.room)) THEN
+            RAISE EXCEPTION 'Invalid room member';
+          END IF;
+
+        END IF;
+        
+        RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
+
+      CREATE TRIGGER room_member_check
+      BEFORE INSERT OR DELETE ON messages
+      FOR EACH ROW
+      EXECUTE FUNCTION room_member_check();
+`);
+
   // target me
   /*
   0 "following",

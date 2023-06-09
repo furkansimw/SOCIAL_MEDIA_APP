@@ -1,23 +1,171 @@
-import React, { FC } from "react";
+import React, { FC, useEffect, useLayoutEffect, useState } from "react";
 import { styled } from "styled-components";
 import { CloseIcon } from "../Icons";
+import { GetMessageContext } from "../../context/MessagesContextProvider";
+import LinkQ from "../post/LinkQ";
+import { disableRightClick } from "../navigation/Navigation";
+import { shallowEqual, useSelector } from "react-redux";
+import { selectValues } from "../../redux/profileReducer";
+import { searchProfile } from "../../api/profile";
+import LoadingBox from "../LoadingBox";
+import { getRooms, sendMessage, startRoom } from "../../api/messages";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../redux/store";
+import { setBack, setCurrentPostId } from "../../redux/postsReducer";
+import { toast } from "react-toastify";
 
 type Props = {
   title: string;
   close: () => void;
 };
 
+type ISearchL = {
+  username: string;
+  id: string;
+  pp: string | null;
+  fullname: string | null;
+};
+
 const MessagesPopup: FC<Props> = ({ title, close }) => {
+  const { rooms, setRooms } = GetMessageContext();
+  const [searchL, setSearchL] = useState<ISearchL[]>([]);
+
+  const [loading, setLoading] = useState(false);
+  const [text, _text] = useState("");
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    _text(e.target.value.toLowerCase());
+
+  useLayoutEffect(() => {
+    setLoading(text.trim().length != 0);
+    setSearchL([]);
+    var timer: any;
+    clearTimeout(timer);
+
+    timer = setTimeout(() => {
+      if (text.trim().length > 0) {
+        searchProfile(text)
+          .then(setSearchL)
+          .finally(() => {
+            setLoading(false);
+          });
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [text]);
+
+  useEffect(() => {
+    if (text.trim().length == 0) {
+      if (rooms.length == 0) getRooms(false).then(setRooms);
+    }
+  }, [text]);
+
+  const onScroll = (e: React.UIEvent<HTMLUListElement, UIEvent>) => {
+    const { scrollTop, clientHeight, scrollHeight } = e.target as Element;
+    if (scrollTop + clientHeight + 100 >= scrollHeight) {
+      if (text.trim().length == 0) {
+        if (rooms.length % 12 == 0) {
+          getRooms(false, {
+            date: rooms[rooms.length - 1].mcreated!,
+            id: rooms[rooms.length - 1].rid!,
+          });
+        }
+      }
+    }
+  };
+
+  const nav = useNavigate();
+
+  const tap = (userid: string) =>
+    startRoom(userid)
+      .then((roomid) =>
+        sendMessage(roomid, window.location.pathname.split("/")[2], 2)
+      )
+      .then((t) => {
+        close();
+        toast.info("Sucessfly shared post");
+      });
+
   return (
     <>
       <Bg onClick={close} />
       <Container>
-        <div className="header">
+        <div className="headery">
           <p>{title}</p>
           <button onClick={close}>
             <CloseIcon />
           </button>
         </div>
+        <div className="input-h">
+          <p>To:</p>
+          <input
+            value={text}
+            onChange={onChange}
+            type="text"
+            placeholder="Search..."
+          />
+        </div>
+        <ul onScroll={onScroll}>
+          {loading && <LoadingBox />}
+          {searchL.length == 0 && rooms.length == 0 && (
+            <p className="naf">No account found.</p>
+          )}
+          {text.trim().length > 0 ? (
+            <>
+              {searchL.map((obj) => (
+                <li onClick={() => tap(obj.id)} key={obj.username}>
+                  <LinkQ className="pp" to={`/${obj.username}`}>
+                    <img
+                      onContextMenu={disableRightClick}
+                      src={obj.pp || "/pp.jpg"}
+                      alt="pp"
+                    />
+                  </LinkQ>
+                  <div className="text">
+                    <LinkQ to={`/${obj.username}`}>
+                      <p className="username">{obj.username}</p>
+                    </LinkQ>
+                    {obj.fullname && <p className="fullname">{obj.fullname}</p>}
+                  </div>
+                </li>
+              ))}
+            </>
+          ) : (
+            <>
+              {rooms.map((obj) => (
+                <li
+                  key={obj.rid}
+                  onClick={() => {
+                    sendMessage(
+                      obj.rid,
+                      window.location.pathname.split("/")[2],
+                      2
+                    ).then(() => {
+                      close();
+                      toast.info("Shared post.");
+                    });
+                  }}
+                >
+                  <LinkQ className="pp" to={`/${obj.username}`}>
+                    <img
+                      onContextMenu={disableRightClick}
+                      src={obj.pp || "/pp.jpg"}
+                      alt="pp"
+                    />
+                  </LinkQ>
+                  <div className="text">
+                    <LinkQ to={`/${obj.username}`}>
+                      <p className="username">{obj.username}</p>
+                    </LinkQ>
+                    {obj.fullname && <p className="fullname">{obj.fullname}</p>}
+                  </div>
+                </li>
+              ))}
+            </>
+          )}
+        </ul>
       </Container>
     </>
   );
@@ -39,6 +187,7 @@ const Container = styled.div`
   height: 100vh;
   position: fixed;
   display: flex;
+  flex-direction: column;
   left: 0px;
   top: 0px;
   z-index: 600;
@@ -67,8 +216,9 @@ const Container = styled.div`
     top: 2rem;
     height: calc(100% - 4rem);
   }
-  .header {
+  .headery {
     width: 100%;
+    min-height: 56px;
     height: 56px;
     border-bottom: 1px solid #363636;
     position: relative;
@@ -88,6 +238,79 @@ const Container = styled.div`
       position: absolute;
       right: 10px;
       top: 10px;
+    }
+  }
+  .input-h {
+    padding: 12px;
+    display: flex;
+    p {
+      font-weight: 600;
+      line-height: 18px;
+      font-size: 14px;
+      padding: 12px;
+    }
+    input {
+      padding: 4px 12px 4px 20px;
+      outline: none;
+      border: none;
+      line-height: 30px;
+      font-size: 14px;
+      width: 100%;
+      background-color: transparent;
+    }
+  }
+  .naf {
+    font-size: 14px;
+    color: #a8a8a8;
+    padding: 12px 24px;
+  }
+  .loading-box {
+    background-color: transparent !important;
+    position: relative !important;
+    width: 100%;
+    height: 2rem !important;
+    min-height: 2rem !important;
+    max-height: 2rem !important;
+  }
+  ul {
+    li {
+      display: flex;
+      cursor: pointer;
+      position: relative;
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      height: 60px;
+      width: 100%;
+      padding: 8px 24px;
+      img {
+        width: 44px;
+        height: 44px;
+        object-fit: cover;
+        border-radius: 100%;
+        margin-right: 12px;
+      }
+      .text {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        p {
+          font-size: 14px;
+          &.username {
+            font-weight: 600;
+          }
+          &.fullname {
+            color: #a8a8a8;
+          }
+        }
+      }
+      button {
+        position: absolute;
+        right: 24px;
+        top: 22px;
+        width: 1rem;
+        height: 1rem;
+      }
     }
   }
 `;

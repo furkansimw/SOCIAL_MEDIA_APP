@@ -7,6 +7,7 @@ import PostPopupComments from "./post/postpopup/PostPopupComments";
 import PostPopupImages from "./post/postpopup/PostPopupImages";
 import PostPopupNav from "./PostPopupNav";
 import { useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
 
 const PostPopup = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -37,6 +38,7 @@ const PostPopup = () => {
       <Container>
         <PostPopupImages />
         <PostPopupComments />
+        <ToastContainer position="bottom-center" theme="dark" />
       </Container>
       {back != "home" && <PostPopupNav />}
     </>

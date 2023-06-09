@@ -12,15 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.startRoom = exports.getRoom = exports.getRooms = void 0;
+exports.sendMessage = exports.startRoom = exports.getRoom = exports.getRooms = void 0;
 const converter_1 = __importDefault(require("../functions/converter"));
 const error_1 = require("../mw/error");
 const messagesQ_1 = require("../queries/messagesQ");
 const getRooms = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     const { id } = res.locals;
     const { requests } = req.query;
-    const rooms = yield (0, messagesQ_1.getRoomsQ)(id, ["undefined", "false", false, undefined].includes((_a = requests) !== null && _a !== void 0 ? _a : ""), (0, converter_1.default)(req.query));
+    const rooms = yield (0, messagesQ_1.getRoomsQ)(id, requests == "true", (0, converter_1.default)(req.query));
     res.json(rooms);
 }));
 exports.getRooms = getRooms;
@@ -38,3 +37,20 @@ const getRoom = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, v
     res.json(result);
 }));
 exports.getRoom = getRoom;
+const sendMessage = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = res.locals;
+    const { roomid } = req.params;
+    let { content, type, reply } = req.body;
+    type = parseInt(type);
+    if (!(type > 0 && type <= 3))
+        return (0, error_1.badRequest)();
+    if (type == 3) {
+        const a = yield (0, messagesQ_1.selectReplyForMessage)(reply);
+        if (a == null)
+            (0, error_1.badRequest)();
+        reply = `${a.id}-${a.content}`;
+    }
+    const result = yield (0, messagesQ_1.sendMessageQ)(id, roomid, content, type, reply);
+    res.json(result);
+}));
+exports.sendMessage = sendMessage;

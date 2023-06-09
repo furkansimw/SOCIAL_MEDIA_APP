@@ -10,5 +10,5 @@ const messagesRoute = (0, express_1.Router)();
 messagesRoute.use(mustbeloggedin_1.default);
 messagesRoute.route("/start").post(messagesController_1.startRoom);
 messagesRoute.route("/rooms").get(messagesController_1.getRooms);
-messagesRoute.route("/rooms/:roomid").get(messagesController_1.getRoom);
+messagesRoute.route("/rooms/:roomid").get(messagesController_1.getRoom).post(messagesController_1.sendMessage);
 exports.default = messagesRoute;

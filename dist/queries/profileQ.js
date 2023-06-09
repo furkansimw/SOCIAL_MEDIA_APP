@@ -18,7 +18,7 @@ const blocked_1 = __importDefault(require("../functions/blocked"));
 const then_1 = __importDefault(require("../functions/then"));
 const searchProfileQ = (id, u) => db_1.default
     .query(`
-      select username, pp, fullname from users u
+      select username,u.id, pp, fullname from users u
       left join relationships b on b.owner = u.id and b.target = $1 and b.type = 2
       left join relationships f on f.owner = $1 and f.target = u.id and f.type = 0
       where b is null and username like $2 || '%'

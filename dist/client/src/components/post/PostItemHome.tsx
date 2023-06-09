@@ -90,6 +90,8 @@ const PostItemHome: FC<props> = ({ post }) => {
   const [more, setMore] = useState(false);
   const [isOverflow, setIsOverflow] = useState(false);
 
+  const share = () => {};
+
   return (
     <Container className="homelistitem">
       <div className="info-s">
@@ -146,7 +148,7 @@ const PostItemHome: FC<props> = ({ post }) => {
               <CommentIcon />
             </button>
             {likesPopup && <Likes type="post" quit={quit} postid={postid} />}
-            <button>
+            <button onClick={share}>
               <ShareIcon />
             </button>
           </div>

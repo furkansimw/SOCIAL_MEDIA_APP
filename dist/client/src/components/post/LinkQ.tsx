@@ -19,7 +19,7 @@ const LinkQ: FC<Props> = (props) => {
   };
 
   return (
-    <Link replace to={props.to} className={props.className} onClick={closex}>
+    <Link onClick={closex} replace to={props.to} className={props.className}>
       {props.children}
     </Link>
   );
