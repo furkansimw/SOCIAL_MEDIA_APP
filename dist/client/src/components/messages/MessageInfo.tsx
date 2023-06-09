@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { MessageIconIcon } from "../Icons";
 import { styled } from "styled-components";
 
@@ -46,4 +46,4 @@ const Container = styled.div`
   }
 `;
 
-export default MessageInfo;
+export default memo(MessageInfo);

@@ -58,6 +58,7 @@ const Navigation = () => {
       if (panel == "search") return key == "search";
       if (panel == "notifications") return key == "notifications";
     }
+    if (key == "messages") return pathname.includes("/direct/inbox");
     return key == pathname;
   };
   const [m, _m] = useState(window.location.pathname.includes("/direct/inbox"));
@@ -265,9 +266,9 @@ const Navigation = () => {
                 <p>Explore</p>
               </Link>
             </li>
-            <li className={uiController("/direct/inbox") ? "active" : ""}>
+            <li className={uiController("messages") ? "active" : ""}>
               <Link onClick={closePanel} to={"/direct/inbox"}>
-                <MessagesIcon isactive={uiController("/direct/inbox")} />
+                <MessagesIcon isactive={uiController("messages")} />
                 <p>Messages</p>
                 {unreadMessagesCount > 0 && (
                   <div className="circle">

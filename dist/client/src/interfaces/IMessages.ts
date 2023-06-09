@@ -8,7 +8,7 @@ export interface IUser {
 }
 
 export interface IRoom extends IUser {
-  roomid: string;
+  rid: string;
   mid: string | null;
   mowner: string | null;
   mtype: string | null;

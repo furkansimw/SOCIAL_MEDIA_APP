@@ -150,8 +150,13 @@ const create = async () => {
     owner uuid references users(id) on delete cascade not null, 
     room uuid references rooms(id) on delete cascade not null,
     delete timestamp default now(),
+    inbox boolean not null default true,
     seen timestamp default now()
   );`);
+
+  await db.query(
+    `alter table cursor add column if not exists inbox boolean not null default true;`
+  );
 
   // -------- TRIGGERS
 

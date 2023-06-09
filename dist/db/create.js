@@ -144,8 +144,10 @@ const create = () => __awaiter(void 0, void 0, void 0, function* () {
     owner uuid references users(id) on delete cascade not null, 
     room uuid references rooms(id) on delete cascade not null,
     delete timestamp default now(),
+    inbox boolean not null default true,
     seen timestamp default now()
   );`);
+    yield db_1.default.query(`alter table cursor add column if not exists inbox boolean not null default true;`);
     // -------- TRIGGERS
     // target me
     /*

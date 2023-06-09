@@ -17,8 +17,10 @@ const converter_1 = __importDefault(require("../functions/converter"));
 const error_1 = require("../mw/error");
 const messagesQ_1 = require("../queries/messagesQ");
 const getRooms = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const { id } = res.locals;
-    const rooms = yield (0, messagesQ_1.getRoomsQ)(id, (0, converter_1.default)(req.query));
+    const { requests } = req.query;
+    const rooms = yield (0, messagesQ_1.getRoomsQ)(id, ["undefined", "false", false, undefined].includes((_a = requests) !== null && _a !== void 0 ? _a : ""), (0, converter_1.default)(req.query));
     res.json(rooms);
 }));
 exports.getRooms = getRooms;

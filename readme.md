@@ -56,8 +56,8 @@
 
 ## About The Project
 
-- Create Account.
-- Only unique username and mail, passwords are hashed.
+- PostgreSQL ExpressJs ReactJs NodeJs + Typescript,Socket-io, Redux-toolkit,Context-api, JWT,Cloudinary, React-router-dom, Styled-components used.
+- Create Account. Only unique username and mail, passwords are hashed.
 - Post Shareable + You can make your account private. Posts are visible when you are not logged in, but if your account is private the logged in + viewer must follow you (after your confirmation) If your account is private they should follow you for the post even if they save the post until they follow you back (after your confirmation) they can't do it later.
 - Post Shareable + You can make your account private. Posts are visible when you are not logged in, but if your account is private the logged in + viewer must follow you (after your confirmation) If your account is private they should follow you for the post even if they save the post until they follow you back (after your confirmation) they can't do it later.
 - Posts from people you follow on your homepage come by date and are scalable (no offset), last line date, id based, more scalable and to avoid issues like data duplication during performance offset increase.
@@ -65,7 +65,7 @@
 - After the postpopup is opened, it does not send requests to the server again and you can close it with the right and left arrow navigation esc.
 - Security is provided with jwt. The token is refreshed every 2 hours. Renewal is canceled after logging out or changing the password. After changing the password, all sessions will be closed in 2 hours- If you type @username while posting or commenting, you can click to go to the specified person (there are no conditions here and the username does not need to be consistent)
 - There are session features in the application, but (normally you cannot like, comment, etc. + features such as advanced post like, comment like)
-- Real-time messaging
+- Real-time messaging, push notifications, no notifications and no inbox if you don't know the sender
 - Relationships are blocked, all post likes, comments, sub-comments are completely hidden from you and vice versa (if he blocks you, you will not see it at all) but if you block him, you can see it in the search section.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
