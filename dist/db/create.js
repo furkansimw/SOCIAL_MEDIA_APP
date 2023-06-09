@@ -16,7 +16,8 @@ const db_1 = __importDefault(require("./db"));
 const create = () => __awaiter(void 0, void 0, void 0, function* () {
     yield db_1.default.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
     yield db_1.default.query('CREATE EXTENSION IF NOT EXISTS "pgcrypto";');
-    //
+    yield db_1.default.query(`alter table users add column if not exists is_online boolean not null default false;`);
+    yield db_1.default.query(`alter table users add column if not exists lastonline timestamp not null default now();`);
     yield db_1.default.query(`CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     username VARCHAR(36) NOT NULL UNIQUE CHECK (username ~ '^(?!.*[_.]{2})[a-zd._]{5,35}[^_.]$'),
@@ -37,6 +38,9 @@ const create = () => __awaiter(void 0, void 0, void 0, function* () {
     ncreatedcommentcount numeric not null default 0,
     
     unreadmessagescount numeric not null default 0,
+
+    is_online boolean not null default false,
+    lastonline timestamp not null default now(),
 
     created TIMESTAMP DEFAULT NOW()
     );`);
@@ -116,6 +120,32 @@ const create = () => __awaiter(void 0, void 0, void 0, function* () {
     created TIMESTAMP DEFAULT NOW()
   );
   `);
+    // 0 = text, 1 = image, 2 = post, 3 = messagereply
+    yield db_1.default.query(`create table if not exists messages (
+      id uuid primary key not null default uuid_generate_v4(),
+      owner uuid references users(id) on delete cascade,
+      type numeric not null default 0,
+      content varchar(500) not null,
+      reply varchar(237),
+      created TIMESTAMP DEFAULT NOW()
+    )`);
+    // i dont use uuid[] because query is very limited with uuid and there are no references in the lists anyway.
+    yield db_1.default.query(`create table if not exists rooms (
+      id uuid primary key not null default uuid_generate_v4(),
+      last_msg uuid references messages(id) ON DELETE SET NULL,
+      members uuid[] not null,      
+      created TIMESTAMP DEFAULT NOW()
+    );
+  `);
+    yield db_1.default.query(`alter table messages add column if not exists room uuid references rooms(id) on delete cascade not null;`);
+    // if delete chat message getting start with cursor date and seen date
+    yield db_1.default.query(`create table if not exists cursor (
+    id uuid primary key not null default uuid_generate_v4(),
+    owner uuid references users(id) on delete cascade not null, 
+    room uuid references rooms(id) on delete cascade not null,
+    delete timestamp default now(),
+    seen timestamp default now()
+  );`);
     // -------- TRIGGERS
     // target me
     /*

@@ -6,6 +6,7 @@
   "scripts": {
     "build": "npm install && npx tsc && cd ./dist/client && npm install && npm run build && cd ../.. ",
     "start": "npm install && node dist/index.js",
+    "devC": "cd ./dist/client && npm install && npm run dev",
     "dev": "npm install && concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
   },
   "keywords": [],
