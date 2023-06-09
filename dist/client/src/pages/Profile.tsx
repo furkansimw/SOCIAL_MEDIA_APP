@@ -1,8 +1,10 @@
 import { shallowEqual, useSelector } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AppDispatch, RootState } from "../redux/store";
 import {
+  addSavedProfile,
   selectPostsProfile,
+  selectPostsSaved,
   selectProfile,
   setOffset,
 } from "../redux/postsReducer";
@@ -13,10 +15,11 @@ import {
   followUser,
   getProfile,
   getProfilePosts,
+  getSavedPosts,
 } from "../api/profile";
 import LoadingBox from "../components/LoadingBox";
 import styled from "styled-components";
-import { MoreIcon3 } from "../components/Icons";
+import { MoreIcon3, PostsIcon, SavedMini } from "../components/Icons";
 import Title from "../components/Title";
 import PostMini from "../components/post/PostMini";
 import NotFound from "../components/profile/NotFound.tsx";
@@ -34,6 +37,7 @@ const Profile = () => {
   const isloggedin = useSelector(selectIsLoggedin, shallowEqual);
   const p = useLocation().pathname.split("/");
   const username = p[1];
+  const issaved = p[2];
   const [block, setBlock] = useState([false, false]);
 
   const [more, setMore] = useState(false);
@@ -43,16 +47,21 @@ const Profile = () => {
     (s: RootState) => selectProfile(s, username),
     shallowEqual
   );
-
+  const savedP = useSelector((s: RootState) => selectProfile(s, "saved"));
   useEffect(() => {
     if (!profile) dispatch(getProfile(username));
     if (!profile) dispatch(getProfilePosts({ username }));
+  }, [username]);
+
+  useEffect(() => {
+    if (!savedP) dispatch(addSavedProfile());
   }, [username]);
 
   const posts = useSelector(
     (s: RootState) => selectPostsProfile(s, username),
     shallowEqual
   );
+  const savedposts = useSelector(selectPostsSaved, shallowEqual);
 
   const { username: myusername } = useSelector(selectValues, shallowEqual);
 
@@ -79,16 +88,31 @@ const Profile = () => {
     pp: null,
     username: "",
   });
+  const nav = useNavigate();
+  useEffect(() => {
+    if (!profile?.loading) return;
+    if (!myusername) return;
+    if (issaved && myusername != username)
+      nav(`/${username}`, { replace: true });
+  }, [myusername, profile, window.location.pathname]);
 
   const [viewC, setViewC] = useState<"followings" | "followers" | null>(null);
   const closeViewC = () => setViewC(null);
   const closeUnfollowpostpopup = () =>
     setUnfollowpopupx({ active: false, username: "", pp: null });
+  useEffect(() => {
+    if (!issaved || !profile) return;
+    if (profile?.loading) return;
+    if (username != myusername) return;
+    if (savedposts.length !== 0) return;
+    if (savedP?.postsState?.loading) return;
+    if (!savedP?.postsState?.hasmore) return;
+    dispatch(getSavedPosts({ username: "saved" }));
+  }, [issaved, username, profile]);
 
   if (!profile) return <></>;
 
   const { postsState, loading } = profile;
-
   if (profile.exists == false) return <NotFound />;
 
   if (loading || !postsState || !profile.info) return <></>;
@@ -136,6 +160,16 @@ const Profile = () => {
   const c = k(followingcount);
 
   const onScroll = (e: React.UIEvent<HTMLUListElement, UIEvent>) => {
+    if (issaved) {
+      const { hasmore, loading } = savedP.postsState!;
+      if (loading || !hasmore) return;
+      const { scrollTop, scrollHeight, clientHeight } = e.target as Element;
+      if (scrollTop + clientHeight + 100 >= scrollHeight) {
+        const { created: date, id } = savedposts[savedposts.length - 1];
+        dispatch(getSavedPosts({ date, id, username: `saved` }));
+      }
+      return;
+    }
     const { hasmore, loading } = postsState;
     if (loading || !hasmore) return;
     const { scrollTop, scrollHeight, clientHeight } = e.target as Element;
@@ -218,6 +252,23 @@ const Profile = () => {
         </div>
       </div>
       <Priv info={info} />
+      {(status == 0 || ispublic || myusername == username) && (
+        <>
+          <div className="upsidex">
+            <div className="x"></div>
+            <Link to={`/${username}`} className={!issaved ? "a" : ""}>
+              <PostsIcon />
+              <p>Posts</p>
+            </Link>
+            {username == myusername && (
+              <Link className={issaved ? "a" : ""} to={`/username1/saved`}>
+                <SavedMini />
+                <p>Saved</p>
+              </Link>
+            )}
+          </div>
+        </>
+      )}
       {block[0] && (
         <Block
           close={() => setBlock([false, false])}
@@ -233,9 +284,13 @@ const Profile = () => {
         />
       )}
       <ul>
-        {posts.map((post) => (
-          <PostMini key={post.id} post={post} back={username} />
-        ))}
+        {issaved
+          ? savedposts.map((post) => (
+              <PostMini key={post.id + "saved"} post={post} back={username} />
+            ))
+          : posts.map((post) => (
+              <PostMini key={post.id} post={post} back={username} />
+            ))}
       </ul>
       {postsState?.loading && <LoadingBox />}
     </Container>
@@ -329,6 +384,33 @@ const Container = styled.ul`
   flex-direction: column;
   align-items: center;
   overflow-y: auto;
+  .upsidex {
+    display: flex;
+    height: 2rem;
+    position: relative;
+    .x {
+      position: fixed;
+      left: 0px;
+      width: 100vw;
+      height: 1px;
+      background-color: #262626;
+    }
+
+    a {
+      cursor: pointer;
+      width: 60px;
+      margin-right: 60px;
+      display: flex;
+      align-items: center;
+      margin-top: 1px;
+      &.a {
+        border-top: 1px solid #fafafa;
+      }
+      p {
+        margin-left: 6px;
+      }
+    }
+  }
   .loading-box {
     margin: 4rem 0px;
   }

@@ -23,6 +23,12 @@ export const getProfilePosts = createAsyncThunk(
     req(`/profile/${username}/posts?date=${date}&id=${id}`)
 );
 
+export const getSavedPosts = createAsyncThunk(
+  "/profile/mysaved",
+  ({ date, id }: IGetProfilePosts) =>
+    req(`/profile/mysaved?date=${date}&id=${id}`)
+);
+
 export const searchProfile = (u: string) =>
   req(`/profile/search?u=${u}`).then((r) => r as any);
 

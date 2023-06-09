@@ -25,6 +25,7 @@ import {
   followUser,
   getProfile,
   getProfilePosts,
+  getSavedPosts,
 } from "../api/profile.ts";
 
 const initialState: IPostsSliceInitialState = {
@@ -41,6 +42,29 @@ export const postsSlice = createSlice({
   name: "posts",
   initialState,
   reducers: {
+    addSavedProfile: (state) => {
+      const obj: IProfile = {
+        loading: false,
+        username: "saved",
+        exists: true,
+        info: {
+          bio: "",
+          followercount: 0,
+          followingcount: 0,
+          fullname: "",
+          id: "",
+          isfollowingme: true,
+          ispublic: true,
+          offset: 0,
+          postcount: 0,
+          pp: "",
+          status: 0,
+          username: "saved",
+        },
+        postsState: { hasmore: true, loading: false },
+      };
+      state.profiles = [...state.profiles, obj];
+    },
     setBack: (state, action: PayloadAction<string | null>) => {
       state.back = action.payload;
     },
@@ -458,6 +482,46 @@ export const postsSlice = createSlice({
       });
 
     builder
+      .addCase(getSavedPosts.pending, (state, action) => {
+        const { profiles } = state;
+        const { username } = action.meta.arg;
+        const postsState = { loading: true, hasmore: true };
+        const obj = (p: IProfile): IProfile => ({ ...p, postsState });
+        state.profiles = profileU(profiles, username, obj);
+      })
+      .addCase(getSavedPosts.fulfilled, (state, action) => {
+        const { profiles, posts } = state;
+
+        const { username } = action.meta.arg;
+        const payload: IPost[] = (action.payload as IPost[]).map(
+          (p: IPost) => ({
+            ...p,
+            page: username,
+            comments: {
+              data: [],
+              hasmore: true,
+              loading: false,
+              sending: false,
+            },
+          })
+        );
+
+        const postsState = { loading: false, hasmore: payload.length == 12 };
+
+        const obj = (p: IProfile): IProfile => ({ ...p, postsState });
+        state.posts = [...posts, ...payload];
+
+        state.profiles = profileU(profiles, username, obj);
+      })
+      .addCase(getSavedPosts.rejected, (state, action) => {
+        const { profiles } = state;
+        const { username } = action.meta.arg;
+        const postsState = { loading: false, hasmore: false };
+        const obj = (p: IProfile): IProfile => ({ ...p, postsState });
+        state.profiles = profileU(profiles, username, obj);
+      });
+
+    builder
       .addCase(getProfilePosts.pending, (state, action) => {
         const { profiles } = state;
         const { username } = action.meta.arg;
@@ -676,8 +740,13 @@ export const postsSlice = createSlice({
   },
 });
 
-export const { setBack, toggleSubCommetsT, setCurrentPostId, setOffset } =
-  postsSlice.actions;
+export const {
+  setBack,
+  toggleSubCommetsT,
+  addSavedProfile,
+  setCurrentPostId,
+  setOffset,
+} = postsSlice.actions;
 
 export const selectCurrentId = (s: RootState) => s.posts.currentId;
 

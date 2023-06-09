@@ -5,6 +5,8 @@ import {
   startRoom,
   getRoom,
   sendMessage,
+  getMessages,
+  deleteMessage,
 } from "../controller/messagesController";
 
 const messagesRoute = Router();
@@ -12,6 +14,11 @@ messagesRoute.use(mustBeLoggedin);
 
 messagesRoute.route("/start").post(startRoom);
 messagesRoute.route("/rooms").get(getRooms);
-messagesRoute.route("/rooms/:roomid").get(getRoom).post(sendMessage);
+
+const roomIdRoute = Router({ mergeParams: true });
+messagesRoute.use("/rooms/:roomid", roomIdRoute);
+roomIdRoute.route("/").get(getRoom).post(sendMessage);
+roomIdRoute.route("/messages").get(getMessages);
+roomIdRoute.route("/messages/:messageid").delete(deleteMessage);
 
 export default messagesRoute;

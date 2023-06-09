@@ -67,9 +67,9 @@ const Data = forwardRef<Refs, Props>(({ reply }, ref) => {
 });
 
 const DataContainer = styled.ul`
-  height: calc(100% - 146px - 90px);
+  height: calc(100% - 146px - 71px);
   &.backnone {
-    height: calc(100% - 146px - 71px) !important;
+    /* height: calc(100% - 146px - 71px) !important; */
   }
   overflow-y: auto;
   width: 100%;

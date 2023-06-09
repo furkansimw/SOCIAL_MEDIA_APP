@@ -7,6 +7,8 @@ import {
   getRoomQ,
   sendMessageQ,
   selectReplyForMessage,
+  getMessagesQ,
+  deleteMessageQ,
 } from "../queries/messagesQ";
 
 const getRooms = asyncErrorWrapper(async (req, res) => {
@@ -50,4 +52,27 @@ const sendMessage = asyncErrorWrapper(async (req, res) => {
   res.json(result);
 });
 
-export { getRooms, getRoom, startRoom, sendMessage };
+const getMessages = asyncErrorWrapper(async (req, res) => {
+  const { id } = res.locals;
+  const { roomid } = req.params;
+
+  const result = await getMessagesQ(id, roomid);
+  res.json(result);
+});
+
+const deleteMessage = asyncErrorWrapper(async (req, res) => {
+  const { id } = res.locals;
+  const { roomid, messageid } = req.params;
+
+  const result = await deleteMessageQ(id, roomid, messageid);
+  res.json(result);
+});
+
+export {
+  getRooms,
+  getRoom,
+  startRoom,
+  sendMessage,
+  getMessages,
+  deleteMessage,
+};

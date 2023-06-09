@@ -11,14 +11,14 @@ const getRoomsQ = (id: string, requests: boolean, last?: ILast) => {
   return db
     .query(
       `
-    select r.id rid,mc.seen mseen,uc.seen useen, m.*,c.inbox inbox, u.id uid, u.username, u.pp, u.fullname, u.is_online, u.lastonline from rooms r
+    select r.id rid,r.last_msg, mc.seen mseen, uc.seen useen, m.*, mc.inbox inbox, u.id uid, u.username, u.pp, u.fullname, u.is_online, u.lastonline from rooms r
     left join users u on u.id = case WHEN r.members[1] <> $1 then r.members[1] else r.members[2] END
     left join messages m on m.id = r.last_msg
-    left join cursor mc on mc.room = r.id and c.owner = $1
-    left join cursor uc on uc.room = r.id and c.owner = u.id
+    left join cursor mc on mc.room = r.id and mc.owner = $1
+    left join cursor uc on uc.room = r.id and uc.owner = u.id
     left join relationships b on (b.owner = $1 and b.target = any(r.members) and b.type = 2) or (b.target = $1 and b.owner = any(r.members) and b.type = 2) 
     left join relationships f on f.owner = $1 and f.target = u.id and f.type = 0
-    WHERE $1 = any(r.members) ${str} and b is null and (c is not null and c.inbox = ${!requests}) 
+    WHERE $1 = any(r.members) ${str} and b is null and (mc is not null and mc.inbox = ${!requests}) 
     order by m.created desc, m.id desc
     limit 12
   `,
@@ -79,4 +79,17 @@ const sendMessageQ = (
     )
     .then((r) => r.rows[0]);
 
-export { getRoomsQ, startRoomQ, getRoomQ, sendMessageQ, selectReplyForMessage };
+const getMessagesQ = (id: string, roomid: string) => db.query(``, [id, roomid]);
+
+const deleteMessageQ = (id: string, roomid: string, messageid: string) =>
+  db.query(``, [id, roomid, messageid]);
+
+export {
+  getRoomsQ,
+  startRoomQ,
+  getRoomQ,
+  sendMessageQ,
+  selectReplyForMessage,
+  getMessagesQ,
+  deleteMessageQ,
+};

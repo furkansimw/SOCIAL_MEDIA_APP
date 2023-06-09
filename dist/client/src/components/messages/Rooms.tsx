@@ -1,7 +1,11 @@
-import { FC, memo } from "react";
+import { FC, memo, useEffect, useLayoutEffect } from "react";
 import { styled } from "styled-components";
 import Messages from "./Messages";
 import Requests from "./Requests";
+import { GetMessageContext } from "../../context/MessagesContextProvider";
+import { getRooms } from "../../api/messages";
+import socket from "../../api/socket/socket";
+import { IMessage } from "../../interfaces/IMessages";
 
 type Props = {
   requests: boolean;
@@ -18,6 +22,17 @@ const Rooms: FC<Props> = ({
 }) => {
   const openRequest = () => setRequests(true);
   const closeRequest = () => setRequests(false);
+
+  const { rooms, setRooms } = GetMessageContext();
+
+  useLayoutEffect(() => {
+    if (rooms.length == 0) getRooms(false).then(setRooms);
+  }, []);
+
+  useEffect(() => {
+    socket.on("message", (message: IMessage) => {});
+  }, []);
+
   return (
     <Container className={requests ? "r" : "m"}>
       <Messages
