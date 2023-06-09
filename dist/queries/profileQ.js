@@ -203,7 +203,6 @@ const getFollowersQ = (id, userid, last) => {
       left join relationships f on f.owner = $1 and f.target = u.id
       ${b}
       where r.target = $2 and r.type = 0 ${str} and b is null
-      
       order by r.created desc, rid desc
       limit 12
   `, values)
@@ -219,7 +218,7 @@ const getFollowingQ = (id, userid, last) => {
     return db_1.default
         .query(`
       select r.created, r.id rid, u.id, u.username, u.pp, u.ispublic, u.fullname, f.type status from relationships r
-      left join users u on u.id = r.owner
+      left join users u on u.id = r.target
       left join relationships f on f.owner = $1 and f.target = u.id
       ${b}
       where r.owner = $2 and r.type = 0 ${str} and b is null

@@ -108,7 +108,7 @@ const Profile = () => {
   const statusClick = () => {
     if (!isloggedin) return dispatch(toggleSetLoginPopupActive());
 
-    if (status == 1 && !ispublic)
+    if ((status == 1 || status == 0) && !ispublic)
       setUnfollowpopupx({ active: true, pp, username });
     else if (status == 2) setBlock([true, false]);
     else {

@@ -528,12 +528,16 @@ export const postsSlice = createSlice({
           };
         else return p;
       });
-      const isfollowing =
-        state.profiles.find((p) => p?.info?.id == userid)?.info?.status == 0;
+      const info = state.profiles.find((p) => p?.info?.id == userid)?.info;
       state.posts = posts.map((p) => {
-        if (p.owner == userid) return { ...p, isfollowing };
+        if (p.owner == userid) return { ...p, isfollowing: info?.status == 0 };
         return p;
       });
+      if (!info?.ispublic && info?.status != 0) {
+        state.posts = state.posts.filter(
+          (p) => p.page != userid && p.owner != userid
+        );
+      }
     });
 
     builder
@@ -555,7 +559,7 @@ export const postsSlice = createSlice({
         const username = profiles.find((p) => p.info?.id == userid)!.username;
         if (a)
           state.posts = posts.filter(
-            (p) => p.page != username || p.owner != userid
+            (p) => p.page != username && p.owner != userid
           );
       })
       .addCase(blockUser.rejected, (state, action) => {
