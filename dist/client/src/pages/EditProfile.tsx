@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, memo, useEffect, useState } from "react";
 import styled from "styled-components";
 import {
   accountDetail,
@@ -663,4 +663,4 @@ const Container = styled.div`
   }
 `;
 
-export default EditProfile;
+export default memo(EditProfile);

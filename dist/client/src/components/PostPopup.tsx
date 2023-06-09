@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { memo, useEffect } from "react";
 import { shallowEqual, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { AppDispatch } from "../redux/store";
@@ -173,4 +173,4 @@ const Container = styled.div`
   }
 `;
 
-export default PostPopup;
+export default memo(PostPopup);

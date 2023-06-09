@@ -6,7 +6,7 @@ import {
   selectProfile,
   setOffset,
 } from "../redux/postsReducer";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { memo, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   blockUser,
@@ -585,4 +585,4 @@ const Container = styled.ul`
   }
 `;
 
-export default Profile;
+export default memo(Profile);

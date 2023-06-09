@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { memo, useEffect, useLayoutEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../redux/store.ts";
 import { getPosts } from "../api/posts.ts";
@@ -90,4 +90,4 @@ const Container = styled.ul`
   }
 `;
 
-export default Posts;
+export default memo(Posts);

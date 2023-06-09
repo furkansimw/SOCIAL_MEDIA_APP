@@ -2,6 +2,7 @@ import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { AppDispatch } from "../../redux/store";
 import { toggleSetLoginPopupActive } from "../../redux/profileReducer";
+import { memo } from "react";
 
 const LoginBanner = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -50,4 +51,4 @@ const Container = styled.div`
   }
 `;
 
-export default LoginBanner;
+export default memo(LoginBanner);

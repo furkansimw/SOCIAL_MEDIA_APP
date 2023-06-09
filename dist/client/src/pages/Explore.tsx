@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { memo, useEffect, useLayoutEffect, useRef } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../redux/store";
 import {
@@ -81,4 +81,4 @@ const Container = styled.ul`
   }
 `;
 
-export default Explore;
+export default memo(Explore);

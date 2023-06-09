@@ -4,6 +4,8 @@ import {
   useRef,
   MouseEvent as ME,
   forwardRef,
+  memo,
+  useLayoutEffect,
 } from "react"; // with the global mouseevent to avoid collision.
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
@@ -58,10 +60,13 @@ const Navigation = () => {
     }
     return key == pathname;
   };
-
-  useEffect(() => {
-    setMini(panel != null);
-  }, [panel]);
+  const [m, _m] = useState(window.location.pathname.includes("/direct/inbox"));
+  useLayoutEffect(() => {
+    setMini(
+      panel != null || window.location.pathname.includes("/direct/inbox")
+    );
+    _m(window.location.pathname.includes("/direct/inbox"));
+  }, [panel, window.location.pathname]);
 
   const searchPanelBtnRef = useRef<HTMLLIElement>(null),
     notificationPanelBtnRef = useRef<HTMLLIElement>(null),
@@ -228,7 +233,7 @@ const Navigation = () => {
         closepanel={closepanel}
       />
       {createPostPopup && <CreatePostPopup close={closeCreatePostPopup} />}
-      <Container className={mini ? "mini" : ""}>
+      <Container className={`${mini ? "mini" : ""} ${m ? " m " : ""}`}>
         <div className="content" ref={leftSideRef}>
           <div className="up">
             <Link onClick={closePanel} to={"/"}>
@@ -371,6 +376,12 @@ const MorePanel = forwardRef<HTMLDivElement, { moreIconActive: boolean }>(
 const Container = styled.div`
   height: 100vh;
   width: 360px;
+  &.m {
+    .content {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
   .logout {
     color: #fafafa !important;
   }
@@ -699,4 +710,4 @@ const Logo = () => (
   </svg>
 );
 
-export default Navigation;
+export default memo(Navigation);

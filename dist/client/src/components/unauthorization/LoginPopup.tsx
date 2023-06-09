@@ -7,7 +7,7 @@ import {
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../redux/store";
 import Login from "../../pages/Login";
-import { useEffect } from "react";
+import { memo, useEffect } from "react";
 
 const LoginPopup = () => {
   useEffect(() => {
@@ -75,4 +75,4 @@ const Container = styled.div`
   }
 `;
 
-export default LoginPopup;
+export default memo(LoginPopup);

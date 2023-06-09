@@ -4,7 +4,7 @@ import {
   setBack,
   setCurrentPostId,
 } from "../redux/postsReducer";
-import { useEffect } from "react";
+import { memo, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
 import { getPost } from "../api/posts";
@@ -181,4 +181,4 @@ const Contianer = styled.div`
   }
 `;
 
-export default PostPage;
+export default memo(PostPage);
