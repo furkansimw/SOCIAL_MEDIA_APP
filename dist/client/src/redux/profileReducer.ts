@@ -31,6 +31,17 @@ export const profileSlice = createSlice({
     setUpdateValues: (state, action) => {
       state.values = { ...state.values, ...action.payload };
     },
+    setUnreadMessageCount: (state, action) => {
+      const t = action.payload;
+      const { unreadmessagescount } = state.values;
+      if (t == "inc") {
+        state.values.unreadmessagescount = unreadmessagescount + 1;
+      } else if (t == "dec") {
+        state.values.unreadmessagescount = unreadmessagescount - 1;
+      } else {
+        state.values.unreadmessagescount = 0;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getMyProfile.fulfilled, (state, action) => {
@@ -39,8 +50,11 @@ export const profileSlice = createSlice({
   },
 });
 
-export const { toggleSetLoginPopupActive, setUpdateValues } =
-  profileSlice.actions;
+export const {
+  toggleSetLoginPopupActive,
+  setUpdateValues,
+  setUnreadMessageCount,
+} = profileSlice.actions;
 
 export const selectProfile = (state: RootState) => state.profile;
 export const selectValues = (state: RootState) => state.profile.values;

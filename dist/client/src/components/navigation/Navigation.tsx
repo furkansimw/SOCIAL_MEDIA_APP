@@ -271,7 +271,7 @@ const Navigation = () => {
                 <MessagesIcon isactive={uiController("messages")} />
                 <p>Messages</p>
                 {unreadMessagesCount > 0 && (
-                  <div className="circle">
+                  <div className="circlex">
                     <p>{unreadMessagesCount}</p>
                   </div>
                 )}
@@ -544,6 +544,31 @@ const Container = styled.div`
             font-size: 1rem;
             color: #fafafa;
             display: block !important;
+          }
+        }
+        .circlex {
+          padding: 0px 4px;
+          position: absolute;
+          top: 12px;
+          z-index: 500;
+          left: 28px;
+          width: min-content;
+          min-width: 18px;
+          height: 18px;
+          background-color: #ed4956 !important;
+          display: block !important;
+          border-radius: 100%;
+          p {
+            width: min-content;
+            position: relative;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -60%);
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            line-height: 10px;
+            margin: 0px !important;
           }
         }
         .circle {

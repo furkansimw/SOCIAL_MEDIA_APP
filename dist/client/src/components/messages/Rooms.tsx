@@ -7,6 +7,13 @@ import { getRoom, getRooms, startRoom } from "../../api/messages";
 import socket from "../../api/socket/socket";
 import { IMessage } from "../../interfaces/IMessages";
 import e from "express";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../redux/store";
+import { updateProfile } from "../../api/profile";
+import {
+  setUnreadMessageCount,
+  setUpdateValues,
+} from "../../redux/profileReducer";
 
 type Props = {
   requests: boolean;
@@ -43,6 +50,8 @@ const Rooms: FC<Props> = ({
     });
   }, []);
 
+  const dispatch = useDispatch<AppDispatch>();
+
   useEffect(() => {
     const a = rooms.map((room) => {
       const { inbox, last_message_created, my_seen } = room;
@@ -51,7 +60,7 @@ const Rooms: FC<Props> = ({
         new Date(last_message_created || "").getTime() >
           new Date(my_seen).getTime()
       ) {
-        //
+        dispatch(setUnreadMessageCount("inc"));
       }
     });
   }, [rooms]);

@@ -11,6 +11,7 @@ import LoadingBox from "../components/LoadingBox";
 import PostMini from "../components/post/PostMini";
 import styled from "styled-components";
 import Title from "../components/Title";
+import { setUnreadMessageCount } from "../redux/profileReducer";
 
 const Explore = () => {
   const dispatch = useDispatch<AppDispatch>();
