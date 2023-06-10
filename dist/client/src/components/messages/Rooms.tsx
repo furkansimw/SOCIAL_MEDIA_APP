@@ -53,7 +53,7 @@ const Rooms: FC<Props> = ({
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    const a = rooms.map((room) => {
+    rooms.map((room) => {
       const { inbox, last_message_created, my_seen } = room;
       if (
         inbox &&
