@@ -57,7 +57,7 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
       });
       setRooms(prev);
     } else {
-      setRooms((prev) => [...prev, room]);
+      setRooms((prev) => prev.concat(room));
     }
   }, [room]);
 

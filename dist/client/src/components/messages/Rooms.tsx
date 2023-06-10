@@ -3,9 +3,10 @@ import { styled } from "styled-components";
 import Messages from "./Messages";
 import Requests from "./Requests";
 import { GetMessageContext } from "../../context/MessagesContextProvider";
-import { getRooms } from "../../api/messages";
+import { getRoom, getRooms, startRoom } from "../../api/messages";
 import socket from "../../api/socket/socket";
 import { IMessage } from "../../interfaces/IMessages";
+import e from "express";
 
 type Props = {
   requests: boolean;
@@ -31,9 +32,29 @@ const Rooms: FC<Props> = ({
 
   useEffect(() => {
     socket.on("message", (message: IMessage) => {
-      const isExistsRoom = rooms.find((room) => message.room);
+      const room = rooms.find((r) => r.room_id == message.room);
+      if (room) {
+        setRooms((prev) => prev.concat(room));
+      } else {
+        getRoom(message.room).then((room) =>
+          setRooms((prev) => prev.concat(room))
+        );
+      }
     });
   }, []);
+
+  useEffect(() => {
+    const a = rooms.map((room) => {
+      const { inbox, last_message_created, my_seen } = room;
+      if (
+        inbox &&
+        new Date(last_message_created || "").getTime() >
+          new Date(my_seen).getTime()
+      ) {
+        //
+      }
+    });
+  }, [rooms]);
 
   return (
     <Container className={requests ? "r" : "m"}>
