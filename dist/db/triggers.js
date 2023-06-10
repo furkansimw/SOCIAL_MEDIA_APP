@@ -20,6 +20,7 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
       CREATE OR REPLACE FUNCTION room_member_check()
       RETURNS TRIGGER AS $$
       BEGIN
+  
       IF (TG_OP = 'INSERT') THEN
         IF NOT (NEW.owner = ANY(SELECT unnest(members) FROM rooms WHERE id = NEW.room)) THEN
             RAISE EXCEPTION 'Invalid room member';
@@ -42,6 +43,9 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
       DROP TRIGGER IF EXISTS room_last_msg_and_cursor ON messages;
       CREATE OR REPLACE FUNCTION room_last_msg_and_cursor()
       RETURNS TRIGGER AS $$
+        DECLARE
+        user_id uuid;
+        members_array uuid[];
       BEGIN
       
       IF (TG_OP = 'INSERT') THEN
@@ -50,6 +54,17 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
         IF NOT EXISTS (SELECT 1 FROM cursor WHERE room = NEW.room AND owner = NEW.owner) THEN
             INSERT INTO cursor (owner, room)
             VALUES (NEW.owner, NEW.room);
+        END IF;
+
+        SELECT ARRAY(SELECT unnest(members)) INTO members_array
+        FROM rooms
+        WHERE id = NEW.room;
+    
+        user_id := members_array[array_position(members_array, NEW.owner) % 2 + 1];
+
+        IF NOT EXISTS (SELECT 1 FROM cursor WHERE room = NEW.room AND user_id = ANY(members_array)) THEN
+            INSERT INTO cursor (owner, room, inbox)
+            VALUES (NEW.owner, NEW.room, (SELECT CASE WHEN EXISTS (SELECT 1 FROM relationships WHERE owner = user_id AND target = new.owner AND type = 0) THEN 'true' ELSE 'false' END));
         END IF;
     
       ELSIF (TG_OP = 'DELETE') THEN

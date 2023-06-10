@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { NewMessage } from "../Icons";
 import { shallowEqual, useSelector } from "react-redux";
 import { selectValues } from "../../redux/profileReducer";
@@ -27,12 +27,22 @@ const Messages: FC<Props> = ({
 
   const { rooms, setRooms } = GetMessageContext();
   const nav = useNavigate();
+
+  useEffect(() => {
+    const sorted = rooms.sort(
+      (a, b) =>
+        new Date(b?.last_message_created || "").getTime() -
+        new Date(a?.last_message_created || "").getTime()
+    );
+    setRooms(sorted);
+  }, [rooms]);
+
   const detail = (room: IRoom) =>
-    room.type == 1
+    room.last_message_type == 1
       ? "A image sended"
-      : room.type == 2
+      : room.last_message_type == 2
       ? "A post shared"
-      : room.mcontent;
+      : room.last_message_content;
 
   return (
     <Container className="messages">
@@ -53,10 +63,10 @@ const Messages: FC<Props> = ({
           .map((room) => (
             <li
               onClick={() => {
-                nav(`/direct/inbox/${room.rid}`);
-                setMessagegroupid(room.rid);
+                nav(`/direct/inbox/${room.room_id}`);
+                setMessagegroupid(room.room_id);
               }}
-              className={messagegroupid == room.rid ? "active" : ""}
+              className={messagegroupid == room.room_id ? "active" : ""}
             >
               <div className="pp">
                 <img
@@ -73,9 +83,6 @@ const Messages: FC<Props> = ({
             </li>
           ))}
       </ul>
-      <pre style={{ overflowY: "scroll" }}>
-        {JSON.stringify(rooms, null, 2)}
-      </pre>
     </Container>
   );
 };
@@ -140,7 +147,7 @@ const Container = styled.div`
       cursor: pointer;
       padding: 10px 24px;
       &:hover {
-        background-color: #363636;
+        background-color: #262626;
       }
       &.active {
         background-color: #363636;

@@ -68,8 +68,8 @@ const MessagesPopup: FC<Props> = ({ title, close }) => {
       if (text.trim().length == 0) {
         if (rooms.length % 12 == 0) {
           getRooms(false, {
-            date: rooms[rooms.length - 1].mcreated!,
-            id: rooms[rooms.length - 1].rid!,
+            date: rooms[rooms.length - 1].last_message_created!,
+            id: rooms[rooms.length - 1].last_message_id!,
           });
         }
       }
@@ -79,7 +79,7 @@ const MessagesPopup: FC<Props> = ({ title, close }) => {
   const nav = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const tap = (userid: string) => {
-    if (title == "share") {
+    if (title == "Share") {
       startRoom(userid)
         .then((roomid) =>
           sendMessage(roomid, window.location.pathname.split("/")[2], 2)
@@ -99,7 +99,7 @@ const MessagesPopup: FC<Props> = ({ title, close }) => {
   };
 
   const tap2 = (rid: string) => {
-    if (title == "share") {
+    if (title == "Share") {
       sendMessage(rid, window.location.pathname.split("/")[2], 2).then(() => {
         close();
         toast.info("Shared post.");
@@ -159,7 +159,7 @@ const MessagesPopup: FC<Props> = ({ title, close }) => {
           ) : (
             <>
               {rooms.map((obj) => (
-                <li key={obj.rid} onClick={() => tap2(obj.rid)}>
+                <li key={obj.room_id} onClick={() => tap2(obj.room_id)}>
                   <LinkQ className="pp" to={`/${obj.username}`}>
                     <img
                       onContextMenu={disableRightClick}

@@ -38,6 +38,6 @@ export const sendMessage = (
   });
 
 export const getMessages = (roomid: string, last?: ILast) =>
-  req(`/messages/rooms/${roomid}?date=${last?.date}&id=${last?.id}`).then(
-    (r) => r as any[]
-  );
+  req(
+    `/messages/rooms/${roomid}/messages?date=${last?.date}&id=${last?.id}`
+  ).then((r) => r as any[]);

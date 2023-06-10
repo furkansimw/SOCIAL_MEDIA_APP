@@ -3,6 +3,21 @@ import blocked from "../functions/blocked";
 import ILast from "../functions/last";
 import then from "../functions/then";
 
+/*
+
+  room_id
+  last_message_id
+  last_message_owner
+  last_message_type
+  last_message_content
+  last_message_reply
+  last_message_created
+  user_seen
+  my_seen
+  inbox
+
+*/
+
 const getRoomsQ = (id: string, requests: boolean, last?: ILast) => {
   const values: any[] = [id];
   if (last) values.push(last.date, last.id);
@@ -11,8 +26,8 @@ const getRoomsQ = (id: string, requests: boolean, last?: ILast) => {
   return db
     .query(
       `
-    select r.id rid,r.last_msg, mc.seen mseen, uc.seen useen, m.*,m.type::int, mc.inbox inbox, u.id uid, u.username, u.pp, u.fullname, u.is_online, u.lastonline from rooms r
-    left join users u on u.id = case WHEN r.members[1] <> $1 then r.members[1] else r.members[2] END
+    select r.id room_id,m.id last_message_id, m.owner last_message_owner, COALESCE(m.type::int, null) last_message_type, m.content last_message_content, m.reply last_message_reply, m.reply last_message_created, uc.seen user_seen, mc.seen my_seen, mc.inbox inbox, u.username, u.pp, u.fullname, u.is_online, u.id uid, u.lastonline from rooms r
+    left join users u on u.id = case WHEN r.members[1] != $1 then r.members[1] else r.members[2] END
     left join messages m on m.id = r.last_msg
     left join cursor mc on mc.room = r.id and mc.owner = $1
     left join cursor uc on uc.room = r.id and uc.owner = u.id
@@ -31,7 +46,7 @@ const startRoomQ = async (id: string, userid: string) => {
   const roomsIsExists = await db.query(
     `
     select r.id from rooms r
-    left join users u on u.id = case WHEN r.members[1] <> $1 then r.members[1] else r.members[2] END
+    left join users u on u.id = case WHEN r.members[1] != $1 then r.members[1] else r.members[2] END
     left join messages m on m.id = r.last_msg
     ${blocked("u.id")}
     WHERE $1 = any(r.members) and $2 = any(r.members) and b is null
@@ -51,8 +66,8 @@ const getRoomQ = (id: string, roomid: string) =>
   db
     .query(
       `
-    select r.id rid,r.last_msg, mc.seen mseen, uc.seen useen, m.*,m.type::int, mc.inbox inbox, u.id uid, u.username, u.pp, u.fullname, u.is_online, u.lastonline from rooms r
-    left join users u on u.id = case WHEN r.members[1] <> $1 then r.members[1] else r.members[2] END
+    select r.id room_id,m.id last_message_id, m.owner last_message_owner,COALESCE(m.type::int, null) last_message_type , m.content last_message_content, m.reply last_message_reply, m.created last_message_created, uc.seen user_seen, mc.seen my_seen, mc.inbox inbox, u.username, u.pp, u.fullname, u.is_online, u.id uid, u.lastonline from rooms r
+    left join users u on u.id = case WHEN r.members[1] != $1 then r.members[1] else r.members[2] END
     left join messages m on m.id = r.last_msg
     left join cursor mc on mc.room = r.id and mc.owner = $1
     left join cursor uc on uc.room = r.id and uc.owner = u.id
@@ -79,12 +94,29 @@ const sendMessageQ = (
 ) =>
   db
     .query(
-      `insert into messages (owner, room, content, type, reply) values ($1, $2, $3, $4, $5) returning *,type::int`,
+      `insert into messages (owner, room, content, type, reply) select $1, $2, $3, $4, $5 from rooms r where id = $2 and $1 = any(members) and not exists (
+          select 1 from relationships b where b.type = 2 and (b.owner = $1 and b.target = any(r.members)) or (b.target = $1 and b.owner = any(r.members)) 
+      ) returning *,type::int`,
       [id, roomid, content, type, reply]
     )
     .then((r) => r.rows[0]);
 
-const getMessagesQ = (id: string, roomid: string) => db.query(``, [id, roomid]);
+const getMessagesQ = (id: string, roomid: string, last?: ILast) => {
+  const values: any[] = [id, roomid];
+  const str = last ? `(m.created, m.id) < ($3, $4)` : ``;
+  if (last) values.push(last.date, last.id);
+  return db
+    .query(
+      `
+          select m.*, m.type::int, u.username, u.pp from messages m 
+          left join users u on m.owner = u.id
+          left join rooms r on r.id = m.room
+          where m.room = $2 and $1 = ANY(r.members) ${str}
+    `,
+      values
+    )
+    .then((r) => r.rows);
+};
 
 const deleteMessageQ = (id: string, roomid: string, messageid: string) =>
   db.query(``, [id, roomid, messageid]);

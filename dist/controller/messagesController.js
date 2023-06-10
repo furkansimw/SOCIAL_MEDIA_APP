@@ -57,7 +57,7 @@ exports.sendMessage = sendMessage;
 const getMessages = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = res.locals;
     const { roomid } = req.params;
-    const result = yield (0, messagesQ_1.getMessagesQ)(id, roomid);
+    const result = yield (0, messagesQ_1.getMessagesQ)(id, roomid, (0, converter_1.default)(req.query));
     res.json(result);
 }));
 exports.getMessages = getMessages;

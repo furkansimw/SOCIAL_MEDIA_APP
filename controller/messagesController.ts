@@ -56,7 +56,7 @@ const getMessages = asyncErrorWrapper(async (req, res) => {
   const { id } = res.locals;
   const { roomid } = req.params;
 
-  const result = await getMessagesQ(id, roomid);
+  const result = await getMessagesQ(id, roomid, conv(req.query));
   res.json(result);
 });
 

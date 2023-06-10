@@ -31,6 +31,7 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
     if (room.messages.length == 0 && room.hasmore) {
       getMessages(messagegroupid)
         .then((messages) => {
+          console.log(messages);
           const hasmore = messages.length == 24;
           const loading = false;
 
@@ -39,13 +40,25 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
         .catch(() => {
           const hasmore = false;
           const loading = false;
+
           setRoom({ ...room, loading, hasmore });
         });
     }
   }, [room]);
 
   useEffect(() => {
-    // todo
+    if (!room) return;
+    const isExistsRoom = rooms.find((r) => r.room_id == room.room_id);
+
+    if (isExistsRoom) {
+      const prev = rooms.map((r) => {
+        if (r.room_id == room.room_id) return room;
+        return r;
+      });
+      setRooms(prev);
+    } else {
+      setRooms((prev) => [...prev, room]);
+    }
   }, [room]);
 
   if (!room) return <></>;
