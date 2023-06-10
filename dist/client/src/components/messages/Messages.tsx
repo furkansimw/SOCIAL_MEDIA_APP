@@ -13,14 +13,12 @@ type Props = {
   openRequest: () => void;
   setMessagegroupid: React.Dispatch<React.SetStateAction<string | undefined>>;
   messagegroupid: string | undefined;
-  isActive: boolean;
 };
 
 const Messages: FC<Props> = ({
   openRequest,
   setMessagegroupid,
   messagegroupid,
-  isActive,
 }) => {
   const { username } = useSelector(selectValues, shallowEqual);
   const [mp, _mp] = useState(false);
@@ -75,6 +73,9 @@ const Messages: FC<Props> = ({
             </li>
           ))}
       </ul>
+      <pre style={{ overflowY: "scroll" }}>
+        {JSON.stringify(rooms, null, 2)}
+      </pre>
     </Container>
   );
 };

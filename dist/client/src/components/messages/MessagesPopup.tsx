@@ -77,16 +77,40 @@ const MessagesPopup: FC<Props> = ({ title, close }) => {
   };
 
   const nav = useNavigate();
-
-  const tap = (userid: string) =>
-    startRoom(userid)
-      .then((roomid) =>
-        sendMessage(roomid, window.location.pathname.split("/")[2], 2)
-      )
-      .then((t) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const tap = (userid: string) => {
+    if (title == "share") {
+      startRoom(userid)
+        .then((roomid) =>
+          sendMessage(roomid, window.location.pathname.split("/")[2], 2)
+        )
+        .then((t) => {
+          close();
+          toast.info("Sucessfly shared post");
+        });
+    } else {
+      startRoom(userid).then((roomid) => {
         close();
-        toast.info("Sucessfly shared post");
+        dispatch(setCurrentPostId(null));
+        dispatch(setBack(null));
+        nav(`/direct/inbox/${roomid}`);
       });
+    }
+  };
+
+  const tap2 = (rid: string) => {
+    if (title == "share") {
+      sendMessage(rid, window.location.pathname.split("/")[2], 2).then(() => {
+        close();
+        toast.info("Shared post.");
+      });
+    } else {
+      close();
+      dispatch(setCurrentPostId(null));
+      dispatch(setBack(null));
+      nav(`/direct/inbox/${rid}`);
+    }
+  };
 
   return (
     <>
@@ -135,19 +159,7 @@ const MessagesPopup: FC<Props> = ({ title, close }) => {
           ) : (
             <>
               {rooms.map((obj) => (
-                <li
-                  key={obj.rid}
-                  onClick={() => {
-                    sendMessage(
-                      obj.rid,
-                      window.location.pathname.split("/")[2],
-                      2
-                    ).then(() => {
-                      close();
-                      toast.info("Shared post.");
-                    });
-                  }}
-                >
+                <li key={obj.rid} onClick={() => tap2(obj.rid)}>
                   <LinkQ className="pp" to={`/${obj.username}`}>
                     <img
                       onContextMenu={disableRightClick}

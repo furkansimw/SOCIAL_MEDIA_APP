@@ -43,7 +43,7 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
   }, [room]);
 
   useEffect(() => {
-    if(room.)
+    // todo
   }, [room]);
 
   if (!room) return <></>;

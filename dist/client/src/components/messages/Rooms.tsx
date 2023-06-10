@@ -30,7 +30,9 @@ const Rooms: FC<Props> = ({
   }, []);
 
   useEffect(() => {
-    socket.on("message", (message: IMessage) => {});
+    socket.on("message", (message: IMessage) => {
+      const isExistsRoom = rooms.find((room) => message.room);
+    });
   }, []);
 
   return (
@@ -39,13 +41,11 @@ const Rooms: FC<Props> = ({
         openRequest={openRequest}
         messagegroupid={messagegroupid}
         setMessagegroupid={setMessagegroupid}
-        isActive={!requests}
       />
       <Requests
         closeRequest={closeRequest}
         messagegroupid={messagegroupid}
         setMessagegroupid={setMessagegroupid}
-        isActive={requests}
       />
     </Container>
   );

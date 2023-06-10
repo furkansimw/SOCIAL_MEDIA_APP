@@ -50,14 +50,18 @@ const startRoomQ = (id, userid) => __awaiter(void 0, void 0, void 0, function* (
     `, [id, userid]);
     if ((_a = roomsIsExists.rows[0]) === null || _a === void 0 ? void 0 : _a.id)
         return (_b = roomsIsExists.rows[0]) === null || _b === void 0 ? void 0 : _b.id;
+    db_1.default.query(`insert into rooms (members) values ($1) returning id`, [
+        [id, userid],
+    ]).then((r) => { var _a; return (_a = r.rows[0]) === null || _a === void 0 ? void 0 : _a.id; });
 });
 exports.startRoomQ = startRoomQ;
 const getRoomQ = (id, roomid) => db_1.default
     .query(`
-    select r.id rid,c.inbox inbox, m.id mid, m.owner mowner,m.type::int mtype,m.content mcontent,m.reply mreply,m.created mcreated, u.id uid, u.username, u.pp, u.fullname, u.is_online, u.lastonline from rooms r
+    select r.id rid,r.last_msg, mc.seen mseen, uc.seen useen, m.*,m.type::int, mc.inbox inbox, u.id uid, u.username, u.pp, u.fullname, u.is_online, u.lastonline from rooms r
     left join users u on u.id = case WHEN r.members[1] <> $1 then r.members[1] else r.members[2] END
     left join messages m on m.id = r.last_msg
-    left join cursor c on c.room = r.id
+    left join cursor mc on mc.room = r.id and mc.owner = $1
+    left join cursor uc on uc.room = r.id and uc.owner = u.id
     left join relationships b on (b.owner = $1 and b.target = any(r.members) and b.type = 2) or (b.target = $1 and b.owner = any(r.members) and b.type = 2) 
     WHERE r.id = $2 and $1 = any(r.members) and b is null
     order by m.created desc,m.id desc

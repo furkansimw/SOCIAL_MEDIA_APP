@@ -6,14 +6,12 @@ type Props = {
   closeRequest: () => void;
   setMessagegroupid: React.Dispatch<React.SetStateAction<string | undefined>>;
   messagegroupid: string | undefined;
-  isActive: boolean;
 };
 
 const Requests: FC<Props> = ({
   closeRequest,
   messagegroupid,
   setMessagegroupid,
-  isActive,
 }) => {
   return (
     <Container className="requests">

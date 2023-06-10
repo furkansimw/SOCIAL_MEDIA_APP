@@ -29,4 +29,5 @@ export interface IMessage extends IUser {
   type: 0 | 1 | 2 | 3; // text image post reply
   reply: string | null; // "repying message id + repying message content";
   created: string;
+  room: string;
 }

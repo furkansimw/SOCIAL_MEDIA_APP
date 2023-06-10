@@ -17,11 +17,8 @@ const Messages = () => {
     const worker = (e: KeyboardEvent) => {
       if (e.key == "Escape") {
         setMessagegroupid(undefined);
-        if (window.location.pathname == "/direct/inbox") {
-          setRequests(false);
-        } else {
-          nav("/direct/inbox");
-        }
+        if (window.location.pathname == "/direct/inbox") setRequests(false);
+        else nav("/direct/inbox");
       }
     };
     window.addEventListener("keydown", worker);
