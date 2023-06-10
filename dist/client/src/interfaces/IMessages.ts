@@ -8,16 +8,16 @@ export interface IUser {
 }
 
 export interface IRoom extends IUser {
-  rid: string;
-  mid: string | null;
-  mowner: string | null;
-  type: number | null;
-  mcontent: string | null;
-  mreply: string | null;
-  mcreated: string | null;
+  room_id: string;
+  last_message_id: string | null;
+  last_message_owner: string | null;
+  last_message_type: number | null;
+  last_message_content: string | null;
+  last_message_reply: string | null;
+  last_message_created: string | null;
   messages: IMessage[];
-  useen: string;
-  mseen: string;
+  user_seen: string;
+  my_seen: string;
   inbox: boolean;
   hasmore: boolean;
   loading: boolean;

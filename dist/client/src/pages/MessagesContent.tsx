@@ -13,10 +13,12 @@ type props = {
 const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
   const { rooms, setRooms } = GetMessageContext();
 
-  const [room, setRoom] = useState(rooms.find((r) => r.rid == messagegroupid));
+  const [room, setRoom] = useState(
+    rooms.find((r) => r.room_id == messagegroupid)
+  );
   const nav = useNavigate();
   useEffect(() => {
-    const data = rooms.find((r) => r.rid == messagegroupid);
+    const data = rooms.find((r) => r.room_id == messagegroupid);
     setRoom(data);
     if (!data)
       getRoom(messagegroupid)
