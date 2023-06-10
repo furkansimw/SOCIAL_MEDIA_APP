@@ -13,7 +13,6 @@ export interface IRoom extends IUser {
   last_message_owner: string | null;
   last_message_type: number | null;
   last_message_content: string | null;
-  last_message_reply: string | null;
   last_message_created: string | null;
   messages: IMessage[];
   user_seen: string;

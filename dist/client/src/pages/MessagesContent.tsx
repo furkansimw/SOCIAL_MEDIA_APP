@@ -4,6 +4,9 @@ import { GetMessageContext } from "../context/MessagesContextProvider";
 import { getMessages, getRoom } from "../api/messages";
 import { useNavigate } from "react-router-dom";
 import MessagesList from "../components/messages/MessagesList";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../redux/store";
+import { setUnreadMessageCount } from "../redux/profileReducer";
 
 type props = {
   messagegroupid: string;
@@ -46,11 +49,14 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
     }
   }, [room]);
 
+  const dispatch = useDispatch<AppDispatch>();
+
   useEffect(() => {
     if (!room) return;
     const isExistsRoom = rooms.find((r) => r.room_id == room.room_id);
 
     if (isExistsRoom) {
+      dispatch(setUnreadMessageCount("desc"));
       const prev = rooms.map((r) => {
         if (r.room_id == room.room_id) return room;
         return r;

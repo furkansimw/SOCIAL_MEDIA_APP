@@ -40,9 +40,33 @@ const Rooms: FC<Props> = ({
   useEffect(() => {
     socket.on("message", (message: IMessage) => {
       const room = rooms.find((r) => r.room_id == message.room);
+
       if (room) {
-        setRooms((prev) => prev.concat(room));
+        const { inbox } = room;
+        if (messagegroupid != room.room_id && inbox) {
+          dispatch(setUnreadMessageCount("inc"));
+        }
+        const {
+          content: last_message_content,
+          created: last_message_created,
+          id: last_message_id,
+          owner: last_message_owner,
+        } = message;
+        const obj = {
+          last_message_content,
+          last_message_created,
+          last_message_id,
+          last_message_owner,
+        };
+        setRooms((prev) =>
+          prev.concat({
+            ...room,
+            messages: [...room.messages, message],
+            ...obj,
+          })
+        );
       } else {
+        dispatch(setUnreadMessageCount("inc"));
         getRoom(message.room).then((room) =>
           setRooms((prev) => prev.concat(room))
         );
@@ -51,19 +75,6 @@ const Rooms: FC<Props> = ({
   }, []);
 
   const dispatch = useDispatch<AppDispatch>();
-
-  useEffect(() => {
-    rooms.map((room) => {
-      const { inbox, last_message_created, my_seen } = room;
-      if (
-        inbox &&
-        new Date(last_message_created || "").getTime() >
-          new Date(my_seen).getTime()
-      ) {
-        dispatch(setUnreadMessageCount("inc"));
-      }
-    });
-  }, [rooms]);
 
   return (
     <Container className={requests ? "r" : "m"}>

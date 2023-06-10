@@ -37,7 +37,7 @@ const getRoomsQ = (id, requests, last) => {
     const str = last ? `and r(m.created, m.id) < ($2, $3)` : ``;
     return db_1.default
         .query(`
-    select r.id room_id,m.id last_message_id, m.owner last_message_owner, COALESCE(m.type::int, null) last_message_type, m.content last_message_content, m.reply last_message_reply, m.reply last_message_created, uc.seen user_seen, mc.seen my_seen, mc.inbox inbox, u.username, u.pp, u.fullname, u.is_online, u.id uid, u.lastonline from rooms r
+    select r.id room_id,m.id last_message_id, m.owner last_message_owner, COALESCE(m.type::int, null) last_message_type, m.content last_message_content, m.created last_message_created, uc.seen user_seen, mc.seen my_seen, mc.inbox inbox, u.username, u.pp, u.fullname, u.is_online, u.id uid, u.lastonline from rooms r
     left join users u on u.id = case WHEN r.members[1] != $1 then r.members[1] else r.members[2] END
     left join messages m on m.id = r.last_msg
     left join cursor mc on mc.room = r.id and mc.owner = $1
@@ -72,7 +72,7 @@ exports.startRoomQ = startRoomQ;
 //todo room interface fixede
 const getRoomQ = (id, roomid) => db_1.default
     .query(`
-    select r.id room_id,m.id last_message_id, m.owner last_message_owner,COALESCE(m.type::int, null) last_message_type , m.content last_message_content, m.reply last_message_reply, m.created last_message_created, uc.seen user_seen, mc.seen my_seen, mc.inbox inbox, u.username, u.pp, u.fullname, u.is_online, u.id uid, u.lastonline from rooms r
+    select r.id room_id,m.id last_message_id, m.owner last_message_owner,COALESCE(m.type::int, null) last_message_type , m.content last_message_content, m.created last_message_created, uc.seen user_seen, mc.seen my_seen, mc.inbox inbox, u.username, u.pp, u.fullname, u.is_online, u.id uid, u.lastonline from rooms r
     left join users u on u.id = case WHEN r.members[1] != $1 then r.members[1] else r.members[2] END
     left join messages m on m.id = r.last_msg
     left join cursor mc on mc.room = r.id and mc.owner = $1
