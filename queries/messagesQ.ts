@@ -46,6 +46,7 @@ const startRoomQ = async (id: string, userid: string) => {
   ]).then((r) => r.rows[0]?.id);
 };
 
+//todo room interface fixede
 const getRoomQ = (id: string, roomid: string) =>
   db
     .query(
