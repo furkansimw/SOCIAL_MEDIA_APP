@@ -3,6 +3,7 @@ import { styled } from "styled-components";
 import { GetMessageContext } from "../context/MessagesContextProvider";
 import { getMessages, getRoom } from "../api/messages";
 import { useNavigate } from "react-router-dom";
+import MessagesList from "../components/messages/MessagesList";
 
 type props = {
   messagegroupid: string;
@@ -30,6 +31,7 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
         .then((messages) => {
           const hasmore = messages.length == 24;
           const loading = false;
+
           setRoom({ ...room, messages, loading, hasmore });
         })
         .catch(() => {
@@ -38,6 +40,10 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
           setRoom({ ...room, loading, hasmore });
         });
     }
+  }, [room]);
+
+  useEffect(() => {
+    if(room.)
   }, [room]);
 
   if (!room) return <></>;
@@ -49,7 +55,7 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
           <div className="pp"></div>
         </div>
       </div>
-      <pre>{JSON.stringify(room, null, 2)}</pre>
+      <MessagesList />
     </Container>
   );
 };
