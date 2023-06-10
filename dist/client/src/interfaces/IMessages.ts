@@ -11,13 +11,16 @@ export interface IRoom extends IUser {
   rid: string;
   mid: string | null;
   mowner: string | null;
-  mtype: string | null;
+  type: number | null;
   mcontent: string | null;
   mreply: string | null;
   mcreated: string | null;
   messages: IMessage[];
   useen: string;
   mseen: string;
+  inbox: boolean;
+  hasmore: boolean;
+  loading: boolean;
 }
 export interface IMessage extends IUser {
   id: string;

@@ -23,7 +23,7 @@ const getRoomsQ = (id, requests, last) => {
     const str = last ? `and r(m.created, m.id) < ($2, $3)` : ``;
     return db_1.default
         .query(`
-    select r.id rid,r.last_msg, mc.seen mseen, uc.seen useen, m.*, mc.inbox inbox, u.id uid, u.username, u.pp, u.fullname, u.is_online, u.lastonline from rooms r
+    select r.id rid,r.last_msg, mc.seen mseen, uc.seen useen, m.*,m.type::int, mc.inbox inbox, u.id uid, u.username, u.pp, u.fullname, u.is_online, u.lastonline from rooms r
     left join users u on u.id = case WHEN r.members[1] <> $1 then r.members[1] else r.members[2] END
     left join messages m on m.id = r.last_msg
     left join cursor mc on mc.room = r.id and mc.owner = $1

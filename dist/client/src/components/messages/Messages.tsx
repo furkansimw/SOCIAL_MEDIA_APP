@@ -4,6 +4,10 @@ import { shallowEqual, useSelector } from "react-redux";
 import { selectValues } from "../../redux/profileReducer";
 import { styled } from "styled-components";
 import MessagesPopup from "./MessagesPopup";
+import { GetMessageContext } from "../../context/MessagesContextProvider";
+import { IRoom } from "../../interfaces/IMessages";
+import { disableRightClick } from "../navigation/Navigation";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   openRequest: () => void;
@@ -23,6 +27,15 @@ const Messages: FC<Props> = ({
   const newM = () => _mp(true);
   const close = () => _mp(false);
 
+  const { rooms, setRooms } = GetMessageContext();
+  const nav = useNavigate();
+  const detail = (room: IRoom) =>
+    room.type == 1
+      ? "A image sended"
+      : room.type == 2
+      ? "A post shared"
+      : room.mcontent;
+
   return (
     <Container className="messages">
       {mp && <MessagesPopup title="New message" close={close} />}
@@ -36,7 +49,32 @@ const Messages: FC<Props> = ({
         <p className="t">Messages</p>
         <button onClick={openRequest}>Requests</button>
       </div>
-      <ul></ul>
+      <ul>
+        {rooms
+          .filter((r) => r.inbox)
+          .map((room) => (
+            <li
+              onClick={() => {
+                nav(`/direct/inbox/${room.rid}`);
+                setMessagegroupid(room.rid);
+              }}
+              className={messagegroupid == room.rid ? "active" : ""}
+            >
+              <div className="pp">
+                <img
+                  onContextMenu={disableRightClick}
+                  src={room.pp || "/pp.jpg"}
+                  alt="pp"
+                />
+                {room.is_online && <div className="circle"></div>}
+              </div>
+              <div className="text">
+                <p className="u">{room.username}</p>
+                <p className="d">{detail(room)}</p>
+              </div>
+            </li>
+          ))}
+      </ul>
     </Container>
   );
 };
@@ -94,6 +132,53 @@ const Container = styled.div`
       border-radius: 8px;
       &:active {
         background-color: #464646;
+      }
+    }
+    li {
+      display: flex;
+      cursor: pointer;
+      padding: 10px 24px;
+      &:hover {
+        background-color: #363636;
+      }
+      &.active {
+        background-color: #363636;
+      }
+      .pp {
+        width: 44px;
+        height: 44px;
+        margin-right: 12px;
+        position: relative;
+        .circle {
+          position: absolute;
+          width: 12px;
+          height: 12px;
+          border-radius: 100%;
+          bottom: 0px;
+          right: 0px;
+          z-index: 10;
+          background-color: #1cd14f;
+        }
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 100%;
+        }
+      }
+      .text {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        justify-content: center;
+        .u {
+          font-size: 14px;
+          line-height: 18px;
+        }
+        .d {
+          font-size: 14px;
+          color: #a8a8a8;
+        }
       }
     }
   }
