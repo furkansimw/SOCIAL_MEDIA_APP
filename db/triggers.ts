@@ -26,7 +26,6 @@ export default async () => {
       FOR EACH ROW
       EXECUTE FUNCTION room_member_check();
     `);
-
   await db.query(`
       DROP TRIGGER IF EXISTS room_last_msg_and_cursor ON messages;
       CREATE OR REPLACE FUNCTION room_last_msg_and_cursor()
@@ -50,9 +49,9 @@ export default async () => {
     
         user_id := members_array[array_position(members_array, NEW.owner) % 2 + 1];
 
-        IF NOT EXISTS (SELECT 1 FROM cursor WHERE room = NEW.room AND user_id = ANY(members_array)) THEN
+        IF NOT EXISTS (SELECT 1 FROM cursor WHERE room = NEW.room AND cursor.owner = user_id) THEN
             INSERT INTO cursor (owner, room, inbox)
-            VALUES (NEW.owner, NEW.room, (SELECT CASE WHEN EXISTS (SELECT 1 FROM relationships WHERE owner = user_id AND target = new.owner AND type = 0) THEN 'true' ELSE 'false' END));
+            VALUES (NEW.owner, NEW.room, (SELECT CASE WHEN EXISTS (SELECT 1 FROM relationships WHERE owner = user_id AND target = new.owner AND type = 0) THEN true ELSE false END));
         END IF;
     
       ELSIF (TG_OP = 'DELETE') THEN

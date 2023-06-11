@@ -116,31 +116,37 @@ const updateProfile = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(voi
     if (guest)
         (0, error_1.badRequest)();
     const { pp, username, email, fullname, bio, ispublic } = req.body;
-    let values = {};
-    if (fullname && fullname.length <= 50)
-        values["fullname"] = fullname;
+    let values = req.body;
     try {
-        if (pp != undefined && pp != null) {
-            const url = yield (0, urlConverter_1.default)(id, pp);
-            values["pp"] = url;
+        if (typeof pp == undefined) {
+            delete values.pp;
         }
-        else if (pp == null) {
-            values["pp"] = null;
-            try {
-                yield (0, cloudinary_1.destroy)(`${id}-pp`, "/pp");
+        else {
+            if (pp != null) {
+                const url = yield (0, urlConverter_1.default)(id, pp);
+                values["pp"] = url;
             }
-            catch (error) { }
+            else if (pp == null) {
+                try {
+                    yield (0, cloudinary_1.destroy)(`${id}-pp`, "/pp");
+                }
+                catch (error) { }
+            }
         }
     }
     catch (error) {
         res.json(error);
         return;
     }
+    console.log(values);
+    if (fullname > 50)
+        delete values.fullname;
     const newBio = (bio !== null && bio !== void 0 ? bio : "").replace(/\n{2,}/g, "\n").trim();
-    values["bio"] = newBio.length > 0 ? newBio : null;
+    if (newBio.length == 0)
+        delete values.bio;
     values.ispublic = ispublic || false;
     const usernamePattern = "^(?=.{6,36}$)(?![_.])(?!.*[_.]{2})[a-z0-9._]+(?<![_.])$";
-    if (username != undefined &&
+    if (!(username != undefined &&
         new RegExp(usernamePattern).test(username) &&
         ![
             "explore",
@@ -151,12 +157,15 @@ const updateProfile = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(voi
             "mysaveds",
             "search",
             "myprofile",
-        ].includes(username))
-        values["username"] = username.toLowerCase();
-    if (new RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$").test(email))
-        values["email"] = email;
+        ].includes(username))) {
+        delete values.username;
+    }
+    if (!new RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$").test(email)) {
+        delete values.email;
+    }
+    console.log(values);
     yield (0, profileQ_1.updateProfileQ)(id, values);
-    res.json((values === null || values === void 0 ? void 0 : values.pp) || { status: "ok" });
+    res.json({ status: "ok" });
 }));
 exports.updateProfile = updateProfile;
 const getMyNotifications = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {

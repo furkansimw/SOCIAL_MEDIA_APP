@@ -44,7 +44,7 @@ const getRoomsQ = (id, requests, last) => {
     left join cursor uc on uc.room = r.id and uc.owner = u.id
     left join relationships b on (b.owner = $1 and b.target = any(r.members) and b.type = 2) or (b.target = $1 and b.owner = any(r.members) and b.type = 2) 
     left join relationships f on f.owner = $1 and f.target = u.id and f.type = 0
-    WHERE $1 = any(r.members) ${str} and b is null and (mc is not null and mc.inbox = ${!requests}) 
+    WHERE $1 = any(r.members) ${str} and b is null and (mc is not null and mc.is_active and mc.inbox = ${!requests}) 
     order by m.created desc, m.id desc
     limit 12
   `, values)
@@ -85,13 +85,13 @@ const getRoomQ = (id, roomid) => db_1.default
     .then((r) => r.rows[0] || null);
 exports.getRoomQ = getRoomQ;
 const selectReplyForMessage = (id) => db_1.default
-    .query(`select id,content from messages where id = $1`)
+    .query(`select id,content from messages where id = $1`, [id])
     .then((r) => r.rows[0] || null);
 exports.selectReplyForMessage = selectReplyForMessage;
-const sendMessageQ = (id, roomid, content, type, reply) => db_1.default
-    .query(`insert into messages (owner, room, content, type, reply) select $1, $2, $3, $4, $5 from rooms r where id = $2 and $1 = any(members) and not exists (
+const sendMessageQ = (id, roomid, content, type, messageid, reply) => db_1.default
+    .query(`insert into messages (owner, room, content, type, reply, id) select $1, $2, $3, $4, $5, $6 from rooms r where id = $2 and $1 = any(members) and not exists (
           select 1 from relationships b where b.type = 2 and (b.owner = $1 and b.target = any(r.members)) or (b.target = $1 and b.owner = any(r.members)) 
-      ) returning *,type::int`, [id, roomid, content, type, reply])
+      ) returning *,type::int`, [id, roomid, content, type, reply, messageid])
     .then((r) => r.rows[0]);
 exports.sendMessageQ = sendMessageQ;
 const getMessagesQ = (id, roomid, last) => {

@@ -96,6 +96,20 @@ const Container = styled.div`
   transition: 0.3s ease-in-out all;
   display: flex;
   flex-direction: column;
+  @media screen and (max-width: 900px) {
+    li {
+      display: flex;
+      justify-content: center;
+    }
+    ul li .pp {
+      width: 50px !important;
+      height: 50px !important;
+      margin: 0px !important;
+    }
+    .text {
+      display: none !important;
+    }
+  }
   .up {
     padding: 36px 24px 12px;
     width: 100%;
@@ -154,6 +168,8 @@ const Container = styled.div`
       }
       .pp {
         width: 44px;
+        min-width: 44px;
+        min-height: 44px;
         height: 44px;
         margin-right: 12px;
         position: relative;

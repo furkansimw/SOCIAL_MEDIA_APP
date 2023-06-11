@@ -9,9 +9,10 @@ import LoadingBox from "../LoadingBox";
 type Props = {
   isActive: boolean;
   close: () => void;
+  setLastRequest: React.Dispatch<any>;
 };
 
-const FollowRequests: FC<Props> = ({ isActive, close }) => {
+const FollowRequests: FC<Props> = ({ isActive, close, setLastRequest }) => {
   useEffect(() => {
     if (!isActive) return;
     _d([]);
@@ -59,6 +60,9 @@ const FollowRequests: FC<Props> = ({ isActive, close }) => {
         return a;
       });
       _d(newD);
+      if (newD.filter((nd) => nd.isallowed == false).length == 0) {
+        setLastRequest(null);
+      }
     });
   };
 
@@ -70,6 +74,9 @@ const FollowRequests: FC<Props> = ({ isActive, close }) => {
     requestAction(ri, true);
     const newD = d.filter((a) => a.id != ri);
     _d(newD);
+    if (newD.filter((nd) => nd.isallowed == false).length == 0) {
+      setLastRequest(null);
+    }
   };
 
   return (

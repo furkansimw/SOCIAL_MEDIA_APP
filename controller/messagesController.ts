@@ -1,5 +1,6 @@
-import db from "../db/db";
+import { upload } from "../db/cloudinary";
 import conv from "../functions/converter";
+import { v4 } from "uuid";
 import { asyncErrorWrapper, badRequest } from "../mw/error";
 import {
   getRoomsQ,
@@ -42,13 +43,32 @@ const sendMessage = asyncErrorWrapper(async (req, res) => {
   const { roomid } = req.params;
   let { content, type, reply } = req.body;
   type = parseInt(type);
-  if (!(type > 0 && type <= 3)) return badRequest();
+  const messageid = v4();
+  if (!(type > 0 && type <= 3)) badRequest();
+
   if (type == 3) {
     const a = await selectReplyForMessage(reply);
     if (a == null) badRequest();
     reply = `${a.id}-${a.content}`;
   }
-  const result = await sendMessageQ(id, roomid, content, type, reply);
+
+  if (type == 1) {
+    try {
+      content = await upload(content, messageid, "messages");
+    } catch (error) {
+      res.json(error);
+      return;
+    }
+  }
+  const result = await sendMessageQ(
+    id,
+    roomid,
+    content,
+    type,
+    messageid,
+    reply
+  );
+
   res.json(result);
 });
 

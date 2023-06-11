@@ -28,19 +28,19 @@ const EditProfile = () => {
 
   const [values, setValues] = useState<IE | null>(null);
 
-  const dispatch = useDispatch<AppDispatch>();
   const nav = useNavigate();
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!changed) return;
+    let values: any = {};
     const bio = (values?.bio ?? "").replace(/\n{2,}/g, "\n").trim();
-    var a: any = values;
-    a["bio"] = bio;
-    delete a.pp;
-    updateProfile(a)
+
+    if (bio.length > 0) values = { bio };
+    values = { ...values, username, fullname, ispublic, email };
+
+    updateProfile(values)
       .then(() => {
-        dispatch(getMyProfile());
-        nav(`/${a.username}`, { replace: true });
+        nav(`/${username}`, { replace: true });
         window.location.reload();
       })
       .catch(toast.error);
@@ -112,6 +112,7 @@ const EditProfile = () => {
             setUploadingpp(false);
             const v = values!;
             setValues({ ...v, pp: url });
+            window.location.reload();
           })
           .catch((e) => toast.error(e.toString()));
       })

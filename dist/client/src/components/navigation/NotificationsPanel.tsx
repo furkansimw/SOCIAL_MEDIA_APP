@@ -140,7 +140,11 @@ const NotificationsPanel = forwardRef<HTMLDivElement, Props>(
             {loading && <LoadingBox />}
           </ul>
         </div>
-        <FollowRequests close={() => setFr(false)} isActive={fr} />
+        <FollowRequests
+          close={() => setFr(false)}
+          isActive={fr}
+          setLastRequest={setLastRequest}
+        />
       </Container>
     );
   }

@@ -1,5 +1,5 @@
 import { ILast } from "../interfaces/IApi";
-import { IRoom } from "../interfaces/IMessages";
+import { IMessage, IRoom } from "../interfaces/IMessages";
 import req from "./req";
 
 export const getRooms = (requests: boolean, last?: ILast) =>
@@ -35,7 +35,7 @@ export const sendMessage = (
     type,
     content,
     reply,
-  });
+  }).then((r) => r as IMessage);
 
 export const getMessages = (roomid: string, last?: ILast) =>
   req(

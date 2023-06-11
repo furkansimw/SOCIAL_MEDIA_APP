@@ -21,7 +21,7 @@ const searchProfileQ = (id: string, u: string) =>
 const getMyProfileQ = (id: string) =>
   db
     .query(
-      `select id, pp, username, reqcount::int, unreadmessagescount::int, nreqcount::int, npostlikescount::int, ncreatedcommentcount::int, nfollowcount::int from users where id = $1`,
+      `select id, pp, username, ispublic, reqcount::int, unreadmessagescount::int, nreqcount::int, npostlikescount::int, ncreatedcommentcount::int, nfollowcount::int from users where id = $1`,
       [id]
     )
     .then((r) => r.rows[0]);
@@ -143,7 +143,7 @@ const unBlockUserQ = (id: string, userid: string) =>
 const getMyProfileDetailQ = (id: string) =>
   db
     .query(
-      `select id, username,ispublic, email, pp, bio, unreadmessagescount::int, nreqcount::int, nreqcount::int,npostlikescount::int , fullname from users
+      `select id, username, ispublic, email, pp, bio, unreadmessagescount::int, nreqcount::int, nreqcount::int,npostlikescount::int , fullname from users
        where id = $1
   `,
       [id]

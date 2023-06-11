@@ -17,17 +17,15 @@ const triggers_1 = __importDefault(require("./triggers"));
 const create = () => __awaiter(void 0, void 0, void 0, function* () {
     yield db_1.default.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
     yield db_1.default.query('CREATE EXTENSION IF NOT EXISTS "pgcrypto";');
-    yield db_1.default.query(`alter table users add column if not exists is_online boolean not null default false;`);
-    yield db_1.default.query(`alter table users add column if not exists lastonline timestamp not null default now();`);
     yield db_1.default.query(`CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
-    username VARCHAR(36) NOT NULL UNIQUE CHECK (username ~ '^(?!.*[_.]{2})[a-zd._]{5,35}[^_.]$'),
-    email VARCHAR(255) NOT NULL UNIQUE CHECK (email ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$'),
+    username VARCHAR(36) NOT NULL UNIQUE  ,
+    email VARCHAR(255) NOT NULL UNIQUE ,
     pp VARCHAR(500),
     bio VARCHAR(200), 
     fullname VARCHAR(50),
     password VARCHAR(1000) not null,
-    ispublic BOOLEAN DEFAULT TRUE,
+    ispublic BOOLEAN DEFAULT TRUE not null,
     followerCount numeric not null default 0,
     followingCount numeric not null default 0,
     reqcount numeric not null default 0,
@@ -144,11 +142,11 @@ const create = () => __awaiter(void 0, void 0, void 0, function* () {
     id uuid primary key not null default uuid_generate_v4(),
     owner uuid references users(id) on delete cascade not null, 
     room uuid references rooms(id) on delete cascade not null,
+    is_active boolean default true not null,
     delete timestamp default now(),
     inbox boolean not null default true,
     seen timestamp default now()
   );`);
-    yield db_1.default.query(`alter table cursor add column if not exists inbox boolean not null default true;`);
     yield (0, triggers_1.default)();
 });
 exports.default = create;

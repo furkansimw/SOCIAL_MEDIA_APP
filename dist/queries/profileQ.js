@@ -28,7 +28,7 @@ const searchProfileQ = (id, u) => db_1.default
     .then((r) => r.rows);
 exports.searchProfileQ = searchProfileQ;
 const getMyProfileQ = (id) => db_1.default
-    .query(`select id, pp, username, reqcount::int, unreadmessagescount::int, nreqcount::int, npostlikescount::int, ncreatedcommentcount::int, nfollowcount::int from users where id = $1`, [id])
+    .query(`select id, pp, username, ispublic, reqcount::int, unreadmessagescount::int, nreqcount::int, npostlikescount::int, ncreatedcommentcount::int, nfollowcount::int from users where id = $1`, [id])
     .then((r) => r.rows[0]);
 exports.getMyProfileQ = getMyProfileQ;
 const getProfileQ = (id, username, guest) => {
@@ -129,7 +129,7 @@ const unBlockUserQ = (id, userid) => db_1.default.query(`delete from relationshi
 ]);
 exports.unBlockUserQ = unBlockUserQ;
 const getMyProfileDetailQ = (id) => db_1.default
-    .query(`select id, username,ispublic, email, pp, bio, unreadmessagescount::int, nreqcount::int, nreqcount::int,npostlikescount::int , fullname from users
+    .query(`select id, username, ispublic, email, pp, bio, unreadmessagescount::int, nreqcount::int, nreqcount::int,npostlikescount::int , fullname from users
        where id = $1
   `, [id])
     .then((r) => r.rows[0]);

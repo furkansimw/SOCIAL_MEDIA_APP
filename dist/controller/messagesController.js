@@ -13,7 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteMessage = exports.getMessages = exports.sendMessage = exports.startRoom = exports.getRoom = exports.getRooms = void 0;
+const cloudinary_1 = require("../db/cloudinary");
 const converter_1 = __importDefault(require("../functions/converter"));
+const uuid_1 = require("uuid");
 const error_1 = require("../mw/error");
 const messagesQ_1 = require("../queries/messagesQ");
 const getRooms = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -42,15 +44,25 @@ const sendMessage = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 
     const { roomid } = req.params;
     let { content, type, reply } = req.body;
     type = parseInt(type);
+    const messageid = (0, uuid_1.v4)();
     if (!(type > 0 && type <= 3))
-        return (0, error_1.badRequest)();
+        (0, error_1.badRequest)();
     if (type == 3) {
         const a = yield (0, messagesQ_1.selectReplyForMessage)(reply);
         if (a == null)
             (0, error_1.badRequest)();
         reply = `${a.id}-${a.content}`;
     }
-    const result = yield (0, messagesQ_1.sendMessageQ)(id, roomid, content, type, reply);
+    if (type == 1) {
+        try {
+            content = yield (0, cloudinary_1.upload)(content, messageid, "messages");
+        }
+        catch (error) {
+            res.json(error);
+            return;
+        }
+    }
+    const result = yield (0, messagesQ_1.sendMessageQ)(id, roomid, content, type, messageid, reply);
     res.json(result);
 }));
 exports.sendMessage = sendMessage;

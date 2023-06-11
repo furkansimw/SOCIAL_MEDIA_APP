@@ -111,47 +111,59 @@ const updateProfile = asyncErrorWrapper(async (req, res) => {
   const { id, guest } = res.locals;
   if (guest) badRequest();
   const { pp, username, email, fullname, bio, ispublic } = req.body;
-  let values: any = {};
-  if (fullname && fullname.length <= 50) values["fullname"] = fullname;
+  let values = req.body;
   try {
-    if (pp != undefined && pp != null) {
-      const url = await urlConverter(id, pp);
-      values["pp"] = url;
-    } else if (pp == null) {
-      values["pp"] = null;
-      try {
-        await destroy(`${id}-pp`, "/pp");
-      } catch (error) {}
+    if (typeof pp == undefined) {
+      delete values.pp;
+    } else {
+      if (pp != null) {
+        const url = await urlConverter(id, pp);
+        values["pp"] = url;
+      } else if (pp == null) {
+        try {
+          await destroy(`${id}-pp`, "/pp");
+        } catch (error) {}
+      }
     }
   } catch (error) {
     res.json(error);
     return;
   }
+  console.log(values);
 
+  if (fullname > 50) delete values.fullname;
   const newBio = (bio ?? "").replace(/\n{2,}/g, "\n").trim();
-  values["bio"] = newBio.length > 0 ? newBio : null;
+  if (newBio.length == 0) delete values.bio;
   values.ispublic = ispublic || false;
   const usernamePattern =
     "^(?=.{6,36}$)(?![_.])(?!.*[_.]{2})[a-z0-9._]+(?<![_.])$";
   if (
-    username != undefined &&
-    new RegExp(usernamePattern).test(username) &&
-    ![
-      "explore",
-      "accounts",
-      "account",
-      "myaccount",
-      "mysaved",
-      "mysaveds",
-      "search",
-      "myprofile",
-    ].includes(username)
-  )
-    values["username"] = (username as string).toLowerCase();
-  if (new RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$").test(email))
-    values["email"] = email;
+    !(
+      username != undefined &&
+      new RegExp(usernamePattern).test(username) &&
+      ![
+        "explore",
+        "accounts",
+        "account",
+        "myaccount",
+        "mysaved",
+        "mysaveds",
+        "search",
+        "myprofile",
+      ].includes(username)
+    )
+  ) {
+    delete values.username;
+  }
+  if (
+    !new RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$").test(email)
+  ) {
+    delete values.email;
+  }
+  console.log(values);
+
   await updateProfileQ(id, values);
-  res.json(values?.pp || { status: "ok" });
+  res.json({ status: "ok" });
 });
 
 const getMyNotifications = asyncErrorWrapper(async (req, res) => {

@@ -32,6 +32,7 @@ import { disableRightClick } from "../components/navigation/Navigation.tsx";
 import Priv from "../components/profile/Priv.tsx";
 import UnfollowPopup from "./UnfollowPopup.tsx";
 import Views from "../components/profile/View.tsx";
+import { startRoom } from "../api/messages.ts";
 
 const Profile = () => {
   const isloggedin = useSelector(selectIsLoggedin, shallowEqual);
@@ -182,6 +183,7 @@ const Profile = () => {
 
   const message = () => {
     if (!isloggedin) dispatch(toggleSetLoginPopupActive());
+    startRoom(userid).then((ri) => nav(`/direct/inbox/${ri}`));
     // todo
   };
 

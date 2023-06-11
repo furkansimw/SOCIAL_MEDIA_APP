@@ -128,7 +128,7 @@ const Container = styled.div`
   }
   &.m {
     .requests {
-      width: 0px;
+      width: 0px !important;
     }
   }
 `;
