@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import { FC, useMemo } from "react";
 import { IMessage } from "../../interfaces/IMessages";
 import { styled } from "styled-components";
 import { disableRightClick } from "../navigation/Navigation";
@@ -16,12 +16,12 @@ export const dateViewer = (date: string) => {
   const diff = Math.floor((now - d) / 1000);
 
   if (diff < 86400) {
-    const hours = Math.floor(diff / 3600);
+    let hours: string | number = Math.floor(diff / 3600);
+    hours = hours < 10 ? `0${hours}` : hours;
     const minutes = Math.floor((diff % 3600) / 60);
     const result = hours + ":" + (minutes < 10 ? "0" : "") + minutes;
     return result;
   } else if (diff < 604800) {
-    const days = Math.floor(diff / 86400);
     const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const result = daysOfWeek[new Date(date).getDay()];
     return result;
