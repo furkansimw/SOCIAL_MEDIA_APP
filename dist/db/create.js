@@ -125,7 +125,7 @@ const create = () => __awaiter(void 0, void 0, void 0, function* () {
       owner uuid references users(id) on delete cascade,
       type numeric not null default 0,
       content varchar(500) not null,
-      reply varchar(237),
+      reply varchar(537),
       created TIMESTAMP DEFAULT NOW()
     )`);
     // i dont use uuid[] because query is very limited with uuid and there are no references in the lists anyway.

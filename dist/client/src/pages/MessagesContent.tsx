@@ -8,7 +8,7 @@ import { shallowEqual, useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store";
 import { selectValues, setUnreadMessageCount } from "../redux/profileReducer";
 import { AddImage } from "../components/Icons";
-import { ToastContainer } from "react-toastify";˝
+import { ToastContainer } from "react-toastify";
 import { IMessage } from "../interfaces/IMessages";
 import { useSelector } from "react-redux";
 

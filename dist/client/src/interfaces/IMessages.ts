@@ -21,9 +21,11 @@ export interface IRoom extends IUser {
   hasmore: boolean;
   loading: boolean;
 }
-export interface IMessage extends IUser {
+export interface IMessage {
   id: string;
   owner: string;
+  username: string;
+  pp: string | null;
   content: string;
   type: 0 | 1 | 2 | 3; // text image post reply
   reply: string | null; // "repying message id + repying message content";

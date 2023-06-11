@@ -96,7 +96,7 @@ const sendMessageQ = (id, roomid, content, type, messageid, reply) => db_1.defau
 exports.sendMessageQ = sendMessageQ;
 const getMessagesQ = (id, roomid, last) => {
     const values = [id, roomid];
-    const str = last ? `(m.created, m.id) < ($3, $4)` : ``;
+    const str = last ? `and (m.created, m.id) < ($3, $4)` : ``;
     if (last)
         values.push(last.date, last.id);
     return db_1.default
@@ -105,8 +105,10 @@ const getMessagesQ = (id, roomid, last) => {
           left join users u on m.owner = u.id
           left join rooms r on r.id = m.room
           where m.room = $2 and $1 = ANY(r.members) ${str}
+          order by m.created desc, m.id desc
+          limit 24
     `, values)
-        .then((r) => r.rows);
+        .then(then_1.default);
 };
 exports.getMessagesQ = getMessagesQ;
 const deleteMessageQ = (id, roomid, messageid) => db_1.default.query(``, [id, roomid, messageid]);

@@ -352,9 +352,7 @@ const MorePanel = forwardRef<HTMLDivElement, { moreIconActive: boolean }>(
   ({ moreIconActive }, ref) => {
     const myusername = useSelector(selectValues, shallowEqual).username;
 
-    const handleLogout = () => {
-      logout();
-    };
+    const handleLogout = () => logout();
 
     return (
       <div ref={ref} className={`morepanel ${moreIconActive ? "a" : ""}`}>

@@ -62,6 +62,7 @@ const Messages: FC<Props> = ({
           .filter((r) => r.inbox)
           .map((room) => (
             <li
+              key={room.room_id}
               onClick={() => {
                 nav(`/direct/inbox/${room.room_id}`);
                 setMessagegroupid(room.room_id);

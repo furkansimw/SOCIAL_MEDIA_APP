@@ -42,12 +42,14 @@ const sendMessage = asyncErrorWrapper(async (req, res) => {
   const { id } = res.locals;
   const { roomid } = req.params;
   let { content, type, reply } = req.body;
+
   type = parseInt(type);
   const messageid = v4();
-  if (!(type > 0 && type <= 3)) badRequest();
+  if (!(type >= 0 && type <= 3)) badRequest();
 
   if (type == 3) {
-    const a = await selectReplyForMessage(reply);
+    if (!reply) badRequest();
+    const a = await selectReplyForMessage((reply as string).substring(0, 36));
     if (a == null) badRequest();
     reply = `${a.id}-${a.content}`;
   }
@@ -60,6 +62,7 @@ const sendMessage = asyncErrorWrapper(async (req, res) => {
       return;
     }
   }
+
   const result = await sendMessageQ(
     id,
     roomid,
@@ -77,7 +80,10 @@ const getMessages = asyncErrorWrapper(async (req, res) => {
   const { roomid } = req.params;
 
   const result = await getMessagesQ(id, roomid, conv(req.query));
-  res.json(result);
+  const messages = result.sort(
+    (a, b) => new Date(a.created).getTime() - new Date(b.created).getTime()
+  );
+  res.json(messages);
 });
 
 const deleteMessage = asyncErrorWrapper(async (req, res) => {

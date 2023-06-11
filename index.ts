@@ -37,6 +37,8 @@ io.use((socket, next) => {
   }
 });
 
+//
+
 app.use(express.static(path.join(__dirname, "/client/dist")));
 app.use(express.json({ limit: "60mb" }));
 app.use(cookieParser());

@@ -45,10 +45,12 @@ const sendMessage = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 
     let { content, type, reply } = req.body;
     type = parseInt(type);
     const messageid = (0, uuid_1.v4)();
-    if (!(type > 0 && type <= 3))
+    if (!(type >= 0 && type <= 3))
         (0, error_1.badRequest)();
     if (type == 3) {
-        const a = yield (0, messagesQ_1.selectReplyForMessage)(reply);
+        if (!reply)
+            (0, error_1.badRequest)();
+        const a = yield (0, messagesQ_1.selectReplyForMessage)(reply.substring(0, 36));
         if (a == null)
             (0, error_1.badRequest)();
         reply = `${a.id}-${a.content}`;
@@ -70,7 +72,8 @@ const getMessages = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 
     const { id } = res.locals;
     const { roomid } = req.params;
     const result = yield (0, messagesQ_1.getMessagesQ)(id, roomid, (0, converter_1.default)(req.query));
-    res.json(result);
+    const messages = result.sort((a, b) => new Date(a.created).getTime() - new Date(b.created).getTime());
+    res.json(messages);
 }));
 exports.getMessages = getMessages;
 const deleteMessage = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {

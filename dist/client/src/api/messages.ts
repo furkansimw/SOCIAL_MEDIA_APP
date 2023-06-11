@@ -29,7 +29,7 @@ export const sendMessage = (
   roomid: string,
   content: string,
   type: 0 | 1 | 2 | 3,
-  reply?: string
+  reply: string | null
 ) =>
   req(`/messages/rooms/${roomid}`, "POST", {
     type,

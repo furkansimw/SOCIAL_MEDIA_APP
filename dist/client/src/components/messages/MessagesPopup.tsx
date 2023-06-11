@@ -82,7 +82,7 @@ const MessagesPopup: FC<Props> = ({ title, close }) => {
     if (title == "Share") {
       startRoom(userid)
         .then((roomid) =>
-          sendMessage(roomid, window.location.pathname.split("/")[2], 2)
+          sendMessage(roomid, window.location.pathname.split("/")[2], 2, null)
         )
         .then((t) => {
           close();
@@ -100,10 +100,12 @@ const MessagesPopup: FC<Props> = ({ title, close }) => {
 
   const tap2 = (rid: string) => {
     if (title == "Share") {
-      sendMessage(rid, window.location.pathname.split("/")[2], 2).then(() => {
-        close();
-        toast.info("Shared post.");
-      });
+      sendMessage(rid, window.location.pathname.split("/")[2], 2, null).then(
+        () => {
+          close();
+          toast.info("Shared post.");
+        }
+      );
     } else {
       close();
       dispatch(setCurrentPostId(null));
@@ -128,6 +130,7 @@ const MessagesPopup: FC<Props> = ({ title, close }) => {
             value={text}
             onChange={onChange}
             type="text"
+            autoFocus
             placeholder="Search..."
           />
         </div>
