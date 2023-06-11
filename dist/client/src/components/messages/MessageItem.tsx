@@ -4,7 +4,6 @@ import { styled } from "styled-components";
 import { disableRightClick } from "../navigation/Navigation";
 import { shallowEqual, useSelector } from "react-redux";
 import { selectValues } from "../../redux/profileReducer";
-import { dateCalc } from "../post/postpopup/Bottom";
 
 type Props = {
   message: IMessage;
@@ -88,6 +87,7 @@ const MessageItem: FC<Props> = ({ message, viewDate }) => {
 const Container = styled.li`
   width: 100%;
   display: flex;
+  height: 4rem;
   .pp {
     width: 2rem;
     height: 2rem;

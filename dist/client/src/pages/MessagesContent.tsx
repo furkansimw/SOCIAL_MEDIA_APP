@@ -37,7 +37,6 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
   }, [messagegroupid]);
 
   useEffect(() => {
-    scrollBottom();
     if (!room) return;
     if (room.messages.length == 0 && room.hasmore) {
       getMessages(messagegroupid)
@@ -253,6 +252,9 @@ const Container = styled.div`
         resize: none;
         height: 18px;
         max-height: 180px;
+        &::-webkit-scrollbar {
+          display: none;
+        }
       }
       .image {
         margin: 0px 1rem;

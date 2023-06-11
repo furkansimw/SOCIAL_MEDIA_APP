@@ -1,7 +1,7 @@
-import React, { forwardRef, useImperativeHandle } from "react";
+import React, { forwardRef, useImperativeHandle, useState } from "react";
 import { styled } from "styled-components";
 import { IRoom } from "../../interfaces/IMessages";
-import MessageItem from "./MessageItem";
+import MessageItem, { dateViewer } from "./MessageItem";
 import { getMessages } from "../../api/messages";
 import LoadingBox from "../LoadingBox";
 
@@ -24,22 +24,21 @@ const MessagesList = forwardRef<HTMLUListElement, Props>(
     } = room;
 
     const calc = (index: number) => {
-      const cmd = new Date(messages[index].created).getTime();
-      const bmd = new Date(
-        messages[index == 0 ? 0 : index - 1].created
-      ).getTime();
+      const cmd = dateViewer(messages[index].created);
+      const bmd = dateViewer(messages[index == 0 ? 0 : index - 1].created);
       return cmd != bmd || index == 0;
     };
-
+    const [s, setS] = useState(false);
     const onScroll = (e: React.UIEvent<HTMLUListElement, UIEvent>) => {
       const { scrollTop, scrollHeight } = e.target as Element;
       if (loading || !hasmore) return;
-
       if (scrollTop <= 100) {
+        if (s) return;
+        setS(true);
         const date = messages[0].created;
         const id = messages[0].id;
         setRoom({ ...room, loading: true });
-        const scrollHeightS = scrollHeight;
+        const currentSH = scrollHeight;
         getMessages(room_id, { date, id }).then((messages) => {
           const hasmore = messages.length == 24;
           const loading = false;
@@ -50,9 +49,11 @@ const MessagesList = forwardRef<HTMLUListElement, Props>(
             messages: [...messages, ...room.messages],
           });
           setTimeout(() => {
-            const messagesRef = document.querySelector(".messageslist")!;
-            const newScrollTop = messagesRef.scrollHeight - scrollHeightS;
-            messagesRef.scrollTop += newScrollTop - messagesRef.clientHeight;
+            const a = document.querySelector(".messageslist")!.scrollHeight;
+            document
+              .querySelector(".messageslist")!
+              .scroll({ top: scrollTop + (a - currentSH) });
+            setS(false);
           }, 1);
         });
       }
@@ -73,6 +74,26 @@ const Container = styled.ul`
   width: 100%;
   overflow-y: auto;
   height: 100%;
+  overflow-x: hidden;
+  .loading-box {
+    margin: 2rem 0px;
+  }
+  &::-webkit-scrollbar-thumb {
+    opacity: 1 !important;
+    height: 1px;
+  }
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    width: 8px;
+    background-color: #262626;
+    border-radius: 8px;
+    opacity: 0;
+    &:active {
+      background-color: #363636;
+    }
+  }
 `;
 
 export default MessagesList;
