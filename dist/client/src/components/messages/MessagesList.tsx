@@ -94,6 +94,11 @@ const Container = styled.ul`
       background-color: #363636;
     }
   }
+  .view-date {
+    text-align: center;
+    font-size: 14px;
+    color: #a8a8a8;
+  }
 `;
 
 export default MessagesList;

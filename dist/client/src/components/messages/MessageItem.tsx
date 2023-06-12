@@ -72,7 +72,7 @@ const MessageItem: FC<Props> = ({ message, viewDate }) => {
           <p className="date">{date}</p>
         </div>
       )}
-      <Container>
+      <Container className={usermessage ? "" : "mm"}>
         {usermessage && (
           <div className="pp">
             <img src={pp || "/pp.jpg"} alt="pp" />
@@ -88,9 +88,13 @@ const Container = styled.li`
   width: 100%;
   display: flex;
   height: 4rem;
+  &.mm {
+    flex-direction: row-reverse;
+  }
   .pp {
     width: 2rem;
     height: 2rem;
+    margin-right: 10px;
     img {
       width: 100%;
       height: 100%;
