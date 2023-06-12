@@ -14,7 +14,7 @@ const Requests: FC<Props> = ({
   setMessagegroupid,
 }) => {
   return (
-    <Container className="requests">
+    <Container className="requests coolsb">
       <div className="up">
         <button onClick={closeRequest}>
           <MessageRequestsBack />
@@ -128,26 +128,7 @@ const Container = styled.div`
   height: 100vh;
   overflow: hidden;
   overflow-y: auto;
-  &:hover::-webkit-scrollbar-thumb {
-    display: block;
-  }
-  &::-webkit-scrollbar-thumb {
-    opacity: 1 !important;
-    height: 1px;
-  }
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  &::-webkit-scrollbar-thumb {
-    display: none !important;
-    width: 8px;
-    background-color: #262626;
-    border-radius: 8px;
-    opacity: 0;
-    &:active {
-      background-color: #363636;
-    }
-  }
+
   .up {
     height: 75px;
     padding: 0px 1rem;

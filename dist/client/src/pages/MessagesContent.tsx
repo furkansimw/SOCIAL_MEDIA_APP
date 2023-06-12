@@ -118,8 +118,17 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
 
   const { room_id, messages } = room;
 
-  const setMessages = (newMesage: IMessage) =>
-    setRoom({ ...room, messages: [...messages, newMesage] });
+  const setMessages = (newMesage: IMessage) => {
+    setRoom({
+      ...room,
+      messages: [...messages, newMesage],
+      last_message_content: newMesage.content,
+      last_message_created: newMesage.created,
+      last_message_id: newMesage.id,
+      last_message_owner: newMesage.owner,
+      last_message_type: newMesage.type,
+    });
+  };
 
   return (
     <Container>
@@ -181,15 +190,7 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
                     created: new Date(Date.now()).toISOString(),
                     room: room!.room_id,
                   };
-                  setRoom({
-                    ...room,
-                    messages: [...room.messages, m],
-                    last_message_content: m.content,
-                    last_message_created: m.created,
-                    last_message_id: m.id,
-                    last_message_owner: m.owner,
-                    last_message_type: m.type,
-                  });
+                  setMessages(m);
                   setTimeout(scrollBottom, 1);
                   sendMessage(room_id, imagesrc, 1, null, id);
                 } catch (error) {}
@@ -215,7 +216,6 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
 
 const Container = styled.div`
   width: calc(100vw - 73px - 400px);
-  transition: 0.3s ease-in-out all;
   display: flex;
   flex-direction: column;
   @media screen and (max-width: 900px) {

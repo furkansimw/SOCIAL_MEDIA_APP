@@ -43,3 +43,28 @@ input {
 a.u:hover {
   opacity: 0.7;
 }
+
+.coolsb:hover::-webkit-scrollbar-thumb {
+  display: block;
+}
+.coolsb:hover::-webkit-scrollbar {
+  outline: 1px solid #262626;
+}
+.coolsb::-webkit-scrollbar-thumb {
+  opacity: 1 !important;
+  height: 1px;
+}
+.coolsb::-webkit-scrollbar {
+  width: 8px;
+  border-radius: 8px;
+}
+.coolsb::-webkit-scrollbar-thumb {
+  display: none;
+  width: 8px;
+  background-color: #262626;
+  border-radius: 8px;
+  opacity: 0;
+}
+.coolsb::-webkit-scrollbar-thumb:active {
+  background-color: #363636;
+}

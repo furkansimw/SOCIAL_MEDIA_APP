@@ -15,26 +15,21 @@ export const dateViewer = (date: string) => {
   const d = new Date(date).getTime();
   const diff = Math.floor((now - d) / 1000);
 
-  if (diff < 86400) {
+  if (diff < 60 * 24) {
     let hours: string | number = Math.floor(diff / 3600);
     hours = hours < 10 ? `0${hours}` : hours;
     const minutes = Math.floor((diff % 3600) / 60);
     const result = hours + ":" + (minutes < 10 ? "0" : "") + minutes;
     return result;
-  } else if (diff < 604800) {
+  } else if (diff < 60 * 24 * 7) {
     const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const result = daysOfWeek[new Date(date).getDay()];
     return result;
-  } else if (diff < 31536000) {
-    const day = new Date(date).getDate();
-    const month = new Date(date).toLocaleString("default", { month: "long" });
-    const result = day + " " + month;
-    return result;
   }
-  const year = new Date(date).getFullYear();
-  const month = new Date(date).toLocaleString("default", { month: "long" });
   const day = new Date(date).getDate();
-  const result = day + " " + month + " " + year;
+  const month = new Date(date).toLocaleString("default", { month: "long" });
+  const year = new Date(date).getFullYear();
+  const result = day + " " + month + " " + (year != now);
   return result;
 };
 
@@ -46,11 +41,13 @@ const MessageItem: FC<Props> = ({ message, viewDate }) => {
       return <p>{content}</p>;
     } else if (type == 1) {
       return (
-        <img
-          onClick={disableRightClick}
-          src={content}
-          alt={`message-alt-${id}`}
-        />
+        <div className="sended-img">
+          <img
+            onContextMenu={disableRightClick}
+            src={content}
+            alt={`message-alt-${id}`}
+          />
+        </div>
       );
     } else if (type == 2) {
       return (
@@ -63,7 +60,7 @@ const MessageItem: FC<Props> = ({ message, viewDate }) => {
     }
   }, []);
 
-  const usermessage = myusername == username;
+  const usermessage = myusername != username;
   const date = useMemo(() => dateViewer(created), []);
 
   return (
@@ -73,10 +70,7 @@ const MessageItem: FC<Props> = ({ message, viewDate }) => {
           <p className="date">{date}</p>
         </div>
       )}
-      <Container
-        onClick={() => console.log(date)}
-        className={usermessage ? "" : "mm"}
-      >
+      <Container className={usermessage ? "" : "mm"}>
         {usermessage && (
           <div className="pp">
             <img src={pp || "/pp.jpg"} alt="pp" />
@@ -91,9 +85,10 @@ const MessageItem: FC<Props> = ({ message, viewDate }) => {
 const Container = styled.li`
   width: 100%;
   display: flex;
-  height: 4rem;
+  padding: 0px 1rem;
+  margin: 2rem 0px;
   &.mm {
-    flex-direction: row-reverse;
+    justify-content: end;
   }
   .pp {
     width: 2rem;
@@ -103,6 +98,18 @@ const Container = styled.li`
       width: 100%;
       height: 100%;
       border-radius: 100%;
+    }
+  }
+  .sended-img {
+    max-width: 350px;
+    max-height: 350px;
+    width: calc(50vw - 200px);
+    min-width: 200px;
+    aspect-ratio: 1;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
   }
 `;

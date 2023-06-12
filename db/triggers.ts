@@ -51,7 +51,7 @@ export default async () => {
 
         IF NOT EXISTS (SELECT 1 FROM cursor WHERE room = NEW.room AND cursor.owner = user_id) THEN
             INSERT INTO cursor (owner, room, inbox)
-            VALUES (NEW.owner, NEW.room, (SELECT CASE WHEN EXISTS (SELECT 1 FROM relationships WHERE owner = user_id AND target = new.owner AND type = 0) THEN true ELSE false END));
+            VALUES (user_id, NEW.room, (SELECT CASE WHEN EXISTS (SELECT 1 FROM relationships WHERE owner = user_id AND target = new.owner AND type = 0) THEN true ELSE false END));
         END IF;
     
       ELSIF (TG_OP = 'DELETE') THEN

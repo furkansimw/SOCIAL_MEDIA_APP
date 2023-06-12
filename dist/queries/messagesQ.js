@@ -64,9 +64,11 @@ const startRoomQ = (id, userid) => __awaiter(void 0, void 0, void 0, function* (
     `, [id, userid]);
     if (roomsIsExists.rows.length > 0)
         return (_a = roomsIsExists.rows[0]) === null || _a === void 0 ? void 0 : _a.id;
-    db_1.default.query(`insert into rooms select $1 from relationships returning id `, [
+    return db_1.default
+        .query(`insert into rooms (members) values ($1) returning id `, [
         [id, userid],
-    ]).then((r) => { var _a; return (_a = r.rows[0]) === null || _a === void 0 ? void 0 : _a.id; });
+    ])
+        .then((r) => { var _a; return (_a = r.rows[0]) === null || _a === void 0 ? void 0 : _a.id; });
 });
 exports.startRoomQ = startRoomQ;
 //todo room interface fixede

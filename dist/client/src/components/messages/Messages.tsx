@@ -57,7 +57,7 @@ const Messages: FC<Props> = ({
         <p className="t">Messages</p>
         <button onClick={openRequest}>Requests</button>
       </div>
-      <ul>
+      <ul className="coolsb">
         {rooms
           .filter((r) => r.inbox)
           .map((room) => (
@@ -146,13 +146,21 @@ const Container = styled.div`
     overflow-y: auto;
     width: 100%;
     &:hover::-webkit-scrollbar-thumb {
-      display: block !important;
+      display: block;
     }
-    &::-webkit-scrollbar {
-      width: 8px !important;
+    &:hover::-webkit-scrollbar {
+      outline: 1px solid #262626;
     }
     &::-webkit-scrollbar-thumb {
-      display: none !important;
+      opacity: 1 !important;
+      height: 1px;
+    }
+    &::-webkit-scrollbar {
+      width: 8px;
+      border-radius: 8px;
+    }
+    &::-webkit-scrollbar-thumb {
+      display: none;
       width: 8px;
       background-color: #262626;
       border-radius: 8px;

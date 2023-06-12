@@ -23,6 +23,7 @@ const TextArea: FC<Props> = ({ textAreaIsActive, text, setText }) => {
         <p>{username}</p>
       </div>
       <textarea
+        className="coolsb"
         value={text}
         onChange={onChange}
         maxLength={1000}
@@ -71,26 +72,6 @@ const Container = styled.div`
     padding-right: 4px;
     overflow-y: auto;
     height: calc(100% - 50px);
-    &:hover {
-      &::-webkit-scrollbar-thumb {
-        background-color: #363636;
-      }
-      &::-webkit-scrollbar {
-        background-color: #202020;
-      }
-    }
-
-    &::-webkit-scrollbar {
-      width: 8px;
-    }
-    &::-webkit-scrollbar-thumb {
-      width: 8px;
-      border-radius: 8px;
-      background-color: transparent;
-      &:active {
-        background-color: #484848;
-      }
-    }
   }
 `;
 

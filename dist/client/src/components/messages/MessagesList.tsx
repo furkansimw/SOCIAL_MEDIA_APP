@@ -71,7 +71,7 @@ const MessagesList = forwardRef<HTMLUListElement, Props>(
       <Container
         ref={messageListref}
         onScroll={onScroll}
-        className="messageslist"
+        className="messageslist coolsb"
       >
         {loading && <LoadingBox />}
         {messages.map((message, index) => (
@@ -90,30 +90,12 @@ const Container = styled.ul`
   .loading-box {
     margin: 2rem 0px;
   }
-  &:hover::-webkit-scrollbar-thumb {
-    display: block;
-  }
-  &::-webkit-scrollbar-thumb {
-    opacity: 1 !important;
-    height: 1px;
-  }
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  &::-webkit-scrollbar-thumb {
-    display: none;
-    width: 8px;
-    background-color: #262626;
-    border-radius: 8px;
-    opacity: 0;
-    &:active {
-      background-color: #363636;
-    }
-  }
+
   .view-date {
     text-align: center;
     font-size: 14px;
     color: #a8a8a8;
+    margin: 1rem 0px;
   }
 `;
 
