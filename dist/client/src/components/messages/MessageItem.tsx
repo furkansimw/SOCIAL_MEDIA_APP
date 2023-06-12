@@ -65,6 +65,7 @@ const MessageItem: FC<Props> = ({ message, viewDate }) => {
 
   const usermessage = myusername == username;
   const date = useMemo(() => dateViewer(created), []);
+
   return (
     <>
       {viewDate && (

@@ -94,6 +94,7 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
         const a = messages;
         a.push(m);
         setRoom({ ...room, messages: a });
+        setTimeout(scrollBottom, 1);
       }
     });
     const m: IMessage = {
@@ -114,7 +115,7 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
 
   const textarearef = useRef<HTMLTextAreaElement>(null);
   const myFormRef = useRef<HTMLFormElement>(null);
-
+  const messagesListRef = useRef<HTMLUListElement>(null);
   const onKeyDownTextArea = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.code == "Enter" && e.shiftKey == false) {
       e.preventDefault();
@@ -123,9 +124,10 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
   };
 
   const scrollBottom = () => {
-    const ml = document.querySelector(".messageslist");
-    if (!ml) return;
-    ml.scroll({ top: ml.scrollHeight });
+    if (!messagesListRef.current) return;
+    messagesListRef.current.scroll({
+      top: messagesListRef.current.scrollHeight,
+    });
   };
 
   if (!room) return <></>;
@@ -143,7 +145,7 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
           <div className="pp"></div>
         </div>
       </div>
-      <MessagesList room={room} setRoom={setRoom} />
+      <MessagesList room={room} setRoom={setRoom} ref={messagesListRef} />
       <div className="bottom">
         <form ref={myFormRef} onSubmit={onSubmit}>
           <textarea
@@ -185,6 +187,7 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
                   const imagesrc = (await conv(img)) as any;
                   sendMessage(room_id, imagesrc, 1, null).then((r) => {
                     setRoom({ ...room, messages: [...room.messages, r] });
+                    setTimeout(scrollBottom, 1);
                   });
                 } catch (error) {}
               }}

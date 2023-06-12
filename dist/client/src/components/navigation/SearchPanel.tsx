@@ -24,7 +24,7 @@ type ISearchL = {
 };
 
 const SearchPanel = forwardRef<HTMLDivElement, Props>(
-  ({ isActive, close }: Props, ref) => {
+  ({ isActive, close }, ref) => {
     const [state, setState] = useState("");
     const [focus, setFocus] = useState(false);
     const [searchL, setSearchL] = useState<ISearchL[]>([]);
@@ -34,6 +34,7 @@ const SearchPanel = forwardRef<HTMLDivElement, Props>(
     useEffect(() => {
       const a = localStorage.getItem("recent");
       inputRef.current?.focus();
+
       setState("");
       setLoading(false);
       try {

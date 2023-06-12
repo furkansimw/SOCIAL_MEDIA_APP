@@ -1,4 +1,10 @@
-import React, { forwardRef, useImperativeHandle, useState } from "react";
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { styled } from "styled-components";
 import { IRoom } from "../../interfaces/IMessages";
 import MessageItem, { dateViewer } from "./MessageItem";
@@ -11,7 +17,7 @@ type Props = {
 };
 
 const MessagesList = forwardRef<HTMLUListElement, Props>(
-  ({ room, setRoom }, ref) => {
+  ({ room, setRoom }, messageListref) => {
     const {
       messages,
       pp,
@@ -49,10 +55,11 @@ const MessagesList = forwardRef<HTMLUListElement, Props>(
             messages: [...messages, ...room.messages],
           });
           setTimeout(() => {
-            const a = document.querySelector(".messageslist")!.scrollHeight;
-            document
-              .querySelector(".messageslist")!
-              .scroll({ top: scrollTop + (a - currentSH) });
+            const ref = (messageListref as React.RefObject<HTMLUListElement>)
+              .current!;
+
+            const a = ref.scrollHeight;
+            ref.scroll({ top: scrollTop + (a - currentSH) });
             setS(false);
           }, 1);
         });
@@ -60,7 +67,11 @@ const MessagesList = forwardRef<HTMLUListElement, Props>(
     };
 
     return (
-      <Container ref={ref} onScroll={onScroll} className="messageslist">
+      <Container
+        ref={messageListref}
+        onScroll={onScroll}
+        className="messageslist"
+      >
         {loading && <LoadingBox />}
         {messages.map((message, index) => (
           <MessageItem message={message} viewDate={calc(index)} />
