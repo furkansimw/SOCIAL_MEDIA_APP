@@ -41,10 +41,9 @@ const getRoom = asyncErrorWrapper(async (req, res) => {
 const sendMessage = asyncErrorWrapper(async (req, res) => {
   const { id } = res.locals;
   const { roomid } = req.params;
-  let { content, type, reply } = req.body;
+  let { content, type, reply, messageid } = req.body;
 
   type = parseInt(type);
-  const messageid = v4();
   if (!(type >= 0 && type <= 3)) badRequest();
 
   if (type == 3) {

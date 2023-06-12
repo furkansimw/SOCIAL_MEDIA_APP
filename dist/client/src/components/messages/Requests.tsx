@@ -127,6 +127,27 @@ const Container = styled.div`
   width: 100%;
   height: 100vh;
   overflow: hidden;
+  overflow-y: auto;
+  &:hover::-webkit-scrollbar-thumb {
+    display: block;
+  }
+  &::-webkit-scrollbar-thumb {
+    opacity: 1 !important;
+    height: 1px;
+  }
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    display: none !important;
+    width: 8px;
+    background-color: #262626;
+    border-radius: 8px;
+    opacity: 0;
+    &:active {
+      background-color: #363636;
+    }
+  }
   .up {
     height: 75px;
     padding: 0px 1rem;

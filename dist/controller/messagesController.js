@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteMessage = exports.getMessages = exports.sendMessage = exports.startRoom = exports.getRoom = exports.getRooms = void 0;
 const cloudinary_1 = require("../db/cloudinary");
 const converter_1 = __importDefault(require("../functions/converter"));
-const uuid_1 = require("uuid");
 const error_1 = require("../mw/error");
 const messagesQ_1 = require("../queries/messagesQ");
 const getRooms = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -42,9 +41,8 @@ exports.getRoom = getRoom;
 const sendMessage = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = res.locals;
     const { roomid } = req.params;
-    let { content, type, reply } = req.body;
+    let { content, type, reply, messageid } = req.body;
     type = parseInt(type);
-    const messageid = (0, uuid_1.v4)();
     if (!(type >= 0 && type <= 3))
         (0, error_1.badRequest)();
     if (type == 3) {

@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import { FC, memo, useMemo } from "react";
 import { IMessage } from "../../interfaces/IMessages";
 import { styled } from "styled-components";
 import { disableRightClick } from "../navigation/Navigation";
@@ -73,7 +73,10 @@ const MessageItem: FC<Props> = ({ message, viewDate }) => {
           <p className="date">{date}</p>
         </div>
       )}
-      <Container className={usermessage ? "" : "mm"}>
+      <Container
+        onClick={() => console.log(date)}
+        className={usermessage ? "" : "mm"}
+      >
         {usermessage && (
           <div className="pp">
             <img src={pp || "/pp.jpg"} alt="pp" />
@@ -104,4 +107,4 @@ const Container = styled.li`
   }
 `;
 
-export default MessageItem;
+export default memo(MessageItem);

@@ -93,10 +93,10 @@ const Container = styled.div`
   min-width: 400px;
   height: 100vh;
   width: 100%;
-  overflow: hidden;
   transition: 0.3s ease-in-out all;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   @media screen and (max-width: 900px) {
     li {
       display: flex;
@@ -144,17 +144,21 @@ const Container = styled.div`
   ul {
     height: 100%;
     overflow-y: auto;
-    padding: 8px 0px;
+    width: 100%;
+    &:hover::-webkit-scrollbar-thumb {
+      display: block !important;
+    }
     &::-webkit-scrollbar {
-      width: 8px;
-      background-color: #101010;
+      width: 8px !important;
     }
     &::-webkit-scrollbar-thumb {
+      display: none !important;
       width: 8px;
-      background-color: #363636;
+      background-color: #262626;
       border-radius: 8px;
+      opacity: 0;
       &:active {
-        background-color: #464646;
+        background-color: #363636;
       }
     }
     li {

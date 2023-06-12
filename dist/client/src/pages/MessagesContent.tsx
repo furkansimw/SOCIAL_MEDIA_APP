@@ -9,8 +9,9 @@ import { AppDispatch } from "../redux/store";
 import { selectValues, setUnreadMessageCount } from "../redux/profileReducer";
 import { AddImage } from "../components/Icons";
 import { ToastContainer } from "react-toastify";
-import { IMessage } from "../interfaces/IMessages";
+import { IMessage, IRoom } from "../interfaces/IMessages";
 import { useSelector } from "react-redux";
+import { v4 } from "uuid";
 
 type props = {
   messagegroupid: string;
@@ -77,28 +78,10 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
     e.preventDefault();
     if (!room) return;
     if (message.trim().length == 0) return;
-    sendMessage(room_id, message, 0, isrepliying).then((r) => {
-      if (messages.length > 0) {
-        const m: IMessage = {
-          id: r.id,
-          owner: myid,
-          username: myusername,
-          pp: null,
-          content: message,
-          type: isrepliying ? 3 : 0,
-          reply: isrepliying,
-          created: r.created,
-          room: room!.room_id,
-        };
-
-        const a = messages;
-        a.push(m);
-        setRoom({ ...room, messages: a });
-        setTimeout(scrollBottom, 1);
-      }
-    });
+    const id = v4();
+    sendMessage(room_id, message, 0, isrepliying, id);
     const m: IMessage = {
-      id: "loading",
+      id,
       owner: myid,
       username: myusername,
       pp: null,
@@ -111,6 +94,7 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
     setMessage("");
     setMessages(m);
     textarearef.current!.style.height = "18px";
+    setTimeout(scrollBottom, 1);
   };
 
   const textarearef = useRef<HTMLTextAreaElement>(null);
@@ -185,10 +169,29 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
                   });
                 try {
                   const imagesrc = (await conv(img)) as any;
-                  sendMessage(room_id, imagesrc, 1, null).then((r) => {
-                    setRoom({ ...room, messages: [...room.messages, r] });
-                    setTimeout(scrollBottom, 1);
+                  const id = v4();
+                  const m: IMessage = {
+                    id,
+                    owner: myid,
+                    username: myusername,
+                    pp: null,
+                    content: imagesrc,
+                    type: 1,
+                    reply: null,
+                    created: new Date(Date.now()).toISOString(),
+                    room: room!.room_id,
+                  };
+                  setRoom({
+                    ...room,
+                    messages: [...room.messages, m],
+                    last_message_content: m.content,
+                    last_message_created: m.created,
+                    last_message_id: m.id,
+                    last_message_owner: m.owner,
+                    last_message_type: m.type,
                   });
+                  setTimeout(scrollBottom, 1);
+                  sendMessage(room_id, imagesrc, 1, null, id);
                 } catch (error) {}
               }}
               accept="image/jpeg, image/png, image/jpg"

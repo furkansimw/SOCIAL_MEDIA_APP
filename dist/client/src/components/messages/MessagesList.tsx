@@ -1,5 +1,6 @@
 import React, {
   forwardRef,
+  memo,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -89,6 +90,9 @@ const Container = styled.ul`
   .loading-box {
     margin: 2rem 0px;
   }
+  &:hover::-webkit-scrollbar-thumb {
+    display: block;
+  }
   &::-webkit-scrollbar-thumb {
     opacity: 1 !important;
     height: 1px;
@@ -97,6 +101,7 @@ const Container = styled.ul`
     width: 8px;
   }
   &::-webkit-scrollbar-thumb {
+    display: none;
     width: 8px;
     background-color: #262626;
     border-radius: 8px;
@@ -112,4 +117,4 @@ const Container = styled.ul`
   }
 `;
 
-export default MessagesList;
+export default memo(MessagesList);

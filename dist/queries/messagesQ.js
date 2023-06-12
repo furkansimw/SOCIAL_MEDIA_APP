@@ -52,7 +52,7 @@ const getRoomsQ = (id, requests, last) => {
 };
 exports.getRoomsQ = getRoomsQ;
 const startRoomQ = (id, userid) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a;
     const roomsIsExists = yield db_1.default.query(`
     select r.id from rooms r
     left join users u on u.id = case WHEN r.members[1] != $1 then r.members[1] else r.members[2] END
@@ -62,9 +62,9 @@ const startRoomQ = (id, userid) => __awaiter(void 0, void 0, void 0, function* (
     order by m.created desc,m.id desc
     limit 1
     `, [id, userid]);
-    if ((_a = roomsIsExists.rows[0]) === null || _a === void 0 ? void 0 : _a.id)
-        return (_b = roomsIsExists.rows[0]) === null || _b === void 0 ? void 0 : _b.id;
-    db_1.default.query(`insert into rooms (members) values ($1) returning id`, [
+    if (roomsIsExists.rows.length > 0)
+        return (_a = roomsIsExists.rows[0]) === null || _a === void 0 ? void 0 : _a.id;
+    db_1.default.query(`insert into rooms select $1 from relationships returning id `, [
         [id, userid],
     ]).then((r) => { var _a; return (_a = r.rows[0]) === null || _a === void 0 ? void 0 : _a.id; });
 });

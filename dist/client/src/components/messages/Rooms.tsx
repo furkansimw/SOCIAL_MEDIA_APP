@@ -101,6 +101,7 @@ const Container = styled.div`
   min-width: 400px;
   width: 400px;
   transition: 0.3s ease-in-out all;
+  overflow: hidden;
   @media screen and (max-width: 900px) {
     .messages {
       width: 120px !important;

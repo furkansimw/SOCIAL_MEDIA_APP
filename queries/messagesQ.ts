@@ -55,8 +55,8 @@ const startRoomQ = async (id: string, userid: string) => {
     `,
     [id, userid]
   );
-  if (roomsIsExists.rows[0]?.id) return roomsIsExists.rows[0]?.id;
-  db.query(`insert into rooms (members) values ($1) returning id`, [
+  if (roomsIsExists.rows.length > 0) return roomsIsExists.rows[0]?.id;
+  db.query(`insert into rooms select $1 from relationships returning id `, [
     [id, userid],
   ]).then((r) => r.rows[0]?.id);
 };

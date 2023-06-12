@@ -29,12 +29,14 @@ export const sendMessage = (
   roomid: string,
   content: string,
   type: 0 | 1 | 2 | 3,
-  reply: string | null
+  reply: string | null,
+  messageid: string
 ) =>
   req(`/messages/rooms/${roomid}`, "POST", {
     type,
     content,
     reply,
+    messageid,
   }).then((r) => r as IMessage);
 
 export const getMessages = (roomid: string, last?: ILast) =>
