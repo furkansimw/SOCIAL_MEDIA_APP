@@ -98,8 +98,9 @@ const sendMessageQ = (
   db
     .query(
       `insert into messages (owner, room, content, type, reply, id) select $1, $2, $3, $4, $5, $6 from rooms r where id = $2 and $1 = any(members) and not exists (
-          select 1 from relationships b where b.type = 2 and (b.owner = $1 and b.target = any(r.members)) or (b.target = $1 and b.owner = any(r.members)) 
-      ) returning *,type::int`,
+          select 1 from relationships where type = 2 and (
+            (owner = $1 and target = any(members)) or (target = $1 and owner = any(members)) 
+      )) returning *,type::int`,
       [id, roomid, content, type, reply, messageid]
     )
     .then((r) => r.rows[0]);

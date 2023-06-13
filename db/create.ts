@@ -138,14 +138,15 @@ const create = async () => {
   await db.query(
     `alter table messages add column if not exists room uuid references rooms(id) on delete cascade not null;`
   );
-
+  //--
   // if delete chat message getting start with cursor date and seen date
   await db.query(`create table if not exists cursor (
     id uuid primary key not null default uuid_generate_v4(),
     owner uuid references users(id) on delete cascade not null, 
     room uuid references rooms(id) on delete cascade not null,
     is_active boolean default true not null,
-    delete timestamp default now(),
+    created TIMESTAMP DEFAULT NOW(),
+    delete TIMESTAMP DEFAULT NOW(),
     inbox boolean not null default true,
     seen timestamp default now()
   );`);

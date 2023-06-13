@@ -3,6 +3,7 @@ import React, {
   memo,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -30,11 +31,37 @@ const MessagesList = forwardRef<HTMLUListElement, Props>(
       room_id,
     } = room;
 
+    function transformList() {
+      let a = [];
+      let count = 1;
+
+      for (let i = 0; i < messages.length; i++) {
+        if (
+          i === messages.length - 1 ||
+          dateViewer(messages[i].created) !==
+            dateViewer(messages[i + 1].created)
+        ) {
+          if (count === 1) a.push("single");
+          else if (count === 2) a.push("first", "last");
+          else if (count === 3) a.push("first", "middle", "last");
+          else a.push("first", ...Array(count - 2).fill("middle"), "last");
+
+          count = 1;
+        } else count++;
+      }
+
+      return a;
+    }
+
+    const xd = transformList();
+    console.log(xd);
+
     const calc = (index: number) => {
       const cmd = dateViewer(messages[index].created);
       const bmd = dateViewer(messages[index == 0 ? 0 : index - 1].created);
       return cmd != bmd || index == 0;
     };
+
     const [s, setS] = useState(false);
     const onScroll = (e: React.UIEvent<HTMLUListElement, UIEvent>) => {
       const { scrollTop, scrollHeight } = e.target as Element;
@@ -75,7 +102,11 @@ const MessagesList = forwardRef<HTMLUListElement, Props>(
       >
         {loading && <LoadingBox />}
         {messages.map((message, index) => (
-          <MessageItem message={message} viewDate={calc(index)} />
+          <MessageItem
+            message={message}
+            viewDate={calc(index)}
+            base={xd[index]}
+          />
         ))}
       </Container>
     );
@@ -93,7 +124,7 @@ const Container = styled.ul`
 
   .view-date {
     text-align: center;
-    font-size: 14px;
+    font-size: 12px;
     color: #a8a8a8;
     margin: 1rem 0px;
   }

@@ -8,37 +8,52 @@ import { selectValues } from "../../redux/profileReducer";
 type Props = {
   message: IMessage;
   viewDate: boolean;
+  base: string;
 };
 
 export const dateViewer = (date: string) => {
   const now = new Date(Date.now()).getTime();
   const d = new Date(date).getTime();
   const diff = Math.floor((now - d) / 1000);
-
-  if (diff < 60 * 24) {
-    let hours: string | number = Math.floor(diff / 3600);
-    hours = hours < 10 ? `0${hours}` : hours;
-    const minutes = Math.floor((diff % 3600) / 60);
-    const result = hours + ":" + (minutes < 10 ? "0" : "") + minutes;
-    return result;
-  } else if (diff < 60 * 24 * 7) {
-    const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const result = daysOfWeek[new Date(date).getDay()];
-    return result;
+  const diffD = diff / 60 / 60 / 24;
+  if (diffD < 1) {
+    let hour: any = new Date(d).getHours();
+    let min: any = new Date(d).getMinutes();
+    hour = hour < 10 ? `0${hour}` : hour;
+    min = min < 10 ? `0${min}` : min;
+    return `${hour}:${min}`;
   }
-  const day = new Date(date).getDate();
-  const month = new Date(date).toLocaleString("default", { month: "long" });
-  const year = new Date(date).getFullYear();
-  const result = day + " " + month + " " + (year != now);
-  return result;
+  if (diffD > 1 && diffD < 7) {
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    let hour: any = new Date(d).getHours();
+    let min: any = new Date(d).getMinutes();
+    hour = hour < 10 ? `0${hour}` : hour;
+    min = min < 10 ? `0${min}` : min;
+    const day = days[new Date(d).getDay()];
+    return `${day} ${hour}:${min}`;
+  }
+  const d1 = new Date(d).getFullYear();
+  const d2 = new Date(now).getFullYear();
+  let year = "";
+  if (d1 != d2) year = "- " + d1.toString();
+
+  return `${
+    new Date(d).getDate() < 10
+      ? `0${new Date(d).getDate()}`
+      : new Date(d).getDate()
+  } - ${
+    new Date(d).getMonth() < 10
+      ? `0${new Date(d).getMonth()}`
+      : new Date(d).getMonth() + 1
+  } ${year}`;
 };
 
-const MessageItem: FC<Props> = ({ message, viewDate }) => {
+const MessageItem: FC<Props> = ({ message, viewDate, base }) => {
   const { type, content, reply, created, username, pp, id } = message;
   const { username: myusername } = useSelector(selectValues, shallowEqual);
   const box = useMemo(() => {
     if (type == 0) {
-      return <p>{content}</p>;
+      return <p className={base}>{content}</p>;
     } else if (type == 1) {
       return (
         <div className="sended-img">
@@ -58,10 +73,10 @@ const MessageItem: FC<Props> = ({ message, viewDate }) => {
     } else {
       return <div className="reply"></div>;
     }
-  }, []);
+  }, [base]);
 
   const usermessage = myusername != username;
-  const date = useMemo(() => dateViewer(created), []);
+  const date = useMemo(() => dateViewer(created), [created]);
 
   return (
     <>
@@ -86,7 +101,7 @@ const Container = styled.li`
   width: 100%;
   display: flex;
   padding: 0px 1rem;
-  margin: 2rem 0px;
+  margin: 2px 0px;
   &.mm {
     justify-content: end;
   }
@@ -110,6 +125,32 @@ const Container = styled.li`
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+  }
+  p {
+    @media screen and (max-width: 895px) {
+      max-width: calc(50vw - 50px);
+    }
+    min-width: 0px;
+    width: min-content;
+    max-width: 350px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background-color: #3797f0;
+    font-size: 15px;
+    line-height: 18px;
+    padding: 7px 12px;
+    &.first {
+      border-radius: 1rem 1rem 0px 1rem;
+    }
+    &.middle {
+      border-radius: 1rem 0px 0px 1rem;
+    }
+    &.last {
+      border-radius: 1rem 0px 1rem 1rem;
+    }
+    &.single {
+      border-radius: 1rem;
     }
   }
 `;
