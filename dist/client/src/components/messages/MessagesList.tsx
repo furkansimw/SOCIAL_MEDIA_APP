@@ -54,7 +54,6 @@ const MessagesList = forwardRef<HTMLUListElement, Props>(
     }
 
     const xd = transformList();
-    console.log(xd);
 
     const calc = (index: number) => {
       const cmd = dateViewer(messages[index].created);
