@@ -6,15 +6,17 @@ import { Link } from "react-router-dom";
 import { getPostW } from "../../api/messages";
 import { styled } from "styled-components";
 import { disableRightClick } from "../navigation/Navigation";
+import { dateViewer } from "./base";
 
 interface Props {
   msg: IMessage;
   classN: string;
   setPostData: any;
+  dateView: boolean;
 }
 
-const MessageListItem: FC<Props> = ({ classN, msg, setPostData }) => {
-  const { type, content, reply } = msg;
+const MessageListItem: FC<Props> = ({ classN, msg, setPostData, dateView }) => {
+  const { type, content, reply, created } = msg;
 
   const box = useMemo(() => {
     if (type == 0) {
@@ -27,21 +29,30 @@ const MessageListItem: FC<Props> = ({ classN, msg, setPostData }) => {
       );
     }
   }, [type]);
-
+  const date = useMemo(() => dateViewer(created), [created]);
   return (
-    <Container>
-      {reply && <span className="reply">{reply.slice(37)}</span>}
-      {box}
-    </Container>
+    <>
+      {dateView && <div className="date">{date}</div>}
+      <Container className={classN}>
+        {reply && <span className="reply">{reply.slice(37)}</span>}
+        {box}
+      </Container>
+    </>
   );
 };
 
 const Container = styled.li`
+  margin: 2px 0px;
   .text {
     display: none;
   }
   .layer {
     display: none;
+  }
+  img {
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
   }
   .postmini {
     position: relative;
@@ -99,11 +110,20 @@ const Post = ({
           <Link to={`/${post[1]}`}>{post[1]}</Link>
         </div>
       ) : (
-        <Link className="post" to={`/p/${post.id}`}>
-          <p>PostMini</p>
-          <PostMini back="/" post={post} />
-          <div className="layer2"></div>
-        </Link>
+        <div className="post-mini-wrapper">
+          <div className="up">
+            <Link to={`/${post.pp}`}>
+              <img src={post.pp || "/pp.jpg"} alt="pp" />
+            </Link>
+            <Link to={`/${post.username}`}>
+              <p>{post.username}</p>
+            </Link>
+          </div>
+          <Link className="post" to={`/p/${post.id}`}>
+            <PostMini back="/" post={post} />
+            <div className="layer2"></div>
+          </Link>
+        </div>
       )}
     </div>
   );

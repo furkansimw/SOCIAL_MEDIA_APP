@@ -24,9 +24,8 @@ const Messages = () => {
   const { setRooms, setHasmore, rooms } = GetMessageContext();
 
   useEffect(() => {
-    if (pathname == "/direct/inbox") {
-      setRoom(null);
-    }
+    if (pathname == "/direct/inbox") setRoom(null);
+
     const worker = (e: KeyboardEvent) => {
       if (e.key == "Escape") {
         if (window.location.pathname == "/direct/inbox") setRequests(false);
@@ -42,35 +41,35 @@ const Messages = () => {
     };
   }, [pathname]);
 
-  useEffect(() => {
-    if (s) {
-      const isE = rooms.find((room) => room.room_id == s);
-      if (isE) {
-        setRoom(isE);
-      } else {
-        getRoom(s)
-          .then((_room: IRoom) => {
-            setRoom({ ..._room, messages: [], hasmore: true });
-            setTimeout(
-              () =>
-                getMessages(s).then((_messages) => {
-                  setRoom({
-                    ..._room,
-                    messages: _messages,
-                    loading: true,
-                    hasmore: _messages.length == 24,
-                  });
-                }),
-              1
-            );
-          })
-          .catch(() => {
-            setRoom(null);
-            back();
-          });
-      }
-    }
-  }, [s]);
+  // useEffect(() => {
+  //   if (s) {
+  //     const isE = rooms.find((room) => room.room_id == s);
+  //     if (isE) {
+  //       setRoom(isE);
+  //     } else {
+  //       getRoom(s)
+  //         .then((_room: IRoom) => {
+  //           setRoom({ ..._room, messages: [], hasmore: true, loading: true });
+  //           setTimeout(
+  //             () =>
+  //               getMessages(s).then((_messages) => {
+  //                 setRoom({
+  //                   ..._room,
+  //                   messages: _messages,
+  //                   loading: false,
+  //                   hasmore: _messages.length == 24,
+  //                 });
+  //               }),
+  //             1
+  //           );
+  //         })
+  //         .catch(() => {
+  //           setRoom(null);
+  //           back();
+  //         });
+  //     }
+  //   }
+  // }, [s]);
 
   useEffect(() => {
     if (rooms.length == 0) {
@@ -94,20 +93,36 @@ const Messages = () => {
                 loading: false,
                 hasmore: _messages.length == 24,
               });
+              setTimeout(() => {
+                document.querySelector(".messagelist")?.scroll({
+                  top: document.querySelector(".messagelist")?.scrollHeight,
+                });
+              }, 200);
             });
           } else {
             getRoom(s)
               .then((_room: IRoom) => {
-                setRoom({ ..._room, messages: [], hasmore: true });
+                setRoom({
+                  ..._room,
+                  messages: [],
+                  hasmore: true,
+                  loading: true,
+                });
                 setTimeout(
                   () =>
                     getMessages(s).then((_messages) => {
                       setRoom({
                         ..._room,
                         messages: _messages,
-                        loading: true,
+                        loading: false,
                         hasmore: _messages.length == 24,
                       });
+                      setTimeout(() => {
+                        document.querySelector(".messagelist")?.scroll({
+                          top: document.querySelector(".messagelist")
+                            ?.scrollHeight,
+                        });
+                      }, 200);
                     }),
                   1
                 );
@@ -121,7 +136,6 @@ const Messages = () => {
       });
     }
   }, []);
-
   useEffect(() => {
     if (room) {
       const isExists = rooms.find((room) => room.room_id == room.room_id);
@@ -137,7 +151,6 @@ const Messages = () => {
         setRooms([room, ...rooms]);
       }
     }
-
     setTimeout(() => {
       setRooms((prev) =>
         prev.sort(
@@ -148,7 +161,6 @@ const Messages = () => {
       );
     }, 1);
   }, [room]);
-
   const back = () => nav("/direct/inbox", { replace: true });
 
   return (

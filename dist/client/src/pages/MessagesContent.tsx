@@ -1,11 +1,4 @@
-import React, {
-  FC,
-  memo,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { FC, memo, useEffect, useRef, useState } from "react";
 import { styled } from "styled-components";
 import { getMessages, sendMessage } from "../api/messages";
 import { shallowEqual } from "react-redux";
@@ -15,7 +8,7 @@ import { IMessage, IRoom } from "../interfaces/IMessages";
 import { useSelector } from "react-redux";
 import { v4 } from "uuid";
 import MessageListItem from "../components/messages/MessageListItem";
-import transformList from "../components/messages/base";
+import transformList, { dateViewer } from "../components/messages/base";
 
 type props = {
   room: IRoom;
@@ -23,6 +16,11 @@ type props = {
 };
 
 const MessagesContent: FC<props> = ({ room, setRoom }) => {
+  const scrollBottom = () =>
+    document.querySelector(".messagelist")?.scroll({
+      top: document.querySelector(".messagelist")?.scrollHeight,
+    });
+
   useEffect(() => {
     if (room.hasmore && !room.loading && room.messages.length == 0) {
       setRoom({ ...room, loading: true });
@@ -33,16 +31,10 @@ const MessagesContent: FC<props> = ({ room, setRoom }) => {
           loading: false,
           hasmore: messages.length == 24,
         });
-        setTimeout(scrollBottom, 100);
+        setTimeout(scrollBottom, 200);
       });
     }
   }, [room]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      scrollBottom();
-    }, 50);
-  }, [room.messages]);
 
   const [message, setMessage] = useState("");
   const [isrepliying, setIsRepliying] = useState<string | null>(null);
@@ -82,16 +74,6 @@ const MessagesContent: FC<props> = ({ room, setRoom }) => {
       e.preventDefault();
       myFormRef.current!.requestSubmit();
     }
-  };
-
-  const scrollBottom = () => {
-    document
-      .querySelector(".messagelist")
-      ?.scroll({ top: document.querySelector(".messagelist")?.scrollHeight });
-    if (!messagesListRef.current) return;
-    messagesListRef.current.scroll({
-      top: messagesListRef.current.scrollHeight,
-    });
   };
 
   const setMessages = (newMesage: IMessage) => {
@@ -156,6 +138,10 @@ const MessagesContent: FC<props> = ({ room, setRoom }) => {
         {messages.map((msg, index) => (
           <MessageListItem
             msg={msg}
+            dateView={
+              dateViewer(msg.created) !=
+              dateViewer(messages[(index == 0 ? 1 : index) - 1].created)
+            }
             classN={classNameList[index]}
             setPostData={(pd: any) => {
               setRoom((prev) => {
@@ -261,8 +247,13 @@ const Container = styled.div`
     height: 100%;
     overflow: hidden;
     overflow-y: auto;
+    .date {
+      text-align: center;
+      margin: 2rem 0px;
+      font-size: 12px;
+      color: #a8a8a8;
+    }
     li {
-      margin: 2rem;
     }
   }
   .bottom {
