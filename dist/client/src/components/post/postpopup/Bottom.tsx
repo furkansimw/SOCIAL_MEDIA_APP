@@ -14,7 +14,7 @@ import { selectCurrentPost } from "../../../redux/postsReducer";
 import { CommentIcon, LikeIcon, SaveIcon, ShareIcon } from "../../Icons";
 import LinkQ from "../LinkQ";
 import Likes from "./Likes";
-import MessagesPopup from "../../messages/MessagesPopup";
+import MessagesPopup from "../../messages/MessagesList";
 
 type BottomProps = {
   comment: string;

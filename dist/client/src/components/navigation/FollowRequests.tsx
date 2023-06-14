@@ -138,7 +138,9 @@ const Container = styled.ul`
   overflow: hidden;
   transition: 0.3s ease-in-out all;
   height: 100%;
+  overflow: hidden;
   overflow-y: auto;
+
   &.a {
     width: 100%;
   }
@@ -165,7 +167,9 @@ const Container = styled.ul`
   ul {
     width: 100%;
     height: calc(100% - 58px);
+    overflow: hidden;
     overflow-y: auto;
+
     overflow-x: hidden;
     &:hover {
       &::-webkit-scrollbar-thumb {

@@ -60,7 +60,9 @@ const Container = styled.ul`
   height: 100vh;
   overflow-x: hidden;
   width: 100%;
+  overflow: hidden;
   overflow-y: auto;
+
   display: flex;
   align-items: center;
   flex-direction: column;

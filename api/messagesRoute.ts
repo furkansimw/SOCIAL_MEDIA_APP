@@ -7,11 +7,13 @@ import {
   sendMessage,
   getMessages,
   deleteMessage,
+  getPostW,
 } from "../controller/messagesController";
 
 const messagesRoute = Router();
 messagesRoute.use(mustBeLoggedin);
 
+messagesRoute.route("/post/:postid").get(getPostW);
 messagesRoute.route("/start").post(startRoom);
 messagesRoute.route("/rooms").get(getRooms);
 

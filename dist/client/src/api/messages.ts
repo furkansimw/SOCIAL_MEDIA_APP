@@ -5,22 +5,10 @@ import req from "./req";
 export const getRooms = (requests: boolean, last?: ILast) =>
   req(
     `/messages/rooms?requests=${requests}&date=${last?.date}&id=${last?.id}`
-  ).then((r: any) => {
-    r as any[];
-    r = r.map((xd: any) => ({
-      ...xd,
-      messages: [],
-      hasmore: true,
-      loading: false,
-    }));
-    return r;
-  });
+  ).then((r: any) => r);
 
 export const getRoom = (roomid: string) =>
-  req(`/messages/rooms/${roomid}`).then((a: any) => {
-    const x: IRoom = { ...a, messages: [], hasmore: true, loading: false };
-    return x;
-  });
+  req(`/messages/rooms/${roomid}`).then((a: any) => a);
 
 export const startRoom = (userid: string) =>
   req(`/messages/start`, "POST", { userid }).then((r: any) => r as string);
@@ -43,3 +31,6 @@ export const getMessages = (roomid: string, last?: ILast) =>
   req(
     `/messages/rooms/${roomid}/messages?date=${last?.date}&id=${last?.id}`
   ).then((r) => r as any[]);
+
+export const getPostW = (postid: string) =>
+  req(`/messages/post/${postid}`).then((a) => a as IPost);

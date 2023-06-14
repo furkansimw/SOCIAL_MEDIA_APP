@@ -2,13 +2,13 @@ import React, { memo } from "react";
 import { MessageIconIcon } from "../Icons";
 import { styled } from "styled-components";
 
-const MessageInfo = () => {
+const MessageInfo = ({ open }: { open: () => void }) => {
   return (
     <Container>
       <MessageIconIcon />
       <h1>Your messages</h1>
       <p>Send private photos and messages to a friend</p>
-      <button>Send a message</button>
+      <button onClick={open}>Send a message</button>
     </Container>
   );
 };

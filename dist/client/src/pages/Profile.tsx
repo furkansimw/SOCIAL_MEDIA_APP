@@ -385,7 +385,9 @@ const Container = styled.ul`
   width: 100%;
   flex-direction: column;
   align-items: center;
+  overflow: hidden;
   overflow-y: auto;
+
   .upsidex {
     display: flex;
     height: 2rem;
@@ -441,6 +443,7 @@ const Container = styled.ul`
       margin-top: 6px;
     }
     span {
+      margin-left: 4px;
       cursor: pointer;
       color: #0095f6;
       font-weight: 600;
@@ -549,7 +552,9 @@ const Container = styled.ul`
         width: 100%;
         line-height: 18px;
         max-height: 80px;
+        overflow: hidden;
         overflow-y: auto;
+
         font-size: 14px;
         white-space: pre-wrap;
         word-wrap: break-word;

@@ -10,6 +10,7 @@ import {
   selectReplyForMessage,
   getMessagesQ,
   deleteMessageQ,
+  getPostWQ,
 } from "../queries/messagesQ";
 
 const getRooms = asyncErrorWrapper(async (req, res) => {
@@ -93,6 +94,13 @@ const deleteMessage = asyncErrorWrapper(async (req, res) => {
   res.json(result);
 });
 
+const getPostW = asyncErrorWrapper(async (req, res) => {
+  const { postid } = req.params;
+  const { id } = res.locals;
+  const post = await getPostWQ(id, postid);
+  res.json(post);
+});
+
 export {
   getRooms,
   getRoom,
@@ -100,4 +108,5 @@ export {
   sendMessage,
   getMessages,
   deleteMessage,
+  getPostW,
 };

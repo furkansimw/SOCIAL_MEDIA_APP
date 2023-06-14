@@ -437,7 +437,9 @@ const Container = styled.div`
       height: 100%;
       width: 100%;
 
+      overflow: hidden;
       overflow-y: auto;
+
       &::-webkit-scrollbar {
         display: none;
       }

@@ -8,6 +8,7 @@ const mustbeloggedin_1 = __importDefault(require("../mw/mustbeloggedin"));
 const messagesController_1 = require("../controller/messagesController");
 const messagesRoute = (0, express_1.Router)();
 messagesRoute.use(mustbeloggedin_1.default);
+messagesRoute.route("/post/:postid").get(messagesController_1.getPostW);
 messagesRoute.route("/start").post(messagesController_1.startRoom);
 messagesRoute.route("/rooms").get(messagesController_1.getRooms);
 const roomIdRoute = (0, express_1.Router)({ mergeParams: true });

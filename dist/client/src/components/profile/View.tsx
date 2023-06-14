@@ -94,8 +94,7 @@ const Views: FC<Props> = ({ quit, type, userid }) => {
       followUserS(id, false);
       const process = () => {
         const newLikes = relationships.map((l) => {
-          if (l.username == username)
-            return { ...l, status: ispublic ? 0 : 1 } as IView;
+          if (l.username == username) return { ...l, status: null } as IView;
           return l;
         });
         setRelationships(newLikes);
@@ -200,7 +199,9 @@ const Container = styled.div`
   }
   .contentx {
     height: calc(100% - 42px);
+    overflow: hidden;
     overflow-y: auto;
+
     display: block;
     padding: 0px;
     .loading-box {

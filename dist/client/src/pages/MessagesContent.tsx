@@ -1,72 +1,48 @@
-import React, { FC, memo, useEffect, useRef, useState } from "react";
+import React, {
+  FC,
+  memo,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { styled } from "styled-components";
-import { GetMessageContext } from "../context/MessagesContextProvider";
-import { getMessages, getRoom, sendMessage } from "../api/messages";
-import { useNavigate } from "react-router-dom";
-import MessagesList from "../components/messages/MessagesList";
-import { shallowEqual, useDispatch } from "react-redux";
-import { AppDispatch } from "../redux/store";
-import { selectValues, setUnreadMessageCount } from "../redux/profileReducer";
+import { getMessages, sendMessage } from "../api/messages";
+import { shallowEqual } from "react-redux";
+import { selectValues } from "../redux/profileReducer";
 import { AddImage } from "../components/Icons";
-import { ToastContainer } from "react-toastify";
 import { IMessage, IRoom } from "../interfaces/IMessages";
 import { useSelector } from "react-redux";
 import { v4 } from "uuid";
+import MessageListItem from "../components/messages/MessageListItem";
+import transformList from "../components/messages/base";
 
 type props = {
-  messagegroupid: string;
-  setMessagegroupid: React.Dispatch<React.SetStateAction<string | undefined>>;
+  room: IRoom;
+  setRoom: React.Dispatch<React.SetStateAction<IRoom | null>>;
 };
 
-const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
-  const { rooms, setRooms } = GetMessageContext();
-
-  const [room, setRoom] = useState(
-    rooms.find((r) => r.room_id == messagegroupid)
-  );
-  const nav = useNavigate();
+const MessagesContent: FC<props> = ({ room, setRoom }) => {
   useEffect(() => {
-    const data = rooms.find((r) => r.room_id == messagegroupid);
-    setRoom(data);
-    if (!data)
-      getRoom(messagegroupid)
-        .then((room) => {
-          if (room == null) nav("/direct/inbox", { replace: true });
-          else setRoom(room);
-        })
-        .catch(() => nav("/direct/inbox", { replace: true }));
-  }, [messagegroupid]);
-
-  useEffect(() => {
-    if (!room) return;
-    if (room.messages.length == 0 && room.hasmore) {
-      getMessages(messagegroupid)
-        .then((messages) => {
-          const hasmore = messages.length == 24;
-          const loading = false;
-          setRoom({ ...room, messages, loading, hasmore });
-          setTimeout(scrollBottom, 0);
-        })
-        .catch(() => nav("/direct/inbox", { replace: true }));
+    if (room.hasmore && !room.loading && room.messages.length == 0) {
+      setRoom({ ...room, loading: true });
+      getMessages(room.room_id).then((messages) => {
+        setRoom({
+          ...room!,
+          messages,
+          loading: false,
+          hasmore: messages.length == 24,
+        });
+        setTimeout(scrollBottom, 100);
+      });
     }
   }, [room]);
 
-  const dispatch = useDispatch<AppDispatch>();
-
   useEffect(() => {
-    // current room update rooms
-    if (!room) return;
-    const isExistsRoom = rooms.find((r) => r.room_id == room.room_id);
-
-    if (isExistsRoom) {
-      dispatch(setUnreadMessageCount("desc"));
-      const prev = rooms.map((r) => {
-        if (r.room_id == room.room_id) return room;
-        return r;
-      });
-      setRooms(prev);
-    } else setRooms((prev) => prev.concat(room));
-  }, [room]);
+    setTimeout(() => {
+      scrollBottom();
+    }, 50);
+  }, [room.messages]);
 
   const [message, setMessage] = useState("");
   const [isrepliying, setIsRepliying] = useState<string | null>(null);
@@ -74,6 +50,7 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
     selectValues,
     shallowEqual
   );
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!room) return;
@@ -108,37 +85,93 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
   };
 
   const scrollBottom = () => {
+    document
+      .querySelector(".messagelist")
+      ?.scroll({ top: document.querySelector(".messagelist")?.scrollHeight });
     if (!messagesListRef.current) return;
     messagesListRef.current.scroll({
       top: messagesListRef.current.scrollHeight,
     });
   };
 
-  if (!room) return <></>;
-
-  const { room_id, messages } = room;
-
   const setMessages = (newMesage: IMessage) => {
+    if (!room) return;
     setRoom({
       ...room,
       messages: [...messages, newMesage],
+      inbox: true,
       last_message_content: newMesage.content,
       last_message_created: newMesage.created,
       last_message_id: newMesage.id,
       last_message_owner: newMesage.owner,
       last_message_type: newMesage.type,
     });
+    setTimeout(scrollBottom, 1);
   };
+
+  const onScroll = (e: React.UIEvent<HTMLUListElement, UIEvent>) => {
+    const { scrollTop, scrollHeight } = e.target as Element;
+    const { loading, hasmore } = room;
+    if (loading || !hasmore) return;
+    if (messages.length == 0) return;
+    if (scrollTop <= 100) {
+      setRoom({ ...room, loading: true });
+      getMessages(room.room_id, {
+        date: room.messages[0].created,
+        id: room.messages[0].id,
+      }).then((messages) => {
+        const a = scrollHeight;
+        setRoom({
+          ...room,
+          messages: [...messages, ...room.messages],
+          hasmore: messages.length == 24,
+          loading: false,
+        });
+        setTimeout(() => {
+          const diff = document.querySelector(".messagelist")!.scrollHeight - a;
+          document.querySelector(".messagelist")!.scrollTop += diff;
+        }, 1);
+      });
+    }
+  };
+
+  if (!room) return <></>;
+
+  const { room_id, messages } = room;
+
+  const classNameList = transformList(messages);
 
   return (
     <Container>
-      <ToastContainer theme="dark" />
       <div className="headerxd">
         <div className="left">
           <div className="pp"></div>
         </div>
       </div>
-      <MessagesList room={room} setRoom={setRoom} ref={messagesListRef} />
+      <ul
+        onScroll={onScroll}
+        ref={messagesListRef}
+        className="messagelist coolsb"
+      >
+        {messages.map((msg, index) => (
+          <MessageListItem
+            msg={msg}
+            classN={classNameList[index]}
+            setPostData={(pd: any) => {
+              setRoom((prev) => {
+                if (prev?.room_id == room_id) {
+                  const m = prev.messages.map((_) => {
+                    if (_.id == msg.id) return { ..._, postdata: pd };
+                    return _;
+                  });
+                  return { ...prev, messages: m };
+                }
+                return prev;
+              });
+            }}
+          />
+        ))}
+      </ul>
       <div className="bottom">
         <form ref={myFormRef} onSubmit={onSubmit}>
           <textarea
@@ -191,7 +224,7 @@ const MessagesContent: FC<props> = ({ messagegroupid, setMessagegroupid }) => {
                     room: room!.room_id,
                   };
                   setMessages(m);
-                  setTimeout(scrollBottom, 1);
+                  setTimeout(scrollBottom, 100);
                   sendMessage(room_id, imagesrc, 1, null, id);
                 } catch (error) {}
               }}
@@ -218,14 +251,19 @@ const Container = styled.div`
   width: calc(100vw - 73px - 400px);
   display: flex;
   flex-direction: column;
-  @media screen and (max-width: 900px) {
-    width: calc(100vw - 73px - 120px);
-  }
   height: 100vh;
   .headerxd {
     width: 100%;
     min-height: 75px;
     border-bottom: 1px solid #262626;
+  }
+  .messagelist {
+    height: 100%;
+    overflow: hidden;
+    overflow-y: auto;
+    li {
+      margin: 2rem;
+    }
   }
   .bottom {
     position: relative;

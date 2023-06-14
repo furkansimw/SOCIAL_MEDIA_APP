@@ -22,6 +22,7 @@ export interface IRoom extends IUser {
   loading: boolean;
 }
 export interface IMessage {
+  postdata?: any;
   id: string;
   owner: string;
   username: string;

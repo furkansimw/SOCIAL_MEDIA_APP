@@ -55,6 +55,8 @@ const startRoomQ = async (id: string, userid: string) => {
     `,
     [id, userid]
   );
+  console.log(roomsIsExists.rows);
+
   if (roomsIsExists.rows.length > 0) return roomsIsExists.rows[0]?.id;
   return db
     .query(`insert into rooms (members) values ($1) returning id `, [
@@ -68,12 +70,12 @@ const getRoomQ = (id: string, roomid: string) =>
   db
     .query(
       `
-    select r.id room_id,m.id last_message_id, m.owner last_message_owner,COALESCE(m.type::int, null) last_message_type , m.content last_message_content, m.created last_message_created, uc.seen user_seen, mc.seen my_seen, mc.inbox inbox, u.username, u.pp, u.fullname, u.is_online, u.id uid, u.lastonline from rooms r
+    select r.id room_id, m.id last_message_id, m.owner last_message_owner,COALESCE(m.type::int, null) last_message_type , m.content last_message_content, m.created last_message_created, uc.seen user_seen, mc.seen my_seen, mc.inbox inbox, u.username, u.pp, u.fullname, u.is_online, u.id uid, u.lastonline from rooms r
     left join users u on u.id = case WHEN r.members[1] != $1 then r.members[1] else r.members[2] END
     left join messages m on m.id = r.last_msg
     left join cursor mc on mc.room = r.id and mc.owner = $1
     left join cursor uc on uc.room = r.id and uc.owner = u.id
-    left join relationships b on (b.owner = $1 and b.target = any(r.members) and b.type = 2) or (b.target = $1 and b.owner = any(r.members) and b.type = 2) 
+    ${blocked("u.id")}
     WHERE r.id = $2 and $1 = any(r.members) and b is null
     order by m.created desc,m.id desc
     limit 1
@@ -127,6 +129,21 @@ const getMessagesQ = (id: string, roomid: string, last?: ILast) => {
 const deleteMessageQ = (id: string, roomid: string, messageid: string) =>
   db.query(``, [id, roomid, messageid]);
 
+const getPostWQ = async (id: string, postid: string) => {
+  const result = await db.query(
+    ` select p.*,f.id fid, p.images[1] cover, u.username, u.pp, u.ispublic from posts p
+      left join users u on u.id = p.owner
+      left join relationships f on f.type = 0 and ((f.target = u.id and f.owner = $1) or (f.owner = u.id and f.target = $1))
+      ${blocked("u.id")}
+      where p.id = $2`,
+    [id, postid]
+  );
+  const post = result.rows[0];
+  if (post == undefined) return null;
+  if (post.ispublic || post.fid != null || post.owner == id) return post;
+  else return { msg: "private", account: post.username };
+};
+
 export {
   getRoomsQ,
   startRoomQ,
@@ -135,4 +152,5 @@ export {
   selectReplyForMessage,
   getMessagesQ,
   deleteMessageQ,
+  getPostWQ,
 };

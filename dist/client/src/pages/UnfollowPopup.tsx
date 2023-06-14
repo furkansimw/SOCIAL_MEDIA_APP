@@ -44,12 +44,12 @@ const Bg = styled.div`
   left: -100vw;
   top: -100vh;
   position: fixed;
-  z-index: 120;
+  z-index: 520;
 `;
 
 const Container = styled.div`
   position: fixed;
-  z-index: 200;
+  z-index: 700;
   top: calc(50% - 150px);
   left: calc(50% - 200px);
   width: 400px;

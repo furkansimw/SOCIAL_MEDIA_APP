@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteMessage = exports.getMessages = exports.sendMessage = exports.startRoom = exports.getRoom = exports.getRooms = void 0;
+exports.getPostW = exports.deleteMessage = exports.getMessages = exports.sendMessage = exports.startRoom = exports.getRoom = exports.getRooms = void 0;
 const cloudinary_1 = require("../db/cloudinary");
 const converter_1 = __importDefault(require("../functions/converter"));
 const error_1 = require("../mw/error");
@@ -81,3 +81,10 @@ const deleteMessage = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(voi
     res.json(result);
 }));
 exports.deleteMessage = deleteMessage;
+const getPostW = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { postid } = req.params;
+    const { id } = res.locals;
+    const post = yield (0, messagesQ_1.getPostWQ)(id, postid);
+    res.json(post);
+}));
+exports.getPostW = getPostW;

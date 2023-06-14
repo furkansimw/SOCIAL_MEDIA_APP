@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const db_1 = __importDefault(require("./db"));
+//
 exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     yield db_1.default.query(`
 

@@ -267,6 +267,7 @@ const Container = styled.div`
       background-color: #161616;
     }
     width: 100%;
+    overflow: hidden;
     overflow-y: auto;
 
     .loading-box {

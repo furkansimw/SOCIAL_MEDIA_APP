@@ -70,7 +70,9 @@ const Container = styled.div`
     color: #fafafa;
     font-size: 1rem;
     padding-right: 4px;
+    overflow: hidden;
     overflow-y: auto;
+
     height: calc(100% - 50px);
   }
 `;

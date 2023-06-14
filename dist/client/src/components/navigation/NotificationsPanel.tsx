@@ -188,7 +188,9 @@ const Container = styled.div`
     }
     ul {
       height: calc(100% - 80px);
+      overflow: hidden;
       overflow-y: auto;
+
       overflow-x: hidden;
       &::-webkit-scrollbar {
         width: 8px;

@@ -117,7 +117,7 @@ const Likes: FC<Props> = ({ quit, postid, commentid, subcommentid, type }) => {
       followUserS(id, false);
       const process = () => {
         const newLikes = likes.map((l) => {
-          if (l.username == username) return { ...l, status: ispublic ? 0 : 1 };
+          if (l.username == username) return { ...l, status: null };
           return l;
         });
         setLikes(newLikes);
@@ -222,7 +222,9 @@ const Container = styled.div`
   }
   .contentx {
     height: calc(100% - 42px);
+    overflow: hidden;
     overflow-y: auto;
+
     .loading-box {
       margin: 2rem 0px;
       position: relative;
@@ -277,6 +279,7 @@ const Container = styled.div`
         color: #000;
         font-size: 14px;
         font-weight: 600;
+        margin-top: 5px;
         &:hover {
           opacity: 0.8;
         }

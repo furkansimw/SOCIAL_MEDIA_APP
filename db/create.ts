@@ -134,7 +134,6 @@ const create = async () => {
       created TIMESTAMP DEFAULT NOW()
     );
   `);
-
   await db.query(
     `alter table messages add column if not exists room uuid references rooms(id) on delete cascade not null;`
   );

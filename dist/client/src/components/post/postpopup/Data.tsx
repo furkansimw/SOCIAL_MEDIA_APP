@@ -72,7 +72,9 @@ const DataContainer = styled.ul`
   &.backnone {
     /* height: calc(100% - 146px - 71px) !important; */
   }
+  overflow: hidden;
   overflow-y: auto;
+
   width: 100%;
   &::-webkit-scrollbar {
     display: none;

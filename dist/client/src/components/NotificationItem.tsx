@@ -14,7 +14,6 @@ const NotificationItem = ({
   onc: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }) => {
   const { id, url, pp, username, created, type, status, text } = n;
-  console.log(n);
   const viewtext = useMemo(
     () =>
       [
@@ -90,7 +89,7 @@ const Container = styled.li`
     }
     button {
       min-width: 94px;
-      margin-top: 3px;
+      margin-top: 5px;
       font-size: 14px;
       border-radius: 8px;
       padding: 7px 1rem;
