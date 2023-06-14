@@ -24,8 +24,61 @@ const Messages = () => {
   const { setRooms, setHasmore, rooms } = GetMessageContext();
 
   useEffect(() => {
-    if (pathname == "/direct/inbox") setRoom(null);
-
+    if (pathname == "/direct/inbox") {
+      setRoom(null);
+    } else {
+      if (s) {
+        const isExists = rooms.find((r) => r.room_id == s);
+        if (isExists) {
+          setRoom({ ...isExists, loading: true });
+          getMessages(s).then((_messages) => {
+            setRoom({
+              ...isExists,
+              messages: _messages,
+              loading: false,
+              hasmore: _messages.length == 24,
+            });
+            setTimeout(() => {
+              document.querySelector(".messagelist")?.scroll({
+                top: document.querySelector(".messagelist")?.scrollHeight,
+              });
+            }, 200);
+          });
+        } else {
+          getRoom(s)
+            .then((_room: IRoom) => {
+              setRoom({
+                ..._room,
+                messages: [],
+                hasmore: true,
+                loading: true,
+              });
+              setTimeout(
+                () =>
+                  getMessages(s).then((_messages) => {
+                    setRoom({
+                      ..._room,
+                      messages: _messages,
+                      loading: false,
+                      hasmore: _messages.length == 24,
+                    });
+                    setTimeout(() => {
+                      document.querySelector(".messagelist")?.scroll({
+                        top: document.querySelector(".messagelist")
+                          ?.scrollHeight,
+                      });
+                    }, 200);
+                  }),
+                1
+              );
+            })
+            .catch(() => {
+              setRoom(null);
+              back();
+            });
+        }
+      }
+    }
     const worker = (e: KeyboardEvent) => {
       if (e.key == "Escape") {
         if (window.location.pathname == "/direct/inbox") setRequests(false);

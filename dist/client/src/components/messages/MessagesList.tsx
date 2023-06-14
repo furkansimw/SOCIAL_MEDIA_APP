@@ -120,9 +120,11 @@ const MessagesPopup: FC<Props> = ({ title, close }) => {
                     my_seen: message.created,
                     inbox: true,
                     messages:
-                      xd.messages.length == 0
+                      xd?.messages?.length == 0
                         ? []
-                        : xd.messages.concat(message),
+                        : xd.messages
+                        ? xd?.messages?.concat(message)
+                        : [],
                   };
                 return xd;
               })

@@ -247,13 +247,12 @@ const Container = styled.div`
     height: 100%;
     overflow: hidden;
     overflow-y: auto;
+    padding: 0px 1rem;
     .date {
       text-align: center;
       margin: 2rem 0px;
       font-size: 12px;
       color: #a8a8a8;
-    }
-    li {
     }
   }
   .bottom {

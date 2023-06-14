@@ -7,6 +7,7 @@ import { GetMessageContext } from "../../context/MessagesContextProvider";
 import { IRoom } from "../../interfaces/IMessages";
 import { Link } from "react-router-dom";
 import { getRooms } from "../../api/messages";
+import { dateCalc } from "../post/postpopup/Bottom";
 
 const Rooms = ({
   open,
@@ -46,7 +47,7 @@ const Rooms = ({
     }
     return "";
   };
-
+  const { username: myusername } = useSelector(selectValues, shallowEqual);
   return (
     <Container className="messages">
       <Up open={open} />
@@ -58,7 +59,13 @@ const Rooms = ({
             const { room_id, username, pp, last_message_type } = room;
             return (
               <li
-                className={room.room_id == _room?.room_id ? "a" : ""}
+                className={`${room.room_id == _room?.room_id ? "a" : ""}  ${
+                  room.last_message_owner != myusername &&
+                  new Date(room.last_message_created || "").getTime() >
+                    new Date(room.my_seen).getTime()
+                    ? "not-seen"
+                    : "seen"
+                }`}
                 onClick={() => setRoom(room)}
               >
                 <Link className="bx" to={`/direct/inbox/${room_id}`}>
@@ -66,10 +73,17 @@ const Rooms = ({
                     <img src={pp || "/pp.jpg"} alt="pp" />
                   </Link>
                   <div className="text">
-                    <p>{username}</p>
+                    <p className="username">{username}</p>
                     {last_message_type != null && (
-                      <p className="lmc">{textController(room)}</p>
+                      <span>
+                        <p className={`lmc`}>{textController(room)}</p>
+                        <span className="da">
+                          {"· "}
+                          {dateCalc(room.last_message_created || "")}
+                        </span>
+                      </span>
                     )}
+                    <div className="blue-circle"></div>
                   </div>
                 </Link>
               </li>
@@ -127,20 +141,28 @@ const Container = styled.div`
     overflow: hidden;
     overflow-y: auto;
     li {
+      position: relative;
+      .blue-circle {
+        background-color: #0095f6;
+        width: 8px;
+        height: 8px;
+        position: absolute;
+        right: 24px;
+        top: 2rem;
+        border-radius: 100%;
+      }
       &:hover {
         background-color: #262626;
       }
       &.a {
         background-color: #363636 !important;
       }
-
       .bx {
         display: flex;
         padding: 12px;
-
         .pp {
           width: 44px;
-          margin-right: 10px;
+          margin-right: 12px;
           height: 44px;
           img {
             width: 44px;
@@ -148,6 +170,32 @@ const Container = styled.div`
             border-radius: 100%;
           }
         }
+      }
+      span {
+        display: flex;
+        align-items: center;
+      }
+      &.not-seen {
+        .lmc {
+          color: #fff;
+          font-weight: 700;
+        }
+        .username {
+          color: #fff;
+          font-weight: 600;
+        }
+      }
+      .lmc {
+        font-size: 14px;
+        color: #a8a8a8;
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .da {
+        margin-left: 10px;
+        font-size: 14px;
+        color: #a8a8a8;
       }
     }
   }

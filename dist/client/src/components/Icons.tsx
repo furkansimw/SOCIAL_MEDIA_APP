@@ -1042,3 +1042,20 @@ export const AddImage = () => (
     ></path>
   </svg>
 );
+
+export const MesseItemMore = () => (
+  <svg
+    aria-label="More"
+    color="rgb(245, 245, 245)"
+    fill="rgb(245, 245, 245)"
+    height="16"
+    role="img"
+    viewBox="0 0 24 24"
+    width="16"
+  >
+    <title>More</title>
+    <circle cx="12" cy="12" r="1.5"></circle>
+    <circle cx="6" cy="12" r="1.5"></circle>
+    <circle cx="18" cy="12" r="1.5"></circle>
+  </svg>
+);
