@@ -24,7 +24,9 @@ const Messages = () => {
   const { setRooms, setHasmore, rooms } = GetMessageContext();
 
   useEffect(() => {
-    if (pathname == "/direct/inbox") setRoom(null);
+    if (pathname == "/direct/inbox") {
+      setRoom(null);
+    }
     const worker = (e: KeyboardEvent) => {
       if (e.key == "Escape") {
         if (window.location.pathname == "/direct/inbox") setRequests(false);
@@ -154,7 +156,12 @@ const Messages = () => {
       <Title title="Messages" />
       {messageListPopup && <MessagesPopup title="New message" close={close} />}
       <div className="l">
-        <Rooms setRequests={setRequests} open={open} setRoom={setRoom} />
+        <Rooms
+          setRequests={setRequests}
+          open={open}
+          setRoom={setRoom}
+          room={room}
+        />
         <Requests isactive={requests} />
       </div>
       {room ? (

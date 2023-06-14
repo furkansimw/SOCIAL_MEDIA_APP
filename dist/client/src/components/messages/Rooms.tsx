@@ -12,10 +12,12 @@ const Rooms = ({
   open,
   setRequests,
   setRoom,
+  room: _room,
 }: {
   open: () => void;
   setRequests: React.Dispatch<React.SetStateAction<boolean>>;
   setRoom: React.Dispatch<React.SetStateAction<IRoom | null>>;
+  room: IRoom | null;
 }) => {
   const { rooms, hasmore, loading, setLoading, setRooms, setHasmore } =
     GetMessageContext();
@@ -55,7 +57,10 @@ const Rooms = ({
           .map((room) => {
             const { room_id, username, pp, last_message_type } = room;
             return (
-              <li onClick={() => setRoom(room)}>
+              <li
+                className={room.room_id == _room?.room_id ? "a" : ""}
+                onClick={() => setRoom(room)}
+              >
                 <Link className="bx" to={`/direct/inbox/${room_id}`}>
                   <Link className="pp" to={`/${username}`}>
                     <img src={pp || "/pp.jpg"} alt="pp" />
@@ -125,6 +130,10 @@ const Container = styled.div`
       &:hover {
         background-color: #262626;
       }
+      &.a {
+        background-color: #363636 !important;
+      }
+
       .bx {
         display: flex;
         padding: 12px;
