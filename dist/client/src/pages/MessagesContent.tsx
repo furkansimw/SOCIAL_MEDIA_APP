@@ -33,6 +33,9 @@ const MessagesContent: FC<props> = ({ room, setRoom }) => {
 
   useEffect(() => {
     socket.emit("seen", [room.uid, room.room_id]);
+  }, [room.messages]);
+
+  useEffect(() => {
     if (room.hasmore && !room.loading && room.messages.length == 0) {
       setRoom({ ...room, loading: true });
       setTimeout(() => {

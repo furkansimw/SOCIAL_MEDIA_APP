@@ -72,6 +72,7 @@ io.on("connection", (socket) => {
   });
   socket.on("seen", (data: any) => {
     const [userid, roomid] = data;
+    console.log(data);
     io.to(findS(userid)).emit("seen", roomid);
   });
 

@@ -73,6 +73,7 @@ exports.io.on("connection", (socket) => {
     });
     socket.on("seen", (data) => {
         const [userid, roomid] = data;
+        console.log(data);
         exports.io.to((0, exports.findS)(userid)).emit("seen", roomid);
     });
     socket.on("disconnect", () => {
