@@ -1,20 +1,14 @@
 import React, { FC, memo, useEffect, useState } from "react";
 import styled from "styled-components";
-import {
-  accountDetail,
-  changePassword,
-  getMyProfile,
-  updateProfile,
-} from "../api/profile";
+import { accountDetail, changePassword, updateProfile } from "../api/profile";
 import { IE } from "../interfaces/IApi";
 import { Bg } from "../components/PostPopup";
 import { ToastContainer, toast } from "react-toastify";
 import LoadingBox from "../components/LoadingBox";
-import { shallowEqual, useDispatch } from "react-redux";
-import { AppDispatch } from "../redux/store";
-import { useNavigate } from "react-router-dom";
+import { shallowEqual } from "react-redux";
 import { useSelector } from "react-redux";
 import { selectValues } from "../redux/profileReducer";
+import { useNavigate } from "react-router-dom";
 
 const EditProfile = () => {
   useEffect(() => {

@@ -10,15 +10,15 @@ const MessageContext = createContext<{
   loading: boolean;
 }>({
   rooms: [],
-  setRooms: function (value: React.SetStateAction<IRoom[]>): void {
+  setRooms: function (): void {
     throw new Error("Function not implemented.");
   },
   hasmore: true,
-  setHasmore: function (value: React.SetStateAction<boolean>): void {
+  setHasmore: function (): void {
     throw new Error("Function not implemented.");
   },
   loading: false,
-  setLoading: function (value: React.SetStateAction<boolean>): void {
+  setLoading: function (): void {
     throw new Error("Function not implemented.");
   },
 });

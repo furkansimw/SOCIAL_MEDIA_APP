@@ -1,5 +1,5 @@
 import { ILast } from "../interfaces/IApi";
-import { IMessage, IRoom } from "../interfaces/IMessages";
+import { IMessage } from "../interfaces/IMessages";
 import { IPost } from "../interfaces/ISlices";
 import req from "./req";
 

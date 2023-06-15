@@ -3,7 +3,7 @@ import { styled } from "styled-components";
 import { getMessages, sendMessage } from "../api/messages";
 import { shallowEqual } from "react-redux";
 import { selectValues } from "../redux/profileReducer";
-import { AddImage, RemoveIcon, RemoveIcon2 } from "../components/Icons";
+import { AddImage, RemoveIcon } from "../components/Icons";
 import { IMessage, IRoom } from "../interfaces/IMessages";
 import { useSelector } from "react-redux";
 import { v4 } from "uuid";
@@ -55,7 +55,7 @@ const MessagesContent: FC<props> = ({ room, setRoom }) => {
   }, [room]);
 
   const [message, setMessage] = useState("");
-  const [isrepliying, setIsRepliying] = useState<string | null>(null);
+  const [isrepliying] = useState<string | null>(null);
   const { id: myid, username: myusername } = useSelector(
     selectValues,
     shallowEqual

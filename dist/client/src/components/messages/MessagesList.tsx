@@ -135,7 +135,7 @@ const MessagesPopup: FC<Props> = ({ title, close }) => {
             });
           }
         })
-        .then((t) => {
+        .then(() => {
           close();
           toast.info("Sucessfly shared post");
         });

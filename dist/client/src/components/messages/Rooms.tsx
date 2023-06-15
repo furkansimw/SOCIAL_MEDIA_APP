@@ -305,9 +305,7 @@ const Up = ({ open }: { open: () => void }) => {
   );
 };
 
-const T = ({
-  setRequests,
-}: {
+const T = ({}: {
   setRequests: React.Dispatch<React.SetStateAction<boolean>>;
 }) => (
   <div className="t">
