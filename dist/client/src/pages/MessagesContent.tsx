@@ -180,8 +180,7 @@ const MessagesContent: FC<props> = ({ room, setRoom }) => {
             msg={msg}
             dateView={
               dateViewer(msg.created) !=
-                dateViewer(messages[(index == 0 ? 1 : index) - 1].created) &&
-              msg.owner != messages[(index == 0 ? 1 : index) - 1].owner
+              dateViewer(messages[(index == 0 ? 1 : index) - 1].created)
             }
             classN={classNameList[index]}
             setPostData={(pd: any) => {
