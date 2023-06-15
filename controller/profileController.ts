@@ -112,6 +112,7 @@ const updateProfile = asyncErrorWrapper(async (req, res) => {
   if (guest) badRequest();
   const { pp, username, email, fullname, bio, ispublic } = req.body;
   let values = req.body;
+  if (values.ispublic == undefined) delete values.ispublic;
   try {
     if (typeof pp == undefined) {
       delete values.pp;
