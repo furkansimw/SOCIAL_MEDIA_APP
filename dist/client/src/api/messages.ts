@@ -1,5 +1,6 @@
 import { ILast } from "../interfaces/IApi";
 import { IMessage, IRoom } from "../interfaces/IMessages";
+import { IPost } from "../interfaces/ISlices";
 import req from "./req";
 
 export const getRooms = (requests: boolean, last?: ILast) =>
@@ -34,3 +35,6 @@ export const getMessages = (roomid: string, last?: ILast) =>
 
 export const getPostW = (postid: string) =>
   req(`/messages/post/${postid}`).then((a) => a as IPost);
+
+export const deleteRoom = (roomid: string) =>
+  req(`/messages/rooms/${roomid}`, "DELETE");

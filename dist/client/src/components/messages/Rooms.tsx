@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 import { styled } from "styled-components";
 import { selectValues } from "../../redux/profileReducer";
 import { NewMessage } from "../Icons";
 import { GetMessageContext } from "../../context/MessagesContextProvider";
 import { IRoom } from "../../interfaces/IMessages";
-import { Link } from "react-router-dom";
-import { getRooms } from "../../api/messages";
+import { Link, useNavigate } from "react-router-dom";
+import { deleteRoom, getRooms } from "../../api/messages";
 import { dateCalc } from "../post/postpopup/Bottom";
+import DeletePopup from "./DeletePopup";
 
 const Rooms = ({
   open,
@@ -48,13 +49,33 @@ const Rooms = ({
     return "";
   };
   const { username: myusername } = useSelector(selectValues, shallowEqual);
+  const [deletePopup, setDeletePopup] = useState<{
+    active: boolean;
+    room: IRoom | null;
+  }>({
+    active: false,
+    room: null,
+  });
+  const nav = useNavigate();
+  const deleteF = () =>
+    deleteRoom(deletePopup.room?.room_id || "").then(() => {
+      setRooms((prev) =>
+        prev.filter((p) => p.room_id != deletePopup.room?.room_id)
+      );
+      nav("/direct/inbox", { replace: true });
+      cancelF();
+    });
+  const cancelF = () => setDeletePopup({ active: false, room: null });
   return (
     <Container className="messages">
+      {deletePopup.active && (
+        <DeletePopup deleteF={deleteF} cancelF={cancelF} />
+      )}
       <Up open={open} />
       <T setRequests={setRequests} />
       <ul onScroll={onScroll} className="coolsb">
         {rooms
-          .filter((a) => a.inbox)
+          .filter((a) => a.inbox && a.is_active)
           .map((room) => {
             const { room_id, username, pp, last_message_type } = room;
             return (
@@ -78,7 +99,6 @@ const Rooms = ({
                       <span>
                         <p className={`lmc`}>{textController(room)}</p>
                         <span className="da">
-                          {"· "}
                           {dateCalc(room.last_message_created || "")}
                         </span>
                       </span>
@@ -86,6 +106,17 @@ const Rooms = ({
                     <div className="blue-circle"></div>
                   </div>
                 </Link>
+                <button
+                  className="delete"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setDeletePopup({ active: true, room });
+                  }}
+                >
+                  <p>Delete</p>
+                  <div className="layer"></div>
+                </button>
               </li>
             );
           })}
@@ -141,7 +172,63 @@ const Container = styled.div`
     overflow: hidden;
     overflow-y: auto;
     li {
+      display: flex;
       position: relative;
+      justify-content: space-between;
+      .delete {
+        position: relative;
+        background-color: #000;
+        p {
+          color: #ed4956;
+          font-weight: 600;
+          font-size: 14px;
+          transition: 0.3s ease-in-out all;
+          position: relative;
+          z-index: 100;
+        }
+        min-width: 64px;
+        display: none;
+        width: 64px;
+        .layer {
+          width: 0px;
+          height: 100%;
+          overflow: hidden;
+          position: absolute;
+          top: 0px;
+          right: 0px;
+          background-color: #000;
+          transition: 0.5s ease-in-out all;
+        }
+        &:hover {
+          p {
+            color: #ed4956;
+          }
+          .layer {
+            @keyframes anx {
+              0% {
+                width: 0px;
+                background-color: red;
+              }
+              50% {
+                border-radius: 0px;
+                width: 400px;
+              }
+
+              100% {
+                background-color: #fff;
+                width: 100%;
+                border-radius: 8px 0px 0px 8px;
+              }
+            }
+            animation: anx 0.5s ease-in-out forwards;
+          }
+        }
+      }
+      &:hover {
+        .delete {
+          display: block;
+        }
+      }
       .blue-circle {
         background-color: #0095f6;
         width: 8px;
@@ -150,6 +237,7 @@ const Container = styled.div`
         right: 24px;
         top: 2rem;
         border-radius: 100%;
+        display: none;
       }
       &:hover {
         background-color: #262626;
@@ -160,6 +248,7 @@ const Container = styled.div`
       .bx {
         display: flex;
         padding: 12px;
+        width: calc(100% - 4rem);
         .pp {
           width: 44px;
           margin-right: 12px;
@@ -183,6 +272,9 @@ const Container = styled.div`
         .username {
           color: #fff;
           font-weight: 600;
+        }
+        .blue-circle {
+          display: block;
         }
       }
       .lmc {

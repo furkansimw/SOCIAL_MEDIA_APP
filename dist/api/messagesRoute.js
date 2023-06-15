@@ -13,7 +13,7 @@ messagesRoute.route("/start").post(messagesController_1.startRoom);
 messagesRoute.route("/rooms").get(messagesController_1.getRooms);
 const roomIdRoute = (0, express_1.Router)({ mergeParams: true });
 messagesRoute.use("/rooms/:roomid", roomIdRoute);
-roomIdRoute.route("/").get(messagesController_1.getRoom).post(messagesController_1.sendMessage);
+roomIdRoute.route("/").get(messagesController_1.getRoom).post(messagesController_1.sendMessage).delete(messagesController_1.deleteRoom);
 roomIdRoute.route("/messages").get(messagesController_1.getMessages);
 roomIdRoute.route("/messages/:messageid").delete(messagesController_1.deleteMessage);
 exports.default = messagesRoute;

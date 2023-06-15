@@ -50,14 +50,17 @@ export default async () => {
         user_id := members_array[array_position(members_array, NEW.owner) % 2 + 1];
 
         IF NOT EXISTS (SELECT 1 FROM cursor WHERE room = NEW.room AND cursor.owner = user_id) THEN
-            INSERT INTO cursor (owner, room, inbox, created, delete)
+            INSERT INTO cursor (owner, room,  created, delete)
             VALUES (user_id, NEW.room, (SELECT CASE WHEN EXISTS (SELECT 1 FROM relationships WHERE owner = user_id AND target = new.owner AND type = 0) THEN true ELSE false END), new.created, new.created);
         END IF;
-    
+
       ELSIF (TG_OP = 'DELETE') THEN
           UPDATE rooms SET last_msg = (SELECT id FROM messages WHERE room = OLD.room ORDER BY created DESC LIMIT 1) WHERE id = OLD.room;
       END IF;
         
+        UPDATE cursor set seen = NOW(), is_active = true where room = new.room and owner = new.owner;
+
+
         RETURN NEW;
       END;
       $$ LANGUAGE plpgsql;

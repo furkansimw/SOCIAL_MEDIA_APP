@@ -36,7 +36,11 @@ exports.io.use((socket, next) => {
     const token = cookies.token;
     try {
         const { id } = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET || "");
-        sessions.push({ userid: id, socketid: socket.id });
+        sessions.push({
+            userid: id,
+            socketid: socket.id,
+            created: new Date(Date.now()).toISOString(),
+        });
         next();
     }
     catch (error) {
@@ -53,6 +57,24 @@ app.use((0, helmet_1.default)({
 }));
 app.use("/api", routes_1.default);
 exports.io.on("connection", (socket) => {
+    socket.on("isonline", (users) => {
+        const newUsers = users.map((ui) => {
+            const ie = sessions.find((s) => s.userid == ui);
+            if (ie) {
+                return {
+                    uid: ui,
+                    status: true,
+                    date: ie.created,
+                };
+            }
+            return { uid: ui, date: "", status: false };
+        });
+        socket.emit("isonline", newUsers);
+    });
+    socket.on("seen", (data) => {
+        const [userid, roomid] = data;
+        exports.io.to((0, exports.findS)(userid)).emit("seen", roomid);
+    });
     socket.on("disconnect", () => {
         sessions = sessions.filter((s) => s.socketid != socket.id);
     });

@@ -2,7 +2,7 @@ export interface IUser {
   username: string;
   pp: string | null;
   fullname: string | null;
-  is_online: false;
+  is_online: boolean;
   uid: string;
   lastonline: string;
 }
@@ -18,6 +18,7 @@ export interface IRoom extends IUser {
   user_seen: string;
   my_seen: string;
   inbox: boolean;
+  is_active: boolean;
   hasmore: boolean;
   loading: boolean;
 }

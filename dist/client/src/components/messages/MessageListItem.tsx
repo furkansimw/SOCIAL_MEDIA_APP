@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { IMessage } from "../../interfaces/IMessages";
 import PostMini from "../post/PostMini";
 import { IPost } from "../../interfaces/ISlices";
@@ -15,9 +15,16 @@ interface Props {
   classN: string;
   setPostData: any;
   dateView: boolean;
+  seen: boolean;
 }
 
-const MessageListItem: FC<Props> = ({ classN, msg, setPostData, dateView }) => {
+const MessageListItem: FC<Props> = ({
+  classN,
+  msg,
+  setPostData,
+  dateView,
+  seen,
+}) => {
   const { username: myusername } = useSelector(selectValues, shallowEqual);
   const { type, content, reply, created, username } = msg;
 
@@ -48,16 +55,17 @@ const MessageListItem: FC<Props> = ({ classN, msg, setPostData, dateView }) => {
         {reply && <span className="reply">{reply.slice(37)}</span>}
         {box}
       </Container>
+      {seen && <p className="seen">Seen</p>}
     </>
   );
 };
-//
 
 const Container = styled.li`
   margin: 2px 0px;
   display: flex;
   height: fit-content;
   width: 100%;
+
   &.single .content {
     border-radius: 18px;
   }
@@ -113,6 +121,16 @@ const Container = styled.li`
   }
   .postmini {
     padding: 4px;
+  }
+  .private {
+    font-size: 14px;
+    font-weight: 400;
+    padding: 8px;
+    text-align: center;
+    a {
+      color: #3797f0;
+      font-weight: 700;
+    }
   }
   .postminix {
     display: block;
@@ -190,7 +208,7 @@ const Post = ({
     if (postData) {
       setPost(postData);
     } else {
-      getPostW(src).then((a) => {
+      getPostW(src).then((a: any) => {
         if (a?.msg == "private") {
           setPost(["private", a.account]);
           setPostData(["private", a.account]);
@@ -210,8 +228,10 @@ const Post = ({
     <div className="postminix">
       {Array.isArray(post) ? (
         <div className="private">
-          <span>You must follow the account to see the post.</span>
-          <Link to={`/${post[1]}`}>{post[1]}</Link>
+          <span>
+            You must follow <Link to={`/${post[1]}`}>{post[1]}</Link> the
+            account to see the post.
+          </span>
         </div>
       ) : (
         <div className="post-mini-wrapper">

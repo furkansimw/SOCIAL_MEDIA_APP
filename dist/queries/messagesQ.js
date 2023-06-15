@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPostWQ = exports.deleteMessageQ = exports.getMessagesQ = exports.selectReplyForMessage = exports.sendMessageQ = exports.getRoomQ = exports.startRoomQ = exports.getRoomsQ = void 0;
+exports.deleteRoomQ = exports.getPostWQ = exports.deleteMessageQ = exports.getMessagesQ = exports.selectReplyForMessage = exports.sendMessageQ = exports.getRoomQ = exports.startRoomQ = exports.getRoomsQ = void 0;
 const db_1 = __importDefault(require("../db/db"));
 const blocked_1 = __importDefault(require("../functions/blocked"));
 const then_1 = __importDefault(require("../functions/then"));
@@ -37,7 +37,7 @@ const getRoomsQ = (id, requests, last) => {
     const str = last ? `and r(m.created, m.id) < ($2, $3)` : ``;
     return db_1.default
         .query(`
-    select r.id room_id,m.id last_message_id, m.owner last_message_owner, COALESCE(m.type::int, null) last_message_type, m.content last_message_content, m.created last_message_created, uc.seen user_seen, mc.seen my_seen, mc.inbox inbox, u.username, u.pp, u.fullname, u.is_online, u.id uid, u.lastonline from rooms r
+    select r.id room_id,mc.is_active , m.id last_message_id, m.owner last_message_owner, COALESCE(m.type::int, null) last_message_type, m.content last_message_content, m.created last_message_created, uc.seen user_seen, mc.seen my_seen, mc.inbox inbox, u.username, u.pp, u.fullname, u.is_online, u.id uid, u.lastonline from rooms r
     left join users u on u.id = case WHEN r.members[1] != $1 then r.members[1] else r.members[2] END
     left join messages m on m.id = r.last_msg
     left join cursor mc on mc.room = r.id and mc.owner = $1
@@ -75,8 +75,8 @@ exports.startRoomQ = startRoomQ;
 //todo room interface fixede
 const getRoomQ = (id, roomid) => db_1.default
     .query(`
-    select r.id room_id, m.id last_message_id, m.owner last_message_owner,COALESCE(m.type::int, null) last_message_type , m.content last_message_content, m.created last_message_created, uc.seen user_seen, mc.seen my_seen, mc.inbox inbox, u.username, u.pp, u.fullname, u.is_online, u.id uid, u.lastonline from rooms r
-    left join users u on u.id = case WHEN r.members[1] != $1 then r.members[1] else r.members[2] END
+      select r.id room_id,mc.is_active , m.id last_message_id, m.owner last_message_owner, COALESCE(m.type::int, null) last_message_type, m.content last_message_content, m.created last_message_created, uc.seen user_seen, mc.seen my_seen, mc.inbox inbox, u.username, u.pp, u.fullname, u.is_online, u.id uid, u.lastonline from rooms r
+      left join users u on u.id = case WHEN r.members[1] != $1 then r.members[1] else r.members[2] END
     left join messages m on m.id = r.last_msg
     left join cursor mc on mc.room = r.id and mc.owner = $1
     left join cursor uc on uc.room = r.id and uc.owner = u.id
@@ -95,32 +95,37 @@ const sendMessageQ = (id, roomid, content, type, messageid, reply) => db_1.defau
     .query(`insert into messages (owner, room, content, type, reply, id) select $1, $2, $3, $4, $5, $6 from rooms r where id = $2 and $1 = any(members) and not exists (
           select 1 from relationships where type = 2 and (
             (owner = $1 and target = any(members)) or (target = $1 and owner = any(members)) 
-      )) returning *,type::int`, [id, roomid, content, type, reply, messageid])
+      )) returning *,type::int,(select (case WHEN r.members[1] != $1 then r.members[1] else r.members[2] END) from rooms r where id = $2) userid`, [id, roomid, content, type, reply, messageid])
     .then((r) => r.rows[0]);
 exports.sendMessageQ = sendMessageQ;
-const getMessagesQ = (id, roomid, last) => {
+const getMessagesQ = (id, roomid, last) => __awaiter(void 0, void 0, void 0, function* () {
     const values = [id, roomid];
     const str = last ? `and (m.created, m.id) < ($3, $4)` : ``;
     if (last)
         values.push(last.date, last.id);
+    db_1.default.query(`update cursor set seen = NOW() where owner = $1 and room = $2`, [
+        id,
+        roomid,
+    ]);
     return db_1.default
         .query(`
           select m.*, m.type::int, u.username, u.pp from messages m 
           left join users u on m.owner = u.id
           left join rooms r on r.id = m.room
-          where m.room = $2 and $1 = ANY(r.members) ${str}
+          left join cursor c on c.owner = $1 and c.room = $2
+          where m.room = $2 and $1 = ANY(r.members) and m.created > c.delete  ${str}
           order by m.created desc, m.id desc
           limit 24
     `, values)
         .then(then_1.default);
-};
+});
 exports.getMessagesQ = getMessagesQ;
 const deleteMessageQ = (id, roomid, messageid) => db_1.default.query(``, [id, roomid, messageid]);
 exports.deleteMessageQ = deleteMessageQ;
 const getPostWQ = (id, postid) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield db_1.default.query(` select p.*,f.id fid, p.images[1] cover, u.username, u.pp, u.ispublic from posts p
       left join users u on u.id = p.owner
-      left join relationships f on f.type = 0 and ((f.target = u.id and f.owner = $1) or (f.owner = u.id and f.target = $1))
+      left join relationships f on f.type = 0 and f.target = u.id and f.owner = $1
       ${(0, blocked_1.default)("u.id")}
       where p.id = $2`, [id, postid]);
     const post = result.rows[0];
@@ -132,3 +137,5 @@ const getPostWQ = (id, postid) => __awaiter(void 0, void 0, void 0, function* ()
         return { msg: "private", account: post.username };
 });
 exports.getPostWQ = getPostWQ;
+const deleteRoomQ = (id, roomid) => db_1.default.query(`update cursor set delete = NOW(), is_active = false where owner = $1 and room = $2 `, [id, roomid]);
+exports.deleteRoomQ = deleteRoomQ;

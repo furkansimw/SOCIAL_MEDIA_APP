@@ -12,11 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPostW = exports.deleteMessage = exports.getMessages = exports.sendMessage = exports.startRoom = exports.getRoom = exports.getRooms = void 0;
+exports.deleteRoom = exports.getPostW = exports.deleteMessage = exports.getMessages = exports.sendMessage = exports.startRoom = exports.getRoom = exports.getRooms = void 0;
 const cloudinary_1 = require("../db/cloudinary");
 const converter_1 = __importDefault(require("../functions/converter"));
 const error_1 = require("../mw/error");
 const messagesQ_1 = require("../queries/messagesQ");
+const __1 = require("..");
 const getRooms = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = res.locals;
     const { requests } = req.query;
@@ -63,6 +64,8 @@ const sendMessage = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 
         }
     }
     const result = yield (0, messagesQ_1.sendMessageQ)(id, roomid, content, type, messageid, reply);
+    if (result != undefined && result.userid != id)
+        __1.io.to((0, __1.findS)(result.userid)).emit("message", result);
     res.json(result);
 }));
 exports.sendMessage = sendMessage;
@@ -88,3 +91,10 @@ const getPostW = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, 
     res.json(post);
 }));
 exports.getPostW = getPostW;
+const deleteRoom = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = res.locals;
+    const { roomid } = req.params;
+    yield (0, messagesQ_1.deleteRoomQ)(id, roomid);
+    res.json({ status: "ok" });
+}));
+exports.deleteRoom = deleteRoom;

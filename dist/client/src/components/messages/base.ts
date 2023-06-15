@@ -44,7 +44,8 @@ function transformList(messages: IMessage[]) {
   for (let i = 0; i < messages.length; i++) {
     if (
       i === messages.length - 1 ||
-      dateViewer(messages[i].created) !== dateViewer(messages[i + 1].created)
+      dateViewer(messages[i].created) !== dateViewer(messages[i + 1].created) ||
+      messages[i].owner !== messages[i + 1].owner
     ) {
       if (count === 1) a.push("single");
       else if (count === 2) a.push("first", "last");

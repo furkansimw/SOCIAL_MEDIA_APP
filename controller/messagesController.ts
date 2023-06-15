@@ -11,7 +11,9 @@ import {
   getMessagesQ,
   deleteMessageQ,
   getPostWQ,
+  deleteRoomQ,
 } from "../queries/messagesQ";
+import { findS, io } from "..";
 
 const getRooms = asyncErrorWrapper(async (req, res) => {
   const { id } = res.locals;
@@ -72,6 +74,9 @@ const sendMessage = asyncErrorWrapper(async (req, res) => {
     reply
   );
 
+  if (result != undefined && result.userid != id)
+    io.to(findS(result.userid)).emit("message", result);
+
   res.json(result);
 });
 
@@ -101,6 +106,13 @@ const getPostW = asyncErrorWrapper(async (req, res) => {
   res.json(post);
 });
 
+const deleteRoom = asyncErrorWrapper(async (req, res) => {
+  const { id } = res.locals;
+  const { roomid } = req.params;
+  await deleteRoomQ(id, roomid);
+  res.json({ status: "ok" });
+});
+
 export {
   getRooms,
   getRoom,
@@ -109,4 +121,5 @@ export {
   getMessages,
   deleteMessage,
   getPostW,
+  deleteRoom,
 };

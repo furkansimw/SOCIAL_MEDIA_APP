@@ -8,6 +8,7 @@ import {
   getMessages,
   deleteMessage,
   getPostW,
+  deleteRoom,
 } from "../controller/messagesController";
 
 const messagesRoute = Router();
@@ -19,7 +20,8 @@ messagesRoute.route("/rooms").get(getRooms);
 
 const roomIdRoute = Router({ mergeParams: true });
 messagesRoute.use("/rooms/:roomid", roomIdRoute);
-roomIdRoute.route("/").get(getRoom).post(sendMessage);
+
+roomIdRoute.route("/").get(getRoom).post(sendMessage).delete(deleteRoom);
 
 roomIdRoute.route("/messages").get(getMessages);
 roomIdRoute.route("/messages/:messageid").delete(deleteMessage);

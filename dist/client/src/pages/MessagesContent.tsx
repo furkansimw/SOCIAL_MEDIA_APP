@@ -3,12 +3,15 @@ import { styled } from "styled-components";
 import { getMessages, sendMessage } from "../api/messages";
 import { shallowEqual } from "react-redux";
 import { selectValues } from "../redux/profileReducer";
-import { AddImage } from "../components/Icons";
+import { AddImage, RemoveIcon, RemoveIcon2 } from "../components/Icons";
 import { IMessage, IRoom } from "../interfaces/IMessages";
 import { useSelector } from "react-redux";
 import { v4 } from "uuid";
 import MessageListItem from "../components/messages/MessageListItem";
 import transformList, { dateViewer } from "../components/messages/base";
+import { Link, useNavigate } from "react-router-dom";
+import { dateCalc } from "../components/post/postpopup/Bottom";
+import socket from "../api/socket/socket";
 
 type props = {
   room: IRoom;
@@ -16,23 +19,35 @@ type props = {
 };
 
 const MessagesContent: FC<props> = ({ room, setRoom }) => {
+  useEffect(() => {
+    setRoom((prev) => ({
+      ...prev!,
+      my_seen: new Date(Date.now()).toISOString(),
+    }));
+  }, []);
+
   const scrollBottom = () =>
     document.querySelector(".messagelist")?.scroll({
       top: document.querySelector(".messagelist")?.scrollHeight,
     });
 
   useEffect(() => {
+    socket.emit("seen", [room.uid, room.room_id]);
     if (room.hasmore && !room.loading && room.messages.length == 0) {
       setRoom({ ...room, loading: true });
-      getMessages(room.room_id).then((messages) => {
-        setRoom({
-          ...room!,
-          messages,
-          loading: false,
-          hasmore: messages.length == 24,
+      setTimeout(() => {
+        if (room?.loading) return;
+        getMessages(room.room_id).then((messages) => {
+          setRoom({
+            ...room!,
+            messages,
+            loading: false,
+            my_seen: new Date(Date.now()).toISOString(),
+            hasmore: messages.length == 24,
+          });
+          setTimeout(scrollBottom, 100);
         });
-        setTimeout(scrollBottom, 200);
-      });
+      }, 1);
     }
   }, [room]);
 
@@ -82,11 +97,13 @@ const MessagesContent: FC<props> = ({ room, setRoom }) => {
       ...room,
       messages: [...messages, newMesage],
       inbox: true,
+      is_active: true,
       last_message_content: newMesage.content,
       last_message_created: newMesage.created,
       last_message_id: newMesage.id,
       last_message_owner: newMesage.owner,
       last_message_type: newMesage.type,
+      my_seen: newMesage.created,
     });
     setTimeout(scrollBottom, 1);
   };
@@ -98,37 +115,57 @@ const MessagesContent: FC<props> = ({ room, setRoom }) => {
     if (messages.length == 0) return;
     if (scrollTop <= 100) {
       setRoom({ ...room, loading: true });
-      getMessages(room.room_id, {
-        date: room.messages[0].created,
-        id: room.messages[0].id,
-      }).then((messages) => {
-        const a = scrollHeight;
-        setRoom({
-          ...room,
-          messages: [...messages, ...room.messages],
-          hasmore: messages.length == 24,
-          loading: false,
+      setTimeout(() => {
+        if (room.loading) return;
+        getMessages(room.room_id, {
+          date: room.messages[0].created,
+          id: room.messages[0].id,
+        }).then((messages) => {
+          const a = scrollHeight;
+          setRoom({
+            ...room,
+            messages: [...messages, ...room.messages],
+            hasmore: messages.length == 24,
+            loading: false,
+          });
+          setTimeout(() => {
+            const diff =
+              document.querySelector(".messagelist")!.scrollHeight - a;
+            document.querySelector(".messagelist")!.scrollTop += diff;
+          }, 1);
         });
-        setTimeout(() => {
-          const diff = document.querySelector(".messagelist")!.scrollHeight - a;
-          document.querySelector(".messagelist")!.scrollTop += diff;
-        }, 1);
-      });
+      }, 1);
     }
   };
-
+  const nav = useNavigate();
   if (!room) return <></>;
 
-  const { room_id, messages } = room;
-
+  const { room_id, messages, pp, username, lastonline, is_online } = room;
   const classNameList = transformList(messages);
-
+  const closeRoom = () => {
+    setRoom(null);
+    nav(`/direct/inbox`);
+  };
   return (
     <Container>
       <div className="headerxd">
         <div className="left">
-          <div className="pp"></div>
+          <div className="pp">
+            <Link to={`/${username}`}>
+              <img src={pp || "/pp.jpg"} alt="pp" />
+              {is_online && <div className="green-circle"></div>}
+            </Link>
+          </div>
+          <Link to={`/${username}`} className="text">
+            <p className="username">{username}</p>
+            <p className="last">
+              {is_online ? "Active now" : `active ${dateCalc(lastonline)}`}
+            </p>
+          </Link>
         </div>
+        <button onClick={closeRoom}>
+          <RemoveIcon />
+        </button>
       </div>
       <ul
         onScroll={onScroll}
@@ -140,7 +177,8 @@ const MessagesContent: FC<props> = ({ room, setRoom }) => {
             msg={msg}
             dateView={
               dateViewer(msg.created) !=
-              dateViewer(messages[(index == 0 ? 1 : index) - 1].created)
+                dateViewer(messages[(index == 0 ? 1 : index) - 1].created) &&
+              msg.owner != messages[(index == 0 ? 1 : index) - 1].owner
             }
             classN={classNameList[index]}
             setPostData={(pd: any) => {
@@ -155,6 +193,12 @@ const MessagesContent: FC<props> = ({ room, setRoom }) => {
                 return prev;
               });
             }}
+            seen={
+              messages.length - 1 == index &&
+              new Date(messages[messages.length - 1].created).getTime() <
+                new Date(room.user_seen || "").getTime() &&
+              messages[messages.length - 1].owner == myid
+            }
           />
         ))}
       </ul>
@@ -242,12 +286,66 @@ const Container = styled.div`
     width: 100%;
     min-height: 75px;
     border-bottom: 1px solid #262626;
+    display: flex;
+    justify-content: space-between;
+    .left {
+      display: flex;
+      align-items: center;
+      padding-left: 2rem;
+      .pp {
+        margin-right: 12px;
+        width: 44px;
+        height: 44px;
+        position: relative;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 100%;
+        }
+        .green-circle {
+          position: absolute;
+          border-radius: 100%;
+          bottom: 0px;
+          right: 0px;
+          width: 14px;
+          height: 14px;
+          border-radius: 100%;
+          background-color: #1cd14f;
+        }
+      }
+      .text {
+        .username {
+          font-size: 1rem;
+          line-height: 20px;
+          font-weight: 600;
+        }
+        .last {
+          font-size: 12px;
+          color: #a8a8a8;
+        }
+      }
+    }
+    button {
+      margin-right: 2rem;
+      svg {
+        width: 1rem;
+        height: 1rem;
+      }
+    }
   }
   .messagelist {
     height: 100%;
     overflow: hidden;
     overflow-y: auto;
     padding: 0px 1rem;
+    .seen {
+      text-align: end;
+      font-size: 12px;
+      color: #a8a8a8;
+      padding-right: 12px;
+      margin-top: 4px;
+    }
     .date {
       text-align: center;
       margin: 2rem 0px;

@@ -18,13 +18,15 @@ const searchProfileQ = (id: string, u: string) =>
     )
     .then((r) => r.rows);
 
-const getMyProfileQ = (id: string) =>
-  db
+const getMyProfileQ = (id: string) => {
+  db.query(`update users set lastonline = NOW() where id = $1`, [id]);
+  return db
     .query(
       `select id, pp, username, ispublic, reqcount::int, unreadmessagescount::int, nreqcount::int, npostlikescount::int, ncreatedcommentcount::int, nfollowcount::int from users where id = $1`,
       [id]
     )
     .then((r) => r.rows[0]);
+};
 
 const getProfileQ = (id: string, username: string, guest: boolean) => {
   const values = [id, username];

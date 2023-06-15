@@ -20,7 +20,7 @@ import path from "path";
 
 export const io = new Server(server);
 
-let sessions: { userid: string; socketid: string }[] = [];
+let sessions: { userid: string; socketid: string; created: string }[] = [];
 
 io.use((socket, next) => {
   const cookies = cookieP(socket.handshake.headers.cookie || "");
@@ -30,7 +30,11 @@ io.use((socket, next) => {
     const { id } = jwt.verify(token, process.env.JWT_SECRET || "") as {
       id: string;
     };
-    sessions.push({ userid: id, socketid: socket.id });
+    sessions.push({
+      userid: id,
+      socketid: socket.id,
+      created: new Date(Date.now()).toISOString(),
+    });
     next();
   } catch (error) {
     next(new Error("Error"));
@@ -52,6 +56,25 @@ app.use(
 app.use("/api", apiRoute);
 
 io.on("connection", (socket) => {
+  socket.on("isonline", (users: string[]) => {
+    const newUsers = users.map((ui) => {
+      const ie = sessions.find((s) => s.userid == ui);
+      if (ie) {
+        return {
+          uid: ui,
+          status: true,
+          date: ie.created,
+        };
+      }
+      return { uid: ui, date: "", status: false };
+    });
+    socket.emit("isonline", newUsers);
+  });
+  socket.on("seen", (data: any) => {
+    const [userid, roomid] = data;
+    io.to(findS(userid)).emit("seen", roomid);
+  });
+
   socket.on("disconnect", () => {
     sessions = sessions.filter((s) => s.socketid != socket.id);
   });
