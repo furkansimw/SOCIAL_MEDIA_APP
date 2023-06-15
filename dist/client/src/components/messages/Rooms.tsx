@@ -312,7 +312,7 @@ const T = ({
 }) => (
   <div className="t">
     <h1>Messages</h1>
-    <button onClick={() => setRequests(true)}>Requests</button>
+    <button onClick={() => {}}>Requests</button>
   </div>
 );
 
