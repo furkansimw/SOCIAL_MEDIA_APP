@@ -56,6 +56,8 @@
 
 ## About The Project
 
+- server: 3000 lines client : 13000 lines total number of lines before compilation 16,000
+
 - PostgreSQL ExpressJs ReactJs NodeJs + Typescript,Socket-io, Redux-toolkit,Context-api, JWT,Cloudinary, React-router-dom, Styled-components used.
 - Create Account. Only unique username and mail, passwords are hashed.
 - Post Shareable + You can make your account private. Posts are visible when you are not logged in, but if your account is private the logged in + viewer must follow you (after your confirmation) If your account is private they should follow you for the post even if they save the post until they follow you back (after your confirmation) they can't do it later.
