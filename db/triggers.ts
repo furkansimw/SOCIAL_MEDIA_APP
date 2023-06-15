@@ -39,8 +39,8 @@ export default async () => {
         UPDATE rooms SET last_msg = NEW.id WHERE id = NEW.room;
     
         IF NOT EXISTS (SELECT 1 FROM cursor WHERE room = NEW.room AND owner = NEW.owner) THEN
-            INSERT INTO cursor (owner, room, created, delete)
-            VALUES (NEW.owner, NEW.room, new.created, new.created);
+            INSERT INTO cursor (owner, room,  delete)
+            VALUES (NEW.owner, NEW.room, new.created);
         END IF;
 
         SELECT ARRAY(SELECT unnest(members)) INTO members_array
@@ -50,8 +50,8 @@ export default async () => {
         user_id := members_array[array_position(members_array, NEW.owner) % 2 + 1];
 
         IF NOT EXISTS (SELECT 1 FROM cursor WHERE room = NEW.room AND cursor.owner = user_id) THEN
-            INSERT INTO cursor (owner, room, created, delete)
-            VALUES (user_id, NEW.room, new.created, new.created);
+            INSERT INTO cursor (owner, room,  delete)
+            VALUES (user_id, NEW.room, new.created);
         END IF;
 
       ELSIF (TG_OP = 'DELETE') THEN

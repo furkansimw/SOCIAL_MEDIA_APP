@@ -81,28 +81,37 @@ const Messages = () => {
         });
         setTimeout(scrollBottom, 1);
       }
-      setRooms((prev) =>
-        prev
-          .map((r) => {
-            if (r.room_id == msg.room) {
-              return {
-                ...r,
-                messages: r.messages?.length == 0 ? [] : [...r.messages, msg],
-                last_message_content: msg.content,
-                last_message_created: msg.created,
-                last_message_id: msg.id,
-                last_message_owner: msg.owner,
-                last_message_type: msg.type,
-              };
-            }
-            return r;
-          })
-          .sort(
-            (a, b) =>
-              new Date(b.last_message_created || "").getTime() -
-              new Date(a.last_message_created || "").getTime()
-          )
-      );
+      const ie = rooms.find((r) => r.room_id == msg.room);
+      if (ie) {
+        setRooms((prev) =>
+          prev
+            .map((r) => {
+              if (r.room_id == msg.room) {
+                return {
+                  ...r,
+                  messages: r.messages?.length == 0 ? [] : [...r.messages, msg],
+                  last_message_content: msg.content,
+                  last_message_created: msg.created,
+                  last_message_id: msg.id,
+                  last_message_owner: msg.owner,
+                  last_message_type: msg.type,
+                };
+              }
+              return r;
+            })
+            .sort(
+              (a, b) =>
+                new Date(b.last_message_created || "").getTime() -
+                new Date(a.last_message_created || "").getTime()
+            )
+        );
+      } else {
+        const a = rooms;
+        getRoom(msg.room).then((froom) => {
+          a.unshift({ ...froom, messages: [] });
+          setRooms(a);
+        });
+      }
     };
     socket.on("message", handle);
     return () => {

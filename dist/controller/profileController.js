@@ -117,6 +117,8 @@ const updateProfile = (0, error_1.asyncErrorWrapper)((req, res) => __awaiter(voi
         (0, error_1.badRequest)();
     const { pp, username, email, fullname, bio, ispublic } = req.body;
     let values = req.body;
+    if (values.ispublic == undefined)
+        delete values.ispublic;
     try {
         if (typeof pp == undefined) {
             delete values.pp;
