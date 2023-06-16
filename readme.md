@@ -100,8 +100,8 @@
 <img style="width:48%;margin-left:2%;" src="./images/Screenshot%202023-06-16%20at%2004.19.04.png"/>
 
 </div>
-
-<video  controller source="./demo.mov"/>
+<br/>
+<a target="_blank" style="cursor:pointer" href="https://photos.google.com/share/AF1QipN0eNtV55973qZQekhfEmQOhl5dTJXQ8BBfmkfpfOa0de_fwcgHqtaD4HH3pceiRg/photo/AF1QipMtesIKDzHyDFRcj0QZpIp2TB-3O78sqvKS0AQf?key=WWJ2Q0pZamJCeGY5V18tN2cyREtHOWdDeXJvZ0Zn">Sample Video</a>
 
 <br/>
 
