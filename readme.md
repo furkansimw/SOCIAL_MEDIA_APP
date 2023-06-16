@@ -73,12 +73,37 @@
 
 ### Screen Shots
 
-<img id="screenshots src=x"/><br>
-<img src="x"/><br>
-<img src="x"/><br>
-<img src="x"/><br>
-<img src="x"/><br>
-<img src="x"/><br>
+<div style="display:flex;padding:8px;border:1px solid #363636;border-radius:4px;overflow:hidden;flex-wrap:wrap">
+
+<img style="width:50%;margin-bottom:8px;" src="./images/Screenshot%202023-06-16%20at%2003.56.00.png"/>
+<img style="width:48%;margin-left:2%;margin-bottom:8px;" src="./images/Screenshot%202023-06-16%20at%2003.56.15.png"/>
+
+<img style="width:50%;margin-bottom:8px;" src="./images/Screenshot%202023-06-16%20at%2003.56.33.png"/>
+<img style="width:48%;margin-left:2%;margin-bottom:8px;" src="./images/Screenshot%202023-06-16%20at%2003.57.30.png"/>
+
+<img style="width:50%;margin-bottom:8px;" src="./images/Screenshot%202023-06-16%20at%2003.57.42.png"/>
+<img style="width:48%;margin-left:2%;margin-bottom:8px;" src="./images/Screenshot%202023-06-16%20at%2003.57.48.png"/>
+
+<img style="width:50%;margin-bottom:8px;" src="./images/Screenshot%202023-06-16%20at%2003.58.11.png"/>
+<img style="width:48%;margin-left:2%;margin-bottom:8px;" src="./images/Screenshot%202023-06-16%20at%2003.58.42.png"/>
+
+<img style="width:50%;margin-bottom:8px;" src="./images/Screenshot%202023-06-16%20at%2003.58.42.png"/>
+<img style="width:48%;margin-left:2%;margin-bottom:8px;" src="./images/Screenshot%202023-06-16%20at%2003.59.27.png"/>
+
+<img style="width:50%;margin-bottom:8px;" src="./images/Screenshot%202023-06-16%20at%2004.00.08.png"/>
+<img style="width:48%;margin-left:2%;margin-bottom:8px;" src="./images/Screenshot%202023-06-16%20at%2004.00.24.png"/>
+
+<img style="width:50%;margin-bottom:8px;" src="./images/Screenshot%202023-06-16%20at%2004.02.42.png"/>
+<img style="width:48%;margin-left:2%;margin-bottom:8px;" src="./images/Screenshot%202023-06-16%20at%2004.04.05.png"/>
+
+<img style="width:50%;" src="./images/Screenshot%202023-06-16%20at%2004.18.53.png"/>
+<img style="width:48%;margin-left:2%;" src="./images/Screenshot%202023-06-16%20at%2004.19.04.png"/>
+
+</div>
+
+<video  controller source="./demo.mov"/>
+
+<br/>
 
 ### Built With
 
