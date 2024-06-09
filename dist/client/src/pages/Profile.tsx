@@ -263,7 +263,7 @@ const Profile = () => {
               <p>Posts</p>
             </Link>
             {username == myusername && (
-              <Link className={issaved ? "a" : ""} to={`/username1/saved`}>
+              <Link className={issaved ? "a" : ""} to={`${username}/saved`}>
                 <SavedMini />
                 <p>Saved</p>
               </Link>
